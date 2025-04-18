@@ -1,4 +1,13 @@
-import { Magazine } from "@/types";
+export interface Magazine {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  publicationDate: string;
+  coverImage: string;
+  pdfUrl: string;
+  articles: MagazineArticle[];
+}
 
 export interface MagazineArticle {
     id: number;
