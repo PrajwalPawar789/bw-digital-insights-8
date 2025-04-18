@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { pressReleaseData } from '../data/pressReleaseData';
-import { ArrowRight, Newspaper, Calendar, Tag } from 'lucide-react';
+import { ArrowRight, Newspaper, Calendar, Tag, Share2, Eye } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -19,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
 
 const PressReleases = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -34,16 +35,25 @@ const PressReleases = () => {
   // Get featured (first 3) press releases
   const featuredPressReleases = pressReleaseData.slice(0, 3);
 
+  const handleShare = (title: string) => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: "Link copied!",
+      description: `Share "${title}" with your network`,
+      duration: 3000,
+    });
+  };
+
   return (
-    <div className="min-h-screen py-12">
+    <div className="min-h-screen py-12 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section with Animation */}
         <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-3xl md:text-5xl font-bold text-insightBlack mb-4 relative inline-block">
+          <h1 className="text-4xl md:text-6xl font-bold text-insightBlack mb-4 relative inline-block group">
             Press Releases
-            <span className="absolute -bottom-2 left-0 w-full h-1 bg-insightRed transform scale-x-50 group-hover:scale-x-100 transition-transform"></span>
+            <span className="absolute -bottom-2 left-0 w-full h-1 bg-insightRed transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></span>
           </h1>
-          <p className="max-w-3xl mx-auto text-gray-600 text-lg">
+          <p className="max-w-3xl mx-auto text-gray-600 text-lg md:text-xl leading-relaxed">
             Stay up-to-date with the latest announcements, partnerships, and innovations from InsightsBW.
           </p>
         </div>
@@ -51,21 +61,26 @@ const PressReleases = () => {
         {/* Featured Carousel */}
         <div className="mb-16">
           <h2 className="text-2xl font-bold text-insightBlack mb-6 flex items-center">
-            <Newspaper className="mr-2 h-5 w-5 text-insightRed" /> Featured Announcements
+            <Newspaper className="mr-2 h-6 w-6 text-insightRed" /> 
+            <span className="relative">
+              Featured Announcements
+              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-insightRed"></span>
+            </span>
           </h2>
           <Carousel className="w-full">
             <CarouselContent>
               {featuredPressReleases.map((pressRelease) => (
                 <CarouselItem key={pressRelease.id} className="md:basis-1/2 lg:basis-1/3">
-                  <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300">
-                    <div className="h-48 overflow-hidden relative">
+                  <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white">
+                    <div className="h-48 overflow-hidden relative group">
                       <img
                         src={pressRelease.image}
                         alt={pressRelease.title}
-                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <div className="absolute top-0 right-0 m-3">
-                        <span className="inline-block px-2 py-1 text-xs font-semibold bg-insightRed text-white rounded-md">
+                        <span className="inline-block px-3 py-1 text-xs font-semibold bg-insightRed text-white rounded-full">
                           {pressRelease.category}
                         </span>
                       </div>
@@ -74,20 +89,29 @@ const PressReleases = () => {
                       <div className="flex items-center text-sm text-gray-500 mb-1">
                         <Calendar className="h-4 w-4 mr-1" /> {pressRelease.date}
                       </div>
-                      <CardTitle className="text-xl hover:text-insightRed transition-colors">
+                      <CardTitle className="text-xl hover:text-insightRed transition-colors line-clamp-2">
                         {pressRelease.title}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pb-2">
                       <p className="text-gray-600 line-clamp-2">{pressRelease.excerpt}</p>
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter className="flex justify-between items-center">
                       <Link
                         to={`/press-releases/${pressRelease.id}`}
-                        className="text-insightRed hover:text-insightBlack text-sm font-medium transition-colors flex items-center"
+                        className="text-insightRed hover:text-insightBlack text-sm font-medium transition-colors flex items-center group"
                       >
-                        Read More <ArrowRight className="ml-1 h-4 w-4" />
+                        Read More 
+                        <ArrowRight className="ml-1 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
                       </Link>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleShare(pressRelease.title)}
+                        className="text-gray-500 hover:text-insightRed"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
                     </CardFooter>
                   </Card>
                 </CarouselItem>
@@ -111,7 +135,11 @@ const PressReleases = () => {
               onClick={() => setSelectedCategory(category)}
               variant={selectedCategory === category ? "default" : "outline"}
               size="sm"
-              className={selectedCategory === category ? "bg-insightRed hover:bg-insightRed/90" : ""}
+              className={`${
+                selectedCategory === category
+                  ? "bg-insightRed hover:bg-insightRed/90 transform hover:scale-105"
+                  : "hover:bg-gray-100"
+              } transition-all duration-300`}
             >
               {category.charAt(0).toUpperCase() + category.slice(1)}
             </Button>
@@ -123,21 +151,22 @@ const PressReleases = () => {
           {filteredPressReleases.map((pressRelease) => (
             <div 
               key={pressRelease.id} 
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
               <div className="flex flex-col md:flex-row">
-                <div className="md:w-1/3 h-48 md:h-auto overflow-hidden">
+                <div className="md:w-1/3 h-48 md:h-auto overflow-hidden relative group">
                   <img
                     src={pressRelease.image}
                     alt={pressRelease.title}
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div className="md:w-2/3 p-6">
                   <div className="flex flex-col h-full">
                     <div>
                       <div className="flex justify-between items-start mb-3">
-                        <span className="inline-block px-2 py-1 text-xs font-semibold bg-insightRed text-white rounded-md">
+                        <span className="inline-block px-3 py-1 text-xs font-semibold bg-insightRed text-white rounded-full">
                           {pressRelease.category}
                         </span>
                         <span className="text-sm text-gray-500 flex items-center">
@@ -149,13 +178,29 @@ const PressReleases = () => {
                       </h2>
                       <p className="text-gray-600 mb-4 line-clamp-3">{pressRelease.excerpt}</p>
                     </div>
-                    <div className="mt-auto">
+                    <div className="mt-auto flex justify-between items-center">
                       <Link
                         to={`/press-releases/${pressRelease.id}`}
-                        className="inline-flex items-center text-insightRed hover:text-insightBlack text-sm font-medium transition-colors"
+                        className="inline-flex items-center text-insightRed hover:text-insightBlack text-sm font-medium transition-colors group"
                       >
-                        Read More <ArrowRight className="ml-1 h-4 w-4" />
+                        Read More 
+                        <ArrowRight className="ml-1 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
                       </Link>
+                      <div className="flex items-center space-x-4">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleShare(pressRelease.title)}
+                          className="text-gray-500 hover:text-insightRed"
+                        >
+                          <Share2 className="h-4 w-4 mr-1" />
+                          Share
+                        </Button>
+                        <span className="flex items-center text-sm text-gray-500">
+                          <Eye className="h-4 w-4 mr-1" />
+                          {Math.floor(Math.random() * 1000) + 100} views
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
