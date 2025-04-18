@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { magazineData, Magazine } from '../data/magazineData';
@@ -34,6 +35,34 @@ const MagazinePage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Create array of page numbers for pagination
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    
+    // Always show first page
+    pageNumbers.push(1);
+    
+    // If there are many pages, add ellipsis after page 1
+    if (currentPage > 3) pageNumbers.push('ellipsis1');
+    
+    // Add previous page if not first or second
+    if (currentPage > 2) pageNumbers.push(currentPage - 1);
+    
+    // Add current page if not first
+    if (currentPage !== 1) pageNumbers.push(currentPage);
+    
+    // Add next page if not last
+    if (currentPage < totalPages - 1) pageNumbers.push(currentPage + 1);
+    
+    // If there are many pages, add ellipsis before last page
+    if (currentPage < totalPages - 2) pageNumbers.push('ellipsis2');
+    
+    // Always show last page if more than 1 page
+    if (totalPages > 1) pageNumbers.push(totalPages);
+    
+    return pageNumbers;
+  };
+
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -68,41 +97,48 @@ const MagazinePage = () => {
         
         {/* Magazine Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {currentMagazines.map((magazine: Magazine) => (
-            <Link
-              key={magazine.id}
-              to={`/magazine/${magazine.id}`}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
-            >
-              <div className="relative">
-                <img
-                  src={magazine.coverImage}
-                  alt={magazine.title}
-                  className="w-full h-64 object-cover transition-transform group-hover:scale-105"
-                />
-                <div className="absolute top-0 right-0 bg-insightRed text-white text-xs font-bold px-2 py-1 m-2 rounded">
-                  {magazine.category}
+          {currentMagazines.length > 0 ? (
+            currentMagazines.map((magazine: Magazine) => (
+              <Link
+                key={magazine.id}
+                to={`/magazine/${magazine.id}`}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
+              >
+                <div className="relative">
+                  <img
+                    src={magazine.coverImage}
+                    alt={magazine.title}
+                    className="w-full h-64 object-cover transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute top-0 right-0 bg-insightRed text-white text-xs font-bold px-2 py-1 m-2 rounded">
+                    {magazine.category}
+                  </div>
                 </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-insightBlack group-hover:text-insightRed transition-colors">
-                  {magazine.title}
-                </h3>
-                <p className="text-gray-600 mb-4 line-clamp-3">{magazine.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{magazine.publicationDate}</span>
-                  <span className="text-insightRed font-medium">View</span>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold mb-2 text-insightBlack group-hover:text-insightRed transition-colors">
+                    {magazine.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 line-clamp-3">{magazine.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-500">{magazine.publicationDate}</span>
+                    <span className="text-insightRed font-medium">View</span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-3 text-center py-12">
+              <p className="text-gray-600">No magazines found in this category.</p>
+            </div>
+          )}
         </div>
 
-        {/* Pagination */}
+        {/* Improved Pagination */}
         {totalPages > 1 && (
           <div className="mt-12">
             <Pagination>
               <PaginationContent>
+                {/* Previous Page Button */}
                 {currentPage > 1 && (
                   <PaginationItem>
                     <PaginationPrevious
@@ -112,34 +148,26 @@ const MagazinePage = () => {
                   </PaginationItem>
                 )}
                 
-                {Array.from({ length: totalPages }).map((_, index) => {
-                  const pageNumber = index + 1;
-                  // Only show limited page numbers for better UI
-                  if (
-                    pageNumber === 1 ||
-                    pageNumber === totalPages ||
-                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-                  ) {
-                    return (
-                      <PaginationItem key={pageNumber}>
-                        <PaginationLink
-                          isActive={currentPage === pageNumber}
-                          onClick={() => handlePageChange(pageNumber)}
-                          className="cursor-pointer"
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  } else if (
-                    (pageNumber === currentPage - 2 && currentPage > 3) ||
-                    (pageNumber === currentPage + 2 && currentPage < totalPages - 2)
-                  ) {
-                    return <PaginationItem key={pageNumber}><PaginationEllipsis /></PaginationItem>;
+                {/* Page Numbers */}
+                {getPageNumbers().map((page, index) => {
+                  if (page === 'ellipsis1' || page === 'ellipsis2') {
+                    return <PaginationItem key={`ellipsis-${index}`}><PaginationEllipsis /></PaginationItem>;
                   }
-                  return null;
+                  
+                  return (
+                    <PaginationItem key={`page-${page}`}>
+                      <PaginationLink
+                        isActive={currentPage === page}
+                        onClick={() => handlePageChange(page as number)}
+                        className="cursor-pointer"
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
                 })}
                 
+                {/* Next Page Button */}
                 {currentPage < totalPages && (
                   <PaginationItem>
                     <PaginationNext

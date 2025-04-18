@@ -23,7 +23,13 @@ const MagazineDetail = () => {
     const foundMagazine = magazineData.find(mag => mag.id === Number(id));
     if (foundMagazine) {
       setMagazine(foundMagazine);
+      // Reset state when magazine changes
+      setNumPages(null);
+      setPageNumber(1);
+      setPdfError(false);
+      setLoadRetry(0);
     }
+    
     // Simulate loading delay
     const timer = setTimeout(() => {
       setLoading(false);
@@ -105,6 +111,9 @@ const MagazineDetail = () => {
     );
   }
 
+  // A reliable sample PDF from a publicly accessible URL
+  const pdfUrl = "https://www.africau.edu/images/default/sample.pdf";
+
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -134,7 +143,7 @@ const MagazineDetail = () => {
             <div className="flex items-center justify-between mb-6">
               <span className="text-sm text-gray-500">Published: {magazine.publicationDate}</span>
               <a
-                href={magazine.pdfUrl}
+                href={pdfUrl}
                 download
                 className="inline-flex items-center bg-insightBlack hover:bg-insightRed text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
               >
@@ -150,7 +159,7 @@ const MagazineDetail = () => {
           <div className="flex justify-center">
             <div className="max-w-3xl">
               <Document
-                file={magazine.pdfUrl}
+                file={pdfUrl}
                 onLoadSuccess={onDocumentLoadSuccess}
                 onLoadError={onDocumentLoadError}
                 loading={<div className="text-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed mx-auto"></div></div>}
@@ -159,7 +168,7 @@ const MagazineDetail = () => {
                     <FileWarning className="h-12 w-12 text-red-500 mb-3" />
                     <p className="text-red-500 font-medium mb-4">Failed to load PDF. Please try downloading instead.</p>
                     <a
-                      href={magazine.pdfUrl}
+                      href={pdfUrl}
                       download
                       className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
                     >

@@ -193,5 +193,110 @@ export const magazineData: Magazine[] = [
         thumbnailImage: "https://www.mckinsey.com/~/media/mckinsey/industries/high%20tech/our%20insights/building%20innovation%20ecosystems/svgz-building-innovation-ecosystems-ex1a.svg"
       }
     ]
+  },
+  {
+    id: 6,
+    title: "Building Resilient Organizations",
+    description: "Learn how to create business structures that withstand market turbulence and economic uncertainty. This issue provides frameworks and strategies for building adaptable organizations that thrive in volatile environments.",
+    category: "leadership",
+    publicationDate: "November 2024",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Successful-Chief-Growth-Officer-You-Should-Know.jpg",
+    pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    articles: [
+      {
+        id: 601,
+        title: "Crisis Management Frameworks",
+        author: "Dr. Emily Wilson",
+        excerpt: "Developing robust systems for anticipating and responding to organizational crises.",
+        pageNumber: 8,
+        thumbnailImage: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3"
+      },
+      {
+        id: 602,
+        title: "Adaptive Leadership",
+        author: "Marcus Thompson",
+        excerpt: "Leadership approaches that embrace uncertainty and foster continuous adaptation.",
+        pageNumber: 17,
+        thumbnailImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3"
+      },
+      {
+        id: 603,
+        title: "Organizational Agility",
+        author: "Sophia Chen",
+        excerpt: "Building structures that respond quickly to market shifts and customer needs.",
+        pageNumber: 24,
+        thumbnailImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3"
+      }
+    ]
+  },
+  {
+    id: 7,
+    title: "Customer Experience Transformation",
+    description: "Discover strategies for reimagining customer journeys and creating memorable brand experiences. This issue examines how leading companies are leveraging technology and human-centered design to build stronger customer relationships.",
+    category: "marketing",
+    publicationDate: "October 2024",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Middle-Easts-Top-Managing-Directors-Revolutionizing-Business.jpg",
+    pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    articles: [
+      {
+        id: 701,
+        title: "Journey Mapping Techniques",
+        author: "Rebecca Adams",
+        excerpt: "Advanced methods for understanding and optimizing the customer journey.",
+        pageNumber: 5,
+        thumbnailImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3"
+      },
+      {
+        id: 702,
+        title: "Personalization at Scale",
+        author: "Daniel Lee",
+        excerpt: "Balancing customized experiences with operational efficiency.",
+        pageNumber: 14,
+        thumbnailImage: "https://images.unsplash.com/photo-1552581234-26160f608093?ixlib=rb-4.0.3"
+      },
+      {
+        id: 703,
+        title: "Emotional Brand Connections",
+        author: "Maya Patel",
+        excerpt: "Creating authentic brand experiences that build lasting customer loyalty.",
+        pageNumber: 21,
+        thumbnailImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3"
+      }
+    ]
+  },
+  {
+    id: 8,
+    title: "Global Supply Chain Innovation",
+    description: "Explore cutting-edge strategies for managing complex international supply networks in an era of uncertainty. This issue covers digital transformation of supply chains, risk mitigation, and sustainable sourcing practices.",
+    category: "operations",
+    publicationDate: "September 2024",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Breaking-Barriers-with-Style-Rethink-Your-Brand-Approach-By-Ana-Maria-Ciubota.jpg",
+    pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    articles: [
+      {
+        id: 801,
+        title: "Digital Supply Networks",
+        author: "James Wilson",
+        excerpt: "Moving from linear supply chains to interconnected digital networks.",
+        pageNumber: 7,
+        thumbnailImage: "https://images.unsplash.com/photo-1621768216845-172b5c6fe7fc?ixlib=rb-4.0.3"
+      },
+      {
+        id: 802,
+        title: "Predictive Analytics in Supply",
+        author: "Lisa Johnson",
+        excerpt: "Using data science to anticipate supply chain disruptions and optimize operations.",
+        pageNumber: 16,
+        thumbnailImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3"
+      },
+      {
+        id: 803,
+        title: "Supply Chain Transparency",
+        author: "Robert Chang",
+        excerpt: "Building ethical, traceable supply chains that strengthen brand reputation.",
+        pageNumber: 23,
+        thumbnailImage: "https://images.unsplash.com/photo-1494412651409-8963ce7935a7?ixlib=rb-4.0.3"
+      }
+    ]
   }
 ];
