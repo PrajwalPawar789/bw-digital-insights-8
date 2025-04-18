@@ -1,49 +1,160 @@
 
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { pressReleaseData } from '../data/pressReleaseData';
+import { ArrowRight, Newspaper, Calendar, Tag } from 'lucide-react';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const PressReleases = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  
+  // Get all unique categories
+  const categories = ['all', ...Array.from(new Set(pressReleaseData.map(pr => pr.category)))];
+  
+  // Filter press releases by category
+  const filteredPressReleases = selectedCategory === 'all'
+    ? pressReleaseData
+    : pressReleaseData.filter(pr => pr.category === selectedCategory);
+  
+  // Get featured (first 3) press releases
+  const featuredPressReleases = pressReleaseData.slice(0, 3);
+
   return (
     <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4">Press Releases</h1>
-          <p className="max-w-3xl mx-auto text-gray-600">
+        {/* Hero Section with Animation */}
+        <div className="text-center mb-12 animate-fade-in">
+          <h1 className="text-3xl md:text-5xl font-bold text-insightBlack mb-4 relative inline-block">
+            Press Releases
+            <span className="absolute -bottom-2 left-0 w-full h-1 bg-insightRed transform scale-x-50 group-hover:scale-x-100 transition-transform"></span>
+          </h1>
+          <p className="max-w-3xl mx-auto text-gray-600 text-lg">
             Stay up-to-date with the latest announcements, partnerships, and innovations from InsightsBW.
           </p>
         </div>
 
+        {/* Featured Carousel */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-bold text-insightBlack mb-6 flex items-center">
+            <Newspaper className="mr-2 h-5 w-5 text-insightRed" /> Featured Announcements
+          </h2>
+          <Carousel className="w-full">
+            <CarouselContent>
+              {featuredPressReleases.map((pressRelease) => (
+                <CarouselItem key={pressRelease.id} className="md:basis-1/2 lg:basis-1/3">
+                  <Card className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="h-48 overflow-hidden relative">
+                      <img
+                        src={pressRelease.image}
+                        alt={pressRelease.title}
+                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-0 right-0 m-3">
+                        <span className="inline-block px-2 py-1 text-xs font-semibold bg-insightRed text-white rounded-md">
+                          {pressRelease.category}
+                        </span>
+                      </div>
+                    </div>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center text-sm text-gray-500 mb-1">
+                        <Calendar className="h-4 w-4 mr-1" /> {pressRelease.date}
+                      </div>
+                      <CardTitle className="text-xl hover:text-insightRed transition-colors">
+                        {pressRelease.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pb-2">
+                      <p className="text-gray-600 line-clamp-2">{pressRelease.excerpt}</p>
+                    </CardContent>
+                    <CardFooter>
+                      <Link
+                        to={`/press-releases/${pressRelease.id}`}
+                        className="text-insightRed hover:text-insightBlack text-sm font-medium transition-colors flex items-center"
+                      >
+                        Read More <ArrowRight className="ml-1 h-4 w-4" />
+                      </Link>
+                    </CardFooter>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="hidden md:block">
+              <CarouselPrevious className="!-left-5" />
+              <CarouselNext className="!-right-5" />
+            </div>
+          </Carousel>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+          <span className="font-medium text-gray-700 flex items-center mr-2">
+            <Tag className="h-4 w-4 mr-1" /> Filter by:
+          </span>
+          {categories.map((category) => (
+            <Button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              variant={selectedCategory === category ? "default" : "outline"}
+              size="sm"
+              className={selectedCategory === category ? "bg-insightRed hover:bg-insightRed/90" : ""}
+            >
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </Button>
+          ))}
+        </div>
+
         {/* Press Release List */}
         <div className="space-y-8">
-          {pressReleaseData.map((pressRelease) => (
-            <div key={pressRelease.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+          {filteredPressReleases.map((pressRelease) => (
+            <div 
+              key={pressRelease.id} 
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+            >
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-1/3 h-48 md:h-auto overflow-hidden">
                   <img
                     src={pressRelease.image}
                     alt={pressRelease.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                   />
                 </div>
                 <div className="md:w-2/3 p-6">
                   <div className="flex flex-col h-full">
                     <div>
                       <div className="flex justify-between items-start mb-3">
-                        <span className="inline-block px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-md">
+                        <span className="inline-block px-2 py-1 text-xs font-semibold bg-insightRed text-white rounded-md">
                           {pressRelease.category}
                         </span>
-                        <span className="text-sm text-gray-500">{pressRelease.date}</span>
+                        <span className="text-sm text-gray-500 flex items-center">
+                          <Calendar className="h-4 w-4 mr-1" /> {pressRelease.date}
+                        </span>
                       </div>
-                      <h2 className="text-xl font-bold text-insightBlack mb-3">{pressRelease.title}</h2>
+                      <h2 className="text-xl font-bold text-insightBlack mb-3 hover:text-insightRed transition-colors">
+                        {pressRelease.title}
+                      </h2>
                       <p className="text-gray-600 mb-4 line-clamp-3">{pressRelease.excerpt}</p>
                     </div>
                     <div className="mt-auto">
                       <Link
                         to={`/press-releases/${pressRelease.id}`}
-                        className="text-insightRed hover:text-insightBlack text-sm font-medium transition-colors"
+                        className="inline-flex items-center text-insightRed hover:text-insightBlack text-sm font-medium transition-colors"
                       >
-                        Read More
+                        Read More <ArrowRight className="ml-1 h-4 w-4" />
                       </Link>
                     </div>
                   </div>
@@ -51,6 +162,19 @@ const PressReleases = () => {
               </div>
             </div>
           ))}
+          
+          {filteredPressReleases.length === 0 && (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <p className="text-gray-600">No press releases found in this category.</p>
+              <Button 
+                onClick={() => setSelectedCategory('all')}
+                variant="outline"
+                className="mt-3"
+              >
+                Show All
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
