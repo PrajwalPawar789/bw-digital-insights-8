@@ -1,231 +1,187 @@
-export interface Magazine {
-  id: number;
-  title: string;
-  category: string;
-  description: string;
-  coverImage: string;
-  publicationDate: string;
-  pdfUrl: string;
-  articles: MagazineArticle[];
-}
+import { Magazine } from "@/types";
 
 export interface MagazineArticle {
-  id: number;
-  title: string;
-  excerpt: string;
-  author: string;
-  thumbnailImage: string;
-  pageNumber: number;
+    id: number;
+    title: string;
+    author: string;
+    excerpt: string;
+    pageNumber: number;
+    thumbnailImage: string;
 }
 
 export const magazineData: Magazine[] = [
   {
     id: 1,
-    title: "InsightsBW Business Intelligence - April 2025",
-    category: "Business",
-    description: "Our latest edition explores emerging business trends, featuring exclusive interviews with industry leaders and in-depth analysis of market transformations driving the global economy.",
+    title: "The Future of Digital Transformation",
+    description: "Explore how companies are leveraging artificial intelligence, IoT, and cloud computing to revolutionize their operations and customer experiences. This issue features insights from top technology leaders and case studies of successful digital transformations.",
+    category: "technology",
+    publicationDate: "April 2025",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Successful-Chief-Growth-Officer-You-Should-Know.jpg",
-    publicationDate: "2025-04-01",
-    pdfUrl: "/sample-magazine.pdf",
+    pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
     articles: [
       {
         id: 101,
-        title: "The Rise of Decentralized Finance",
-        excerpt: "How DeFi is reshaping traditional banking and creating new opportunities for businesses and consumers alike.",
-        author: "Alexandra Morrison",
-        thumbnailImage: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YmxvY2tjaGFpbnxlbnwwfHwwfHx8MA%3D%3D",
-        pageNumber: 14
+        title: "AI-Driven Business Strategies",
+        author: "Dr. Emily Carter",
+        excerpt: "How artificial intelligence is transforming business decision-making processes.",
+        pageNumber: 4,
+        thumbnailImage: "https://images.unsplash.com/photo-1519389950473-47a0f98a952a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dGVjaG5vbG9neXxlbnwwfHwwfHw%3D&w=1000&q=80"
       },
       {
         id: 102,
-        title: "Sustainable Supply Chains: The New Competitive Advantage",
-        excerpt: "Leading companies are transforming their supply chains to meet environmental goals while improving operational efficiency.",
-        author: "Marcus Johnson",
-        thumbnailImage: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8c3VwcGx5JTIwY2hhaW58ZW58MHx8MHx8fDA%3D",
-        pageNumber: 28
+        title: "The Role of IoT in Smart Cities",
+        author: "Michael Lee",
+        excerpt: "Exploring the impact of the Internet of Things on urban development and sustainability.",
+        pageNumber: 12,
+        thumbnailImage: "https://media.istockphoto.com/id/1166475400/photo/abstract-image-visual-internet-of-things-concept.jpg?s=612x612&w=0&k=20&c=egKt_qEwjhYI_zsX-vjtjLumeK1xG-1wJS2m-Lhx_lc="
       },
       {
         id: 103,
-        title: "Leadership in the Age of Remote Work",
-        excerpt: "New management strategies for building cohesive teams and maintaining company culture in distributed organizations.",
-        author: "Sophia Chen",
-        thumbnailImage: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmVtb3RlJTIwd29ya3xlbnwwfHwwfHx8MA%3D%3D",
-        pageNumber: 42
+        title: "Cloud Computing Trends",
+        author: "Sarah Johnson",
+        excerpt: "An overview of the latest trends and innovations in cloud computing technology.",
+        pageNumber: 20,
+        thumbnailImage: "https://www.simplilearn.com/ice9/free_resources_article_thumb/cloud-computing-an-overview-article.jpg"
       }
     ]
   },
   {
     id: 2,
-    title: "InsightsBW Tech Innovations - March 2025",
-    category: "Technology",
-    description: "Discover the breakthrough technologies reshaping industries, with special focus on artificial intelligence, quantum computing, and next-generation cybersecurity solutions.",
-    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Visionary-Leaders-Pioneering-Digital-Transformation-in-2024-December2024.jpg",
-    publicationDate: "2025-03-01",
-    pdfUrl: "/sample-magazine.pdf",
+    title: "Sustainable Business Practices",
+    description: "Discover how leading organizations are implementing sustainable practices that benefit both the environment and their bottom line. This issue examines innovative approaches to reducing carbon footprints, ethical supply chain management, and corporate social responsibility initiatives.",
+    category: "sustainability",
+    publicationDate: "March 2025",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Most-Influential-Leaders-in-Aerospace-Aviation-Industry-to-Watch.jpg",
+    pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
     articles: [
       {
         id: 201,
-        title: "Quantum Computing Reaches Commercial Viability",
-        excerpt: "The race to quantum advantage has been won, with practical business applications now emerging across multiple industries.",
+        title: "Reducing Carbon Footprints",
         author: "Dr. James Wilson",
-        thumbnailImage: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cXVhbnR1bSUyMGNvbXB1dGVyfGVufDB8fDB8fHww",
-        pageNumber: 12
+        excerpt: "Strategies for businesses to minimize their environmental impact and reduce carbon emissions.",
+        pageNumber: 6,
+        thumbnailImage: "https://www.shutterstock.com/image-photo/concept-ecological-footprint-260nw-1909740918.jpg"
       },
       {
         id: 202,
-        title: "AI Ethics: Balancing Innovation and Responsibility",
-        excerpt: "How leading organizations are establishing frameworks to ensure ethical AI development and deployment.",
-        author: "Priya Sharma",
-        thumbnailImage: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YWklMjByb2JvdHxlbnwwfHwwfHx8MA%3D%3D",
-        pageNumber: 24
+        title: "Ethical Supply Chain Management",
+        author: "Maria Rodriguez",
+        excerpt: "Ensuring fair labor practices and environmental responsibility in global supply chains.",
+        pageNumber: 15,
+        thumbnailImage: "https://www.supplychaindive.com/imgproxy/SjxrZl9vdUqAWK42Ejw-V5_1tj1GyysjCa9KpEQC6_A/g:ce/rs:fill:770:364:0/bG9jYWw6Ly8vZGl2ZWltYWdlL0dldHR5SW1hZ2VzLTExNzY2MzQ4MzguanBn.jpg"
       },
       {
         id: 203,
-        title: "The New Cybersecurity Landscape",
-        excerpt: "As threats evolve with unprecedented sophistication, cybersecurity strategies must adapt to protect critical assets.",
-        author: "Michael Torres",
-        thumbnailImage: "https://images.unsplash.com/photo-1480160734175-e2209654c0c1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGN5YmVyc2VjdXJpdHl8ZW58MHx8MHx8fDA%3D",
-        pageNumber: 36
+        title: "Corporate Social Responsibility",
+        author: "David Brown",
+        excerpt: "The importance of CSR initiatives in building a positive brand image and community relations.",
+        pageNumber: 22,
+        thumbnailImage: "https://www.investopedia.com/thmb/QV-I2gMrGfxKJJwV0iwEaQ-ekME=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-1284994248-dbdfa5a8df1c45f5a594b799e3c04c24.jpg"
       }
     ]
   },
   {
     id: 3,
-    title: "InsightsBW Digital Marketing Trends - February 2025",
-    category: "Marketing",
-    description: "Explore cutting-edge marketing strategies and consumer insights shaping the digital landscape, featuring case studies from breakthrough campaigns and expert analysis.",
+    title: "Global Market Trends",
+    description: "Analysis of emerging market trends and opportunities across different regions and industries. Our experts provide forecasts and strategic recommendations to help your business navigate the evolving global economic landscape.",
+    category: "finance",
+    publicationDate: "February 2025",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Breaking-Barriers-with-Style-Rethink-Your-Brand-Approach-By-Ana-Maria-Ciubota.jpg",
-    publicationDate: "2025-02-01",
-    pdfUrl: "/sample-magazine.pdf",
+    pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
     articles: [
       {
         id: 301,
-        title: "The End of Third-Party Cookies: New Marketing Paradigms",
-        excerpt: "How innovative companies are adapting their strategies in a privacy-first digital ecosystem.",
-        author: "Emma Rodriguez",
-        thumbnailImage: "https://images.unsplash.com/photo-1555421689-3f034debb7a6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Y29va2llc3xlbnwwfHwwfHx8MA%3D%3D",
-        pageNumber: 10
+        title: "Emerging Market Opportunities",
+        author: "Alexandra Morrison",
+        excerpt: "Identifying high-growth potential markets for business expansion.",
+        pageNumber: 5,
+        thumbnailImage: "https://www.trade.gov/sites/default/files/styles/opengraph_image/public/2023-03/emergingmarkets.jpg?itok=RjG5Kq4j"
       },
       {
         id: 302,
-        title: "Voice Search Optimization: Preparing for the Audio Revolution",
-        excerpt: "Voice-activated technology is changing how consumers interact with brands—is your marketing strategy ready?",
-        author: "David Thompson",
-        thumbnailImage: "https://images.unsplash.com/photo-1622282577773-e0f9b24cceb5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dm9pY2UlMjBzZWFyY2h8ZW58MHx8MHx8fDA%3D",
-        pageNumber: 22
+        title: "Economic Forecasts for 2025",
+        author: "Marcus Johnson",
+        excerpt: "Expert predictions on the global economic outlook and key factors influencing market performance.",
+        pageNumber: 14,
+        thumbnailImage: "https://images.moneycontrol.com/static-mcnews/2023/01/Budget-Session-economic-survey-770x433.jpg"
       },
       {
         id: 303,
-        title: "Social Commerce: When Entertainment Meets Shopping",
-        excerpt: "The integration of shopping experiences into social platforms is creating new revenue channels for forward-thinking brands.",
-        author: "Jennifer Lee",
-        thumbnailImage: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c29jaWFsJTIwbWVkaWElMjBzaG9wcGluZ3xlbnwwfHwwfHx8MA%3D%3D",
-        pageNumber: 34
+        title: "Strategic Investment Recommendations",
+        author: "Sophia Chen",
+        excerpt: "Guidance on making informed investment decisions in a dynamic economic environment.",
+        pageNumber: 21,
+        thumbnailImage: "https://www.fidelity.com/binaries/content/gallery/mobile/insights/how-to-invest-during-a-recession.jpg"
       }
     ]
   },
   {
     id: 4,
-    title: "InsightsBW Sustainability Report - January 2025",
-    category: "Business",
-    description: "Our comprehensive analysis of sustainable business practices and ESG innovations driving corporate responsibility and long-term value creation across global industries.",
-    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Most-Influential-Leaders-in-Aerospace-Aviation-Industry-to-Watch.jpg",
-    publicationDate: "2025-01-01",
-    pdfUrl: "/sample-magazine.pdf",
+    title: "Leadership in Crisis",
+    description: "Learn effective strategies for leading organizations through times of uncertainty and disruption. This issue features interviews with executives who successfully navigated recent global challenges and expert advice on building resilient teams and adaptive business models.",
+    category: "leadership",
+    publicationDate: "January 2025",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Visionary-Leaders-Pioneering-Digital-Transformation-in-2024-December2024.jpg",
+    pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
     articles: [
       {
         id: 401,
-        title: "Circular Economy Business Models That Work",
-        excerpt: "Case studies of companies successfully implementing circular principles to reduce waste and increase profits.",
-        author: "Jason Miller",
-        thumbnailImage: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cmVjeWNsZXxlbnwwfHwwfHx8MA%3D%3D",
-        pageNumber: 18
+        title: "Leading Through Uncertainty",
+        author: "Dr. James Wilson",
+        excerpt: "Effective leadership strategies for navigating times of crisis and change.",
+        pageNumber: 7,
+        thumbnailImage: "https://miro.medium.com/v2/resize:fit/1400/1*bJESdzWJu9joKqq9G9Jv9Q.jpeg"
       },
       {
         id: 402,
-        title: "ESG Reporting: Beyond Compliance to Strategic Advantage",
-        excerpt: "How leading organizations are leveraging ESG transparency to attract investment and build consumer trust.",
-        author: "Sarah Johnson",
-        thumbnailImage: "https://images.unsplash.com/photo-1562157404-6fe5826bf9ab?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZXNnfGVufDB8fDB8fHww",
-        pageNumber: 30
+        title: "Building Resilient Teams",
+        author: "Maria Rodriguez",
+        excerpt: "Creating strong, adaptable teams that can withstand challenges and setbacks.",
+        pageNumber: 16,
+        thumbnailImage: "https://www.aihr.com/wp-content/uploads/Building-a-resilient-team.png"
       },
       {
         id: 403,
-        title: "Renewable Energy: The Business Case Gets Stronger",
-        excerpt: "Dropping costs and technological advances are making renewable energy the economical choice across industries.",
-        author: "Christopher Green",
-        thumbnailImage: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c29sYXIlMjBwYW5lbHN8ZW58MHx8MHx8fDA%3D",
-        pageNumber: 44
+        title: "Adaptive Business Models",
+        author: "David Brown",
+        excerpt: "Designing flexible business models that can quickly adapt to changing market conditions.",
+        pageNumber: 23,
+        thumbnailImage: "https://www.strategy-business.com/media/image/19301-Quick-Read-Adaptable-Business-Models.jpg?w=1920"
       }
     ]
   },
   {
     id: 5,
-    title: "InsightsBW Leadership Excellence - December 2024",
-    category: "Leadership",
-    description: "Discover transformative leadership strategies with exclusive interviews from global business leaders who are redefining organizational success in challenging times.",
+    title: "Innovation Ecosystems",
+    description: "Explore how companies are creating collaborative networks to accelerate innovation. This issue examines successful partnerships between corporations, startups, academic institutions, and government agencies, providing insights into building effective innovation ecosystems.",
+    category: "innovation",
+    publicationDate: "December 2024",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Middle-Easts-Top-Managing-Directors-Revolutionizing-Business.jpg",
-    publicationDate: "2024-12-01",
-    pdfUrl: "/sample-magazine.pdf",
+    pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
     articles: [
       {
         id: 501,
-        title: "Adaptive Leadership for Uncertain Times",
-        excerpt: "How executives are building resilient organizations capable of thriving amid constant change and disruption.",
-        author: "Elizabeth Clark",
-        thumbnailImage: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlYWRlcnNoaXB8ZW58MHx8MHx8fDA%3D",
-        pageNumber: 16
+        title: "Collaborative Innovation Networks",
+        author: "Alexandra Morrison",
+        excerpt: "Building partnerships between corporations, startups, and academic institutions.",
+        pageNumber: 8,
+        thumbnailImage: "https://www.daglobal.com/wp-content/uploads/2023/02/Innovation-ecosystem.jpg"
       },
       {
         id: 502,
-        title: "The Science of High-Performance Teams",
-        excerpt: "Research-backed approaches to building and sustaining teams that consistently achieve extraordinary results.",
-        author: "Robert Anderson",
-        thumbnailImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dGVhbXxlbnwwfHwwfHx8MA%3D%3D",
-        pageNumber: 28
+        title: "Accelerating Innovation",
+        author: "Marcus Johnson",
+        excerpt: "Strategies for speeding up the innovation process and bringing new products to market faster.",
+        pageNumber: 17,
+        thumbnailImage: "https://www.innosight.com/wp-content/uploads/2017/08/Exhibit-3-New-model-for-corporate-innovation-ecosystem.jpg"
       },
       {
         id: 503,
-        title: "Executive Presence in the Digital Age",
-        excerpt: "Developing and projecting authentic leadership presence across virtual and hybrid work environments.",
-        author: "Michelle Kim",
-        thumbnailImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZXhlY3V0aXZlfGVufDB8fDB8fHww",
-        pageNumber: 42
-      }
-    ]
-  },
-  {
-    id: 6,
-    title: "InsightsBW Financial Strategies - November 2024",
-    category: "Business",
-    description: "Expert financial insights and strategic investment guidance for businesses navigating complex global markets and economic transformations.",
-    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Successful-Chief-Growth-Officer-You-Should-Know.jpg",
-    publicationDate: "2024-11-01",
-    pdfUrl: "/sample-magazine.pdf",
-    articles: [
-      {
-        id: 601,
-        title: "Strategic Asset Allocation in Volatile Markets",
-        excerpt: "Investment strategies that protect capital while capitalizing on emerging opportunities during market turbulence.",
-        author: "William Zhang",
-        thumbnailImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236b3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGludmVzdG1lbnR8ZW58MHx8MHx8fDA%3D",
-        pageNumber: 14
-      },
-      {
-        id: 602,
-        title: "Fintech Disruption: Opportunity or Threat?",
-        excerpt: "How traditional financial institutions are responding to fintech innovation through partnerships and digital transformation.",
-        author: "Rachel Morgan",
-        thumbnailImage: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmludGVjaHxlbnwwfHwwfHx8MA%3D%3D",
-        pageNumber: 26
-      },
-      {
-        id: 603,
-        title: "Corporate Treasury Management in the Digital Age",
-        excerpt: "New approaches to liquidity, risk, and cash flow management leveraging data analytics and automation.",
-        author: "Jonathan Edwards",
-        thumbnailImage: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGZpbmFuY2V8ZW58MHx8MHx8fDA%3D",
-        pageNumber: 38
+        title: "Effective Innovation Ecosystems",
+        author: "Sophia Chen",
+        excerpt: "Insights into creating innovation ecosystems that drive growth and competitive advantage.",
+        pageNumber: 24,
+        thumbnailImage: "https://www.mckinsey.com/~/media/mckinsey/industries/high%20tech/our%20insights/building%20innovation%20ecosystems/svgz-building-innovation-ecosystems-ex1a.svg"
       }
     ]
   }

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { magazineData, Magazine, MagazineArticle } from '../data/magazineData';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, FileWarning } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
 
 // Set up PDF.js worker
@@ -16,6 +16,7 @@ const MagazineDetail = () => {
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [pdfError, setPdfError] = useState<boolean>(false);
+  const [loadRetry, setLoadRetry] = useState<number>(0);
 
   useEffect(() => {
     // Find the magazine by ID
@@ -31,9 +32,23 @@ const MagazineDetail = () => {
     return () => clearTimeout(timer);
   }, [id]);
 
+  // Retry loading PDF if there was an error
+  useEffect(() => {
+    if (pdfError && loadRetry < 2) {
+      const retryTimer = setTimeout(() => {
+        console.log("Retrying PDF load...");
+        setPdfError(false);
+        setLoadRetry(prev => prev + 1);
+      }, 2000);
+      
+      return () => clearTimeout(retryTimer);
+    }
+  }, [pdfError, loadRetry]);
+
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
     setPdfError(false);
+    setLoadRetry(0);
     toast({
       title: "PDF loaded successfully",
       description: `This magazine has ${numPages} pages to explore.`,
@@ -41,8 +56,10 @@ const MagazineDetail = () => {
     });
   };
 
-  const onDocumentLoadError = () => {
+  const onDocumentLoadError = (error: Error) => {
+    console.error("PDF loading error:", error);
     setPdfError(true);
+    
     toast({
       title: "PDF loading error",
       description: "There was an issue loading the PDF. Please try downloading instead.",
@@ -138,14 +155,17 @@ const MagazineDetail = () => {
                 onLoadError={onDocumentLoadError}
                 loading={<div className="text-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed mx-auto"></div></div>}
                 error={<div className="text-center py-12">
-                  <p className="text-red-500 mb-4">Failed to load PDF. Please try downloading instead.</p>
-                  <a
-                    href={magazine.pdfUrl}
-                    download
-                    className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    <Download className="mr-2 h-4 w-4" /> Download PDF
-                  </a>
+                  <div className="flex flex-col items-center">
+                    <FileWarning className="h-12 w-12 text-red-500 mb-3" />
+                    <p className="text-red-500 font-medium mb-4">Failed to load PDF. Please try downloading instead.</p>
+                    <a
+                      href={magazine.pdfUrl}
+                      download
+                      className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                    >
+                      <Download className="mr-2 h-4 w-4" /> Download PDF
+                    </a>
+                  </div>
                 </div>}
               >
                 <Page 
