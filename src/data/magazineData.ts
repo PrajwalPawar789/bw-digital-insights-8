@@ -1,4 +1,3 @@
-
 export interface Magazine {
   id: number;
   title: string;
@@ -25,7 +24,7 @@ export const magazineData: Magazine[] = [
     title: "InsightsBW Business Intelligence - April 2025",
     category: "Business",
     description: "Our latest edition explores emerging business trends, featuring exclusive interviews with industry leaders and in-depth analysis of market transformations driving the global economy.",
-    coverImage: "https://images.unsplash.com/photo-1616248304589-6a3d8d60ad6d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG1hZ2F6aW5lJTIwY292ZXJ8ZW58MHx8MHx8fDA%3D",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Successful-Chief-Growth-Officer-You-Should-Know.jpg",
     publicationDate: "2025-04-01",
     pdfUrl: "/sample-magazine.pdf",
     articles: [
@@ -60,7 +59,7 @@ export const magazineData: Magazine[] = [
     title: "InsightsBW Tech Innovations - March 2025",
     category: "Technology",
     description: "Discover the breakthrough technologies reshaping industries, with special focus on artificial intelligence, quantum computing, and next-generation cybersecurity solutions.",
-    coverImage: "https://images.unsplash.com/photo-1565373679579-96c6767666b5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8dGVjaCUyMG1hZ2F6aW5lfGVufDB8fDB8fHww",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Visionary-Leaders-Pioneering-Digital-Transformation-in-2024-December2024.jpg",
     publicationDate: "2025-03-01",
     pdfUrl: "/sample-magazine.pdf",
     articles: [
@@ -95,7 +94,7 @@ export const magazineData: Magazine[] = [
     title: "InsightsBW Digital Marketing Trends - February 2025",
     category: "Marketing",
     description: "Explore cutting-edge marketing strategies and consumer insights shaping the digital landscape, featuring case studies from breakthrough campaigns and expert analysis.",
-    coverImage: "https://images.unsplash.com/photo-1557838923-2985c318be48?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bWFya2V0aW5nfGVufDB8fDB8fHww",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Breaking-Barriers-with-Style-Rethink-Your-Brand-Approach-By-Ana-Maria-Ciubota.jpg",
     publicationDate: "2025-02-01",
     pdfUrl: "/sample-magazine.pdf",
     articles: [
@@ -130,7 +129,7 @@ export const magazineData: Magazine[] = [
     title: "InsightsBW Sustainability Report - January 2025",
     category: "Business",
     description: "Our comprehensive analysis of sustainable business practices and ESG innovations driving corporate responsibility and long-term value creation across global industries.",
-    coverImage: "https://images.unsplash.com/photo-1535025639604-9a804c092faa?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8c3VzdGFpbmFiaWxpdHl8ZW58MHx8MHx8fDA%3D",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Most-Influential-Leaders-in-Aerospace-Aviation-Industry-to-Watch.jpg",
     publicationDate: "2025-01-01",
     pdfUrl: "/sample-magazine.pdf",
     articles: [
@@ -165,7 +164,7 @@ export const magazineData: Magazine[] = [
     title: "InsightsBW Leadership Excellence - December 2024",
     category: "Leadership",
     description: "Discover transformative leadership strategies with exclusive interviews from global business leaders who are redefining organizational success in challenging times.",
-    coverImage: "https://images.unsplash.com/photo-1570126618953-d437176e8c79?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bGVhZGVyc2hpcHxlbnwwfHwwfHx8MA%3D",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Middle-Easts-Top-Managing-Directors-Revolutionizing-Business.jpg",
     publicationDate: "2024-12-01",
     pdfUrl: "/sample-magazine.pdf",
     articles: [
@@ -200,7 +199,7 @@ export const magazineData: Magazine[] = [
     title: "InsightsBW Financial Strategies - November 2024",
     category: "Business",
     description: "Expert financial insights and strategic investment guidance for businesses navigating complex global markets and economic transformations.",
-    coverImage: "https://images.unsplash.com/photo-1638913665258-ddd2bceafb30?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGZpbmFuY2V8ZW58MHx8MHx8fDA%3D",
+    coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Successful-Chief-Growth-Officer-You-Should-Know.jpg",
     publicationDate: "2024-11-01",
     pdfUrl: "/sample-magazine.pdf",
     articles: [
@@ -209,7 +208,7 @@ export const magazineData: Magazine[] = [
         title: "Strategic Asset Allocation in Volatile Markets",
         excerpt: "Investment strategies that protect capital while capitalizing on emerging opportunities during market turbulence.",
         author: "William Zhang",
-        thumbnailImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGludmVzdG1lbnR8ZW58MHx8MHx8fDA%3D",
+        thumbnailImage: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236b3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGludmVzdG1lbnR8ZW58MHx8MHx8fDA%3D",
         pageNumber: 14
       },
       {
@@ -231,4 +230,3 @@ export const magazineData: Magazine[] = [
     ]
   }
 ];
-

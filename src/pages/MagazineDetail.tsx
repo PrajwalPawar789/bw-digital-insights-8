@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { magazineData, Magazine, MagazineArticle } from '../data/magazineData';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { toast } from "@/components/ui/use-toast";
 
 // Set up PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -14,6 +15,7 @@ const MagazineDetail = () => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
+  const [pdfError, setPdfError] = useState<boolean>(false);
 
   useEffect(() => {
     // Find the magazine by ID
@@ -31,6 +33,22 @@ const MagazineDetail = () => {
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
+    setPdfError(false);
+    toast({
+      title: "PDF loaded successfully",
+      description: `This magazine has ${numPages} pages to explore.`,
+      duration: 3000,
+    });
+  };
+
+  const onDocumentLoadError = () => {
+    setPdfError(true);
+    toast({
+      title: "PDF loading error",
+      description: "There was an issue loading the PDF. Please try downloading instead.",
+      variant: "destructive",
+      duration: 5000,
+    });
   };
 
   const goToPrevPage = () => {
@@ -117,8 +135,18 @@ const MagazineDetail = () => {
               <Document
                 file={magazine.pdfUrl}
                 onLoadSuccess={onDocumentLoadSuccess}
+                onLoadError={onDocumentLoadError}
                 loading={<div className="text-center py-12"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed mx-auto"></div></div>}
-                error={<div className="text-center py-12 text-red-500">Failed to load PDF. Please try downloading instead.</div>}
+                error={<div className="text-center py-12">
+                  <p className="text-red-500 mb-4">Failed to load PDF. Please try downloading instead.</p>
+                  <a
+                    href={magazine.pdfUrl}
+                    download
+                    className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    <Download className="mr-2 h-4 w-4" /> Download PDF
+                  </a>
+                </div>}
               >
                 <Page 
                   pageNumber={pageNumber} 
@@ -131,7 +159,7 @@ const MagazineDetail = () => {
           </div>
           
           {/* PDF Navigation */}
-          {numPages && (
+          {numPages && !pdfError && (
             <div className="flex justify-between items-center mt-4">
               <button
                 onClick={goToPrevPage}
