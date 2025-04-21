@@ -12,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import FeaturedMagazine from '@/components/home/FeaturedMagazine';
 
 const Home = () => {
   const featuredNews = newsData.filter(news => news.isFeatured).slice(0, 10);
@@ -60,38 +61,46 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Carousel - Top Picks */}
-      <section className="relative bg-gray-100 py-8">
+      <section className="relative bg-gradient-to-b from-gray-50 to-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-insightBlack mb-6">Top Picks</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-insightBlack mb-8 text-center">
+            Featured Stories
+          </h2>
           
-          <div className="relative overflow-hidden rounded-lg shadow-lg">
+          <div className="relative overflow-hidden rounded-xl shadow-2xl">
             {/* Carousel */}
-            <div className="relative h-[400px] md:h-[450px]">
+            <div className="relative h-[450px] md:h-[550px]">
               {featuredNews.map((news, index) => (
                 <div
                   key={news.id}
-                  className={`absolute inset-0 transition-opacity duration-500 ${
-                    index === activeSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                  className={`absolute inset-0 transition-all duration-700 transform ${
+                    index === activeSlide 
+                      ? 'opacity-100 translate-x-0' 
+                      : 'opacity-0 translate-x-full'
                   }`}
                 >
-                  <div className="relative h-full">
+                  <div className="relative h-full group">
                     <img
                       src={news.image}
                       alt={news.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 p-6 text-white">
-                      <span className="bg-insightRed text-white px-2 py-1 text-xs font-semibold rounded-md mb-3 inline-block">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
+                    <div className="absolute bottom-0 left-0 p-8 text-white max-w-3xl">
+                      <span className="inline-block px-3 py-1 bg-insightRed text-white text-sm font-semibold rounded-full mb-4">
                         {news.category}
                       </span>
-                      <h3 className="text-2xl md:text-3xl font-bold mb-2">{news.title}</h3>
-                      <p className="text-sm md:text-base mb-4 text-gray-200">{news.excerpt}</p>
+                      <h3 className="text-3xl md:text-4xl font-bold mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        {news.title}
+                      </h3>
+                      <p className="text-lg mb-6 text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                        {news.excerpt}
+                      </p>
                       <Link
                         to={`/article/${news.id}`}
-                        className="inline-flex items-center text-white bg-insightBlack hover:bg-opacity-80 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                        className="inline-flex items-center bg-white text-insightBlack hover:bg-gray-100 px-6 py-3 rounded-full text-sm font-medium transition-colors"
                       >
-                        Read More <ChevronRight className="ml-1 h-4 w-4" />
+                        Read Article <ChevronRight className="ml-2 h-4 w-4" />
                       </Link>
                     </div>
                   </div>
@@ -102,32 +111,89 @@ const Home = () => {
             {/* Navigation Arrows */}
             <button
               onClick={prevSlide}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 rounded-full p-2 text-white backdrop-blur-sm transition"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-3 text-white backdrop-blur-sm transition-all duration-300"
               aria-label="Previous slide"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-6 w-6" />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 rounded-full p-2 text-white backdrop-blur-sm transition"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-3 text-white backdrop-blur-sm transition-all duration-300"
               aria-label="Next slide"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-6 w-6" />
             </button>
-            
-            {/* Indicators */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-              {featuredNews.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveSlide(index)}
-                  className={`h-2 w-2 rounded-full transition-all ${
-                    index === activeSlide ? 'bg-white w-4' : 'bg-white/50'
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                ></button>
-              ))}
-            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Magazine Section with enhanced design */}
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4">
+              Latest Release
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              Join the ranks of industry leaders featured in our prestigious publication.
+              Get insights that shape the future of business.
+            </p>
+          </div>
+
+          <div className="mb-12">
+            <FeaturedMagazine magazine={magazineData[0]} />
+          </div>
+
+          <div className="mt-16">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {magazineData.slice(1, 5).map((magazine) => (
+                  <CarouselItem key={magazine.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                    <Link
+                      to={`/magazine/${magazine.id}`}
+                      className="block group"
+                    >
+                      <div className="relative aspect-[3/4] overflow-hidden rounded-lg shadow-lg">
+                        <img
+                          src={magazine.coverImage}
+                          alt={magazine.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                          <span className="inline-block px-2 py-1 bg-insightRed text-white text-xs font-semibold rounded-full mb-2">
+                            {magazine.category}
+                          </span>
+                          <h3 className="text-lg font-bold text-white mb-2">
+                            {magazine.title}
+                          </h3>
+                          <p className="text-sm text-gray-200">
+                            {magazine.publicationDate}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden md:flex -left-12 bg-white" />
+              <CarouselNext className="hidden md:flex -right-12 bg-white" />
+            </Carousel>
+          </div>
+
+          <div className="text-center mt-12">
+            <Link
+              to="/magazine"
+              className="inline-flex items-center bg-insightBlack text-white hover:bg-opacity-90 px-8 py-4 rounded-full text-lg font-medium transition-colors"
+            >
+              View All Magazines <ChevronRight className="ml-2 h-5 w-5" />
+            </Link>
           </div>
         </div>
       </section>
@@ -178,53 +244,6 @@ const Home = () => {
               </TabsContent>
             ))}
           </Tabs>
-        </div>
-      </section>
-
-      {/* Latest Magazine Section */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold text-insightBlack mb-8">Latest Release Magazines</h2>
-          
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-2 md:-ml-4">
-              {magazineData.map((magazine, index) => (
-                <CarouselItem key={magazine.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                  <div className="bg-white rounded-lg shadow-md overflow-hidden h-full">
-                    <div className="aspect-[3/4] relative">
-                      <img
-                        src={magazine.coverImage}
-                        alt={magazine.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <div className="absolute bottom-0 left-0 p-4 text-white">
-                        <span className="inline-block px-2 py-1 text-xs font-semibold bg-insightRed rounded-md mb-2">
-                          {magazine.category}
-                        </span>
-                        <h3 className="text-lg font-bold mb-1 line-clamp-2">{magazine.title}</h3>
-                        <p className="text-sm text-gray-200 mb-2">{magazine.publicationDate}</p>
-                        <Link
-                          to={`/magazine/${magazine.id}`}
-                          className="inline-flex items-center bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
-                        >
-                          View PDF <ChevronRight className="ml-1 h-4 w-4" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="hidden md:flex -left-12 bg-white" />
-            <CarouselNext className="hidden md:flex -right-12 bg-white" />
-          </Carousel>
         </div>
       </section>
 
