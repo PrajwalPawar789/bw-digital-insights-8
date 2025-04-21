@@ -3,6 +3,13 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { magazineData, Magazine } from '../data/magazineData';
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -11,6 +18,7 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
+import { ChevronRight } from 'lucide-react';
 
 const MagazinePage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -64,30 +72,32 @@ const MagazinePage = () => {
   };
 
   return (
-    <div className="min-h-screen py-12">
+    <div className="min-h-screen py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4">InsightsBW Magazine</h1>
-          <p className="max-w-3xl mx-auto text-gray-600">
-            Our digital magazine delivers in-depth analysis, expert interviews, and actionable insights
-            to help business leaders navigate complexity and drive innovation.
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-insightBlack mb-6 leading-tight">
+            InsightsBW Magazine Collection
+          </h1>
+          <p className="max-w-3xl mx-auto text-lg text-gray-600">
+            Explore our curated collection of business insights, industry analysis, 
+            and expert perspectives shaping the future of business.
           </p>
         </div>
         
         {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10">
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => {
                 setSelectedCategory(category);
-                setCurrentPage(1); // Reset to page 1 when changing category
+                setCurrentPage(1);
               }}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
                 selectedCategory === category
-                  ? 'bg-insightRed text-white'
-                  : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                  ? 'bg-insightRed text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
               }`}
             >
               {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -96,62 +106,79 @@ const MagazinePage = () => {
         </div>
         
         {/* Magazine Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {currentMagazines.length > 0 ? (
             currentMagazines.map((magazine: Magazine) => (
               <Link
                 key={magazine.id}
                 to={`/magazine/${magazine.id}`}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow group"
+                className="transform hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="relative">
-                  <img
-                    src={magazine.coverImage}
-                    alt={magazine.title}
-                    className="w-full h-64 object-cover transition-transform group-hover:scale-105"
-                  />
-                  <div className="absolute top-0 right-0 bg-insightRed text-white text-xs font-bold px-2 py-1 m-2 rounded">
-                    {magazine.category}
+                <Card className="h-full overflow-hidden group hover:shadow-xl">
+                  <div className="relative">
+                    <div className="aspect-[3/4] overflow-hidden">
+                      <img
+                        src={magazine.coverImage}
+                        alt={magazine.title}
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90"></div>
+                    <div className="absolute top-4 right-4">
+                      <span className="inline-flex items-center bg-white/90 backdrop-blur-sm text-insightBlack px-3 py-1.5 text-sm font-semibold rounded-md">
+                        {magazine.category}
+                      </span>
+                    </div>
+                    <div className="absolute bottom-0 left-0 p-6 text-white">
+                      <p className="text-sm font-medium mb-2">{magazine.publicationDate}</p>
+                      <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:underline">
+                        {magazine.title}
+                      </h3>
+                      <p className="text-sm text-gray-200 line-clamp-2 mb-4">
+                        {magazine.description}
+                      </p>
+                      <span className="inline-flex items-center bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 group-hover:scale-105">
+                        Read Magazine <ChevronRight className="ml-2 h-4 w-4" />
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 text-insightBlack group-hover:text-insightRed transition-colors">
-                    {magazine.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4 line-clamp-3">{magazine.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-500">{magazine.publicationDate}</span>
-                    <span className="text-insightRed font-medium">View</span>
-                  </div>
-                </div>
+                </Card>
               </Link>
             ))
           ) : (
-            <div className="col-span-3 text-center py-12">
-              <p className="text-gray-600">No magazines found in this category.</p>
+            <div className="col-span-3 py-16 text-center">
+              <p className="text-lg text-gray-600">No magazines found in this category.</p>
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className="mt-4 text-insightRed hover:text-insightBlack transition-colors"
+              >
+                View all magazines
+              </button>
             </div>
           )}
         </div>
 
-        {/* Improved Pagination */}
+        {/* Enhanced Pagination */}
         {totalPages > 1 && (
           <div className="mt-12">
             <Pagination>
               <PaginationContent>
-                {/* Previous Page Button */}
                 {currentPage > 1 && (
                   <PaginationItem>
                     <PaginationPrevious
                       onClick={() => handlePageChange(currentPage - 1)}
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:bg-gray-50 transition-colors"
                     />
                   </PaginationItem>
                 )}
                 
-                {/* Page Numbers */}
                 {getPageNumbers().map((page, index) => {
                   if (page === 'ellipsis1' || page === 'ellipsis2') {
-                    return <PaginationItem key={`ellipsis-${index}`}><PaginationEllipsis /></PaginationItem>;
+                    return (
+                      <PaginationItem key={`ellipsis-${index}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    );
                   }
                   
                   return (
@@ -159,7 +186,11 @@ const MagazinePage = () => {
                       <PaginationLink
                         isActive={currentPage === page}
                         onClick={() => handlePageChange(page as number)}
-                        className="cursor-pointer"
+                        className={`cursor-pointer transition-all duration-300 ${
+                          currentPage === page
+                            ? 'bg-insightRed text-white hover:bg-insightRed/90'
+                            : 'hover:bg-gray-50'
+                        }`}
                       >
                         {page}
                       </PaginationLink>
@@ -167,12 +198,11 @@ const MagazinePage = () => {
                   );
                 })}
                 
-                {/* Next Page Button */}
                 {currentPage < totalPages && (
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => handlePageChange(currentPage + 1)}
-                      className="cursor-pointer"
+                      className="cursor-pointer hover:bg-gray-50 transition-colors"
                     />
                   </PaginationItem>
                 )}
