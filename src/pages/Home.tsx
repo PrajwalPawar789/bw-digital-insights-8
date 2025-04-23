@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { newsData, NewsItem } from '../data/newsData';
 import { magazineData } from '../data/magazineData';
@@ -7,31 +7,18 @@ import { testimonialData } from '../data/testimonialsData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { ErrorState } from '@/components/ui/error-state';
+import { Card, CardContent } from "@/components/ui/card";
 
 const Home = () => {
-  // State management for content and interactions
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
   const featuredNews = newsData.filter(news => news.isFeatured).slice(0, 10);
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const carouselRef = useRef<HTMLDivElement>(null);
   const latestMagazine = magazineData[0]; // Most recent magazine
   
   // Categories for the news tabs
@@ -44,429 +31,268 @@ const Home = () => {
       .slice(0, 6);
   };
 
-  // Simulate API loading with better UX
+  // Carousel auto-play for top picks
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1200);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Handle retry action for error state
-  const handleRetry = () => {
-    setIsLoading(true);
-    setHasError(false);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  // Carousel auto-play for top picks with pause on hover
-  useEffect(() => {
-    if (isLoading || hasError || isPaused) return;
-    
     const interval = setInterval(() => {
       setActiveSlide((prevSlide) => (prevSlide + 1) % featuredNews.length);
     }, 5000);
     
     return () => clearInterval(interval);
-  }, [featuredNews.length, isLoading, hasError, isPaused]);
+  }, [featuredNews.length]);
   
   // Carousel auto-play for testimonials
   useEffect(() => {
-    if (isLoading || hasError) return;
-    
     const interval = setInterval(() => {
       setActiveTestimonial((prevSlide) => (prevSlide + 1) % testimonialData.length);
     }, 6000);
     
     return () => clearInterval(interval);
-  }, [isLoading, hasError]);
+  }, []);
 
   // Previous slide function
-  const prevSlide = useCallback(() => {
+  const prevSlide = () => {
     setActiveSlide((prevSlide) => (prevSlide - 1 + featuredNews.length) % featuredNews.length);
-  }, [featuredNews.length]);
+  };
 
   // Next slide function
-  const nextSlide = useCallback(() => {
+  const nextSlide = () => {
     setActiveSlide((prevSlide) => (prevSlide + 1) % featuredNews.length);
-  }, [featuredNews.length]);
-
-  // Keyboard navigation for carousel
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (carouselRef.current && carouselRef.current.contains(document.activeElement)) {
-        if (e.key === 'ArrowLeft') {
-          prevSlide();
-          e.preventDefault();
-        } else if (e.key === 'ArrowRight') {
-          nextSlide();
-          e.preventDefault();
-        }
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [prevSlide, nextSlide]);
-
-  // Error state for demonstration
-  if (hasError) {
-    return (
-      <div className="min-h-[50vh] flex items-center justify-center p-6">
-        <ErrorState onRetry={handleRetry} />
-      </div>
-    );
-  }
+  };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       {/* Hero Carousel - Top Picks */}
-      <section 
-        className="relative bg-gradient-to-b from-gray-50 to-white py-12 lg:py-16"
-        aria-labelledby="top-picks-heading"
-      >
+      <section className="relative bg-gradient-to-b from-gray-900 to-gray-800 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 
-            id="top-picks-heading" 
-            className="text-3xl font-bold text-insightBlack mb-8 flex items-center gap-2"
-          >
-            Top Picks
-            <span className="text-sm font-normal text-gray-500">(Featured Stories)</span>
-          </h2>
+          <h2 className="text-3xl font-bold text-white mb-6 text-center">Featured Stories</h2>
           
-          {isLoading ? (
-            <div className="relative overflow-hidden rounded-xl shadow-lg bg-white h-[450px] md:h-[550px] flex items-center justify-center">
-              <LoadingSpinner size="lg" text="Loading featured stories..." />
-            </div>
-          ) : (
-            <div 
-              ref={carouselRef} 
-              className="relative overflow-hidden rounded-xl shadow-lg bg-white focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
-              tabIndex={0}
-              aria-roledescription="carousel"
-              aria-label="Featured stories carousel"
-            >
-              {/* Carousel */}
-              <div className="relative h-[450px] md:h-[550px]">
-                {featuredNews.map((news, index) => (
-                  <div
-                    key={news.id}
-                    className={`absolute inset-0 transition-all duration-700 ease-in-out transform ${
-                      index === activeSlide ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'
-                    }`}
-                    role="group"
-                    aria-roledescription="slide"
-                    aria-label={`Slide ${index + 1} of ${featuredNews.length}: ${news.title}`}
-                    aria-hidden={index !== activeSlide}
-                  >
-                    <div className="relative h-full group">
-                      <img
-                        src={news.image}
-                        alt={`Featured: ${news.title}`}
-                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                        loading={index === 0 ? "eager" : "lazy"}
-                        width="1280"
-                        height="720"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                      <div className="absolute bottom-0 left-0 p-8 w-full">
-                        <span className="inline-flex items-center bg-insightRed text-white px-3 py-1.5 text-sm font-semibold rounded-md mb-4">
-                          {news.category}
-                        </span>
-                        <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">{news.title}</h3>
-                        <p className="text-base md:text-lg mb-6 text-gray-200 max-w-3xl">{news.excerpt}</p>
-                        <Link
-                          to={`/article/${news.id}`}
-                          className="inline-flex items-center text-white bg-insightBlack hover:bg-opacity-90 px-6 py-3 rounded-lg text-base font-medium transition-all duration-300 hover:scale-105 press-effect focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 focus:outline-none"
-                        >
-                          Read Full Story <ChevronRight className="ml-2 h-5 w-5" aria-hidden="true" />
-                        </Link>
-                      </div>
+          <div className="relative overflow-hidden rounded-xl shadow-2xl">
+            {/* Carousel */}
+            <div className="relative h-[500px] md:h-[600px]">
+              {featuredNews.map((news, index) => (
+                <div
+                  key={news.id}
+                  className={`absolute inset-0 transition-opacity duration-700 ${
+                    index === activeSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                  }`}
+                >
+                  <div className="relative h-full group">
+                    <img
+                      src={news.image}
+                      alt={news.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 p-8 w-full">
+                      <span className="inline-block bg-insightRed text-white px-3 py-1.5 text-sm font-semibold rounded-md mb-4">
+                        {news.category}
+                      </span>
+                      <h3 className="text-3xl md:text-4xl font-bold mb-4 text-white">{news.title}</h3>
+                      <p className="text-lg mb-6 text-gray-200 max-w-3xl">{news.excerpt}</p>
+                      <Link
+                        to={`/article/${news.id}`}
+                        className="inline-flex items-center text-white bg-insightRed hover:bg-red-600 px-6 py-3 rounded-md text-lg font-medium transition-colors"
+                      >
+                        Read Full Story <ChevronRight className="ml-2 h-5 w-5" />
+                      </Link>
                     </div>
                   </div>
-                ))}
-              </div>
-              
-              {/* Navigation Arrows */}
-              <button
-                onClick={prevSlide}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/10 hover:bg-white/20 rounded-full p-3 text-white backdrop-blur-sm transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 press-effect"
-                aria-label="Previous slide"
-              >
-                <ChevronLeft className="h-6 w-6" aria-hidden="true" />
-              </button>
-              <button
-                onClick={nextSlide}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/10 hover:bg-white/20 rounded-full p-3 text-white backdrop-blur-sm transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900 press-effect"
-                aria-label="Next slide"
-              >
-                <ChevronRight className="h-6 w-6" aria-hidden="true" />
-              </button>
-              
-              {/* Indicators */}
-              <div 
-                className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2"
-                role="tablist"
-                aria-label="Select a slide to show"
-              >
-                {featuredNews.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setActiveSlide(index)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      index === activeSlide ? 'w-8 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'
-                    } focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-1`}
-                    role="tab"
-                    aria-selected={index === activeSlide}
-                    aria-label={`Go to slide ${index + 1}`}
-                    aria-controls={`slide-${index}`}
-                  ></button>
-                ))}
-              </div>
-
-              {/* Pause/Play Status Indicator */}
-              <div className="absolute top-4 right-4 bg-black/30 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs">
-                {isPaused ? 'Paused' : 'Auto-playing'}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
+            
+            {/* Navigation Controls */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 rounded-full p-3 text-white backdrop-blur-sm transition-all hover:scale-110"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 hover:bg-black/50 rounded-full p-3 text-white backdrop-blur-sm transition-all hover:scale-110"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+            
+            {/* Indicators */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              {featuredNews.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveSlide(index)}
+                  className={`h-2 transition-all ${
+                    index === activeSlide ? 'w-8 bg-insightRed' : 'w-2 bg-white/50'
+                  } rounded-full`}
+                  aria-label={`Go to slide ${index + 1}`}
+                ></button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* News By Category Tabs */}
-      <section 
-        className="py-16 bg-white"
-        aria-labelledby="latest-news-heading"
-      >
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 id="latest-news-heading" className="text-3xl font-bold text-insightBlack mb-10">Latest News</h2>
+          <h2 className="text-3xl font-bold text-center text-insightBlack mb-12">Latest News</h2>
           
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-              {Array(3).fill(0).map((_, index) => (
-                <Card key={`skeleton-${index}`} className="h-96">
-                  <div className="h-48 bg-gray-200 animate-pulse"></div>
-                  <CardHeader>
-                    <div className="h-6 bg-gray-200 animate-pulse rounded w-3/4 mb-2"></div>
-                    <div className="h-4 bg-gray-100 animate-pulse rounded w-1/3"></div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="h-4 bg-gray-100 animate-pulse rounded"></div>
-                      <div className="h-4 bg-gray-100 animate-pulse rounded w-5/6"></div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Tabs defaultValue={categories[0]} className="w-full">
-              <TabsList 
-                className="mb-8 bg-gray-100 p-1 rounded-lg" 
-                aria-label="News categories"
-              >
-                {categories.map((category) => (
-                  <TabsTrigger
-                    key={category}
-                    value={category}
-                    className="px-6 py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm"
-                  >
-                    {category}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-              
+          <Tabs defaultValue={categories[0]} className="w-full">
+            <TabsList className="mb-8 flex justify-center">
               {categories.map((category) => (
-                <TabsContent key={category} value={category} className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {getNewsByCategory(category).map((news: NewsItem) => (
-                      <Card 
-                        key={news.id} 
-                        className="group overflow-hidden hover-card"
-                      >
-                        <div className="relative h-48 overflow-hidden">
+                <TabsTrigger key={category} value={category} className="px-6 py-3">
+                  {category}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            
+            {categories.map((category) => (
+              <TabsContent key={category} value={category} className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {getNewsByCategory(category).map((news: NewsItem) => (
+                    <Link
+                      key={news.id}
+                      to={`/article/${news.id}`}
+                      className="group"
+                    >
+                      <Card className="overflow-hidden border-none shadow-lg hover:shadow-xl transition-all duration-300">
+                        <div className="relative h-56 overflow-hidden">
                           <img
                             src={news.image}
-                            alt={`${news.title}`}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                            width="400"
-                            height="225"
-                            loading="lazy"
+                            alt={news.title}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                           />
-                          <div className="absolute top-0 right-0 p-2">
-                            <span className="inline-block px-3 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm text-insightBlack rounded-md">
+                          <div className="absolute top-4 left-4">
+                            <span className="inline-block px-3 py-1.5 text-sm font-semibold bg-white text-insightBlack rounded-md">
                               {news.category}
                             </span>
                           </div>
                         </div>
-                        <CardHeader>
-                          <CardTitle className="line-clamp-2 group-hover:text-insightRed transition-colors">
+                        <CardContent className="p-6">
+                          <h3 className="text-xl font-bold mb-3 group-hover:text-insightRed transition-colors line-clamp-2">
                             {news.title}
-                          </CardTitle>
-                          <CardDescription className="text-sm text-gray-500">
-                            {news.date}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-sm text-gray-600 mb-4 line-clamp-3">{news.excerpt}</p>
-                          <Link
-                            to={`/article/${news.id}`}
-                            className="inline-flex items-center text-insightRed hover:text-insightBlack text-sm font-medium transition-colors press-effect"
-                            aria-label={`Read more about ${news.title}`}
-                          >
-                            Read More <ChevronRight className="ml-1 h-4 w-4" aria-hidden="true" />
-                          </Link>
+                          </h3>
+                          <p className="text-gray-600 mb-4 line-clamp-3">{news.excerpt}</p>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-500">{news.date}</span>
+                            <span className="text-insightRed font-medium group-hover:translate-x-2 transition-transform duration-300 inline-flex items-center">
+                              Read More <ChevronRight className="ml-1 h-4 w-4" />
+                            </span>
+                          </div>
                         </CardContent>
                       </Card>
-                    ))}
-                  </div>
-                </TabsContent>
-              ))}
-            </Tabs>
-          )}
+                    </Link>
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
         </div>
       </section>
 
       {/* Latest Magazine Section */}
-      <section 
-        className="py-16 bg-gray-50"
-        aria-labelledby="latest-magazines-heading"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 id="latest-magazines-heading" className="text-3xl font-bold text-insightBlack mb-10">Latest Magazines</h2>
+      <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-insightRed/5 to-transparent"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-insightBlack mb-4">Latest Magazines</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Discover our curated collection of in-depth insights and analysis from industry leaders
+            </p>
+          </div>
           
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {Array(3).fill(0).map((_, index) => (
-                <Card key={`mag-skeleton-${index}`} className="overflow-hidden">
-                  <div className="aspect-[3/4] bg-gray-200 animate-pulse"></div>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {magazineData.map((magazine) => (
-                  <CarouselItem key={magazine.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                    <Card className="overflow-hidden group hover-card">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {magazineData.map((magazine) => (
+                <CarouselItem key={magazine.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                  <Link to={`/magazine/${magazine.id}`} className="block group">
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
                       <div className="aspect-[3/4] relative">
                         <img
                           src={magazine.coverImage}
-                          alt={`Cover: ${magazine.title}`}
-                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
-                          width="300"
-                          height="400"
-                          loading="lazy"
+                          alt={magazine.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-90"></div>
-                        <div className="absolute bottom-0 left-0 p-6 text-white">
-                          <span className="inline-flex items-center bg-insightRed/90 backdrop-blur-sm px-3 py-1.5 text-sm font-semibold rounded-md mb-3">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <span className="inline-block px-3 py-1.5 text-sm font-semibold bg-insightRed rounded-md mb-3">
                             {magazine.category}
                           </span>
-                          <h3 className="text-xl font-bold mb-2 line-clamp-2 group-hover:underline">
-                            {magazine.title}
-                          </h3>
+                          <h3 className="text-xl font-bold mb-2">{magazine.title}</h3>
                           <p className="text-sm text-gray-200 mb-4">{magazine.publicationDate}</p>
-                          <Link
-                            to={`/magazine/${magazine.id}`}
-                            className="inline-flex items-center bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 group-hover:scale-105 press-effect focus:ring-2 focus:ring-white focus:ring-offset-1 focus:outline-none"
-                            aria-label={`View magazine: ${magazine.title}`}
-                          >
-                            View Magazine <ChevronRight className="ml-2 h-4 w-4" aria-hidden="true" />
-                          </Link>
+                          <span className="inline-flex items-center text-white text-sm font-medium">
+                            View Magazine <ChevronRight className="ml-1 h-4 w-4" />
+                          </span>
                         </div>
                       </div>
-                    </Card>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="-left-12 bg-white hover:bg-gray-100" />
-              <CarouselNext className="-right-12 bg-white hover:bg-gray-100" />
-            </Carousel>
-          )}
+                    </div>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="-left-12 h-12 w-12 border-2 bg-white/80 backdrop-blur-sm hover:bg-white" />
+            <CarouselNext className="-right-12 h-12 w-12 border-2 bg-white/80 backdrop-blur-sm hover:bg-white" />
+          </Carousel>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section 
-        className="py-20 bg-gradient-to-b from-insightBlack to-gray-900 text-white"
-        aria-labelledby="testimonials-heading"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 id="testimonials-heading" className="text-3xl font-bold mb-16 text-center">What Our Readers Say</h2>
+      <section className="py-20 bg-gradient-to-b from-gray-900 to-insightBlack text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNnptMCAyYTQgNCAwIDEwMCA4IDQgNCAwIDAwMC04eiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PC9nPjwvc3ZnPg==')] opacity-10"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <h2 className="text-3xl font-bold mb-16 text-center">What Our Readers Say</h2>
           
-          {isLoading ? (
-            <div className="flex justify-center">
-              <LoadingSpinner size="lg" text="Loading testimonials..." className="text-white" />
-            </div>
-          ) : (
-            <div className="relative px-8 md:px-16">
-              <div className="relative overflow-hidden min-h-[300px]">
-                {testimonialData.map((testimonial, index) => (
-                  <div
-                    key={testimonial.id}
-                    className={`absolute inset-0 transition-all duration-700 transform ${
-                      index === activeTestimonial ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-                    }`}
-                    role="group"
-                    aria-roledescription="testimonial"
-                    aria-hidden={index !== activeTestimonial}
-                  >
-                    <div className="flex flex-col items-center text-center">
-                      <div className="w-24 h-24 mb-6 rounded-full overflow-hidden border-2 border-insightRed p-1">
-                        <img
-                          src={testimonial.avatar}
-                          alt={testimonial.name}
-                          className="w-full h-full object-cover rounded-full"
-                          width="96"
-                          height="96"
-                          loading="lazy"
-                        />
-                      </div>
-                      <blockquote className="max-w-3xl mb-6">
-                        <p className="text-xl md:text-2xl italic leading-relaxed">"{testimonial.quote}"</p>
-                      </blockquote>
-                      <div>
-                        <cite className="font-semibold text-xl text-white not-italic">{testimonial.name}</cite>
-                        <p className="text-sm text-gray-400 mt-1">{testimonial.title}, {testimonial.company}</p>
-                      </div>
+          <div className="relative px-8 md:px-16">
+            <div className="relative overflow-hidden min-h-[300px]">
+              {testimonialData.map((testimonial, index) => (
+                <div
+                  key={testimonial.id}
+                  className={`absolute inset-0 transition-all duration-700 ${
+                    index === activeTestimonial ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+                  }`}
+                >
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-24 h-24 mb-6 rounded-full overflow-hidden border-4 border-insightRed/20">
+                      <img
+                        src={testimonial.avatar}
+                        alt={testimonial.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <blockquote className="max-w-3xl mb-6">
+                      <p className="text-2xl italic text-gray-200">"{testimonial.quote}"</p>
+                    </blockquote>
+                    <div>
+                      <cite className="font-semibold text-xl text-white not-italic">{testimonial.name}</cite>
+                      <p className="text-gray-400">{testimonial.title}, {testimonial.company}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-              
-              {/* Testimonial Indicators */}
-              <div 
-                className="flex justify-center space-x-3 mt-10"
-                aria-label="Testimonial navigation"
-              >
-                {testimonialData.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setActiveTestimonial(index)}
-                    className={`h-2.5 rounded-full transition-all duration-300 ${
-                      index === activeTestimonial ? 'w-10 bg-insightRed' : 'w-2.5 bg-gray-600 hover:bg-gray-500'
-                    } focus:outline-none focus:ring-2 focus:ring-insightRed focus:ring-offset-1 focus:ring-offset-gray-900`}
-                    aria-label={`Go to testimonial ${index + 1}`}
-                    aria-current={index === activeTestimonial ? "true" : "false"}
-                  ></button>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-          )}
+            
+            {/* Indicators */}
+            <div className="flex justify-center space-x-3 mt-8">
+              {testimonialData.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTestimonial(index)}
+                  className={`h-3 transition-all duration-300 rounded-full ${
+                    index === activeTestimonial ? 'w-12 bg-insightRed' : 'w-3 bg-white/20 hover:bg-white/40'
+                  }`}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                ></button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
     </div>
