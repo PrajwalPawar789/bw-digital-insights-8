@@ -262,20 +262,19 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Latest Magazines Carousel - Enhanced */}
-      <section className="py-16 bg-gray-50">
+      {/* Publications Section - Enhanced */}
+      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-insightBlack">Our Publications</h2>
-              <p className="text-gray-600">Explore our collection of business magazines</p>
+          <div className="flex items-center justify-between mb-12">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center px-3 py-1 bg-insightRed/10 text-insightRed rounded-full text-sm font-medium mb-4">
+                <BookOpen className="w-4 h-4 mr-2" /> Premium Business Publications
+              </div>
+              <h2 className="text-4xl font-bold text-insightBlack mb-4">Our Exclusive C-Suite Magazine Collection</h2>
+              <p className="text-gray-600 text-lg">
+                Discover in-depth interviews, strategic insights, and success stories from the world's most influential business leaders.
+              </p>
             </div>
-            <Link 
-              to="/magazine" 
-              className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium transition-colors"
-            >
-              View All Issues <ChevronRight className="ml-1 h-4 w-4" />
-            </Link>
           </div>
           
           <Carousel
@@ -288,24 +287,32 @@ const Home = () => {
           >
             <CarouselContent className="-ml-4">
               {magazineData.map((magazine) => (
-                <CarouselItem key={magazine.id} className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110">
-                  <Link to={`/magazine/${magazine.id}`} className="block group">
-                    <div className="overflow-hidden rounded-lg shadow-lg bg-white h-full transition-transform duration-300 group-hover:shadow-xl">
-                      <div className="relative aspect-[3/4]">
-                        <img
-                          src={magazine.coverImage}
-                          alt={magazine.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                        <div className="absolute top-0 right-0 m-3">
-                          <span className="inline-flex items-center px-2 py-1 bg-insightRed text-white text-xs font-semibold rounded">
-                            {magazine.publicationDate}
-                          </span>
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <div className="absolute bottom-0 left-0 p-4 text-white transform translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                          <h3 className="text-lg font-semibold">{magazine.title}</h3>
-                          <p className="text-sm text-gray-200 mt-1">{magazine.category}</p>
+                <CarouselItem 
+                  key={magazine.id} 
+                  className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110"
+                >
+                  <Link to={`/magazine/${magazine.id}`} className="block group perspective-1000">
+                    <div className="relative transform transition-all duration-500 group-hover:rotate-y-6 preserve-3d">
+                      <div className="overflow-hidden rounded-xl shadow-2xl bg-white">
+                        <div className="relative aspect-[3/4]">
+                          <img
+                            src={magazine.coverImage}
+                            alt={magazine.title}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          <div className="absolute top-0 right-0 m-4">
+                            <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-insightBlack text-sm font-semibold rounded-full">
+                              {magazine.publicationDate}
+                            </span>
+                          </div>
+                          <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                            <h3 className="text-xl font-bold mb-2">{magazine.title}</h3>
+                            <p className="text-sm text-gray-200 line-clamp-2 mb-4">{magazine.description}</p>
+                            <span className="inline-flex items-center text-sm font-medium text-white">
+                              Read Issue <ChevronRight className="ml-1 h-4 w-4" />
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -313,31 +320,34 @@ const Home = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="flex justify-center mt-8 space-x-4">
-              <CarouselPrevious className="relative static bg-white hover:bg-gray-100 text-insightBlack border-insightRed" />
-              <CarouselNext className="relative static bg-white hover:bg-gray-100 text-insightBlack border-insightRed" />
+            <div className="flex justify-center mt-12 space-x-4">
+              <CarouselPrevious className="relative static bg-white hover:bg-gray-50 text-insightBlack border-insightRed shadow-lg hover:shadow-xl transition-all" />
+              <CarouselNext className="relative static bg-white hover:bg-gray-50 text-insightBlack border-insightRed shadow-lg hover:shadow-xl transition-all" />
             </div>
           </Carousel>
         </div>
       </section>
 
-      {/* News By Category - Improved UI */}
-      <section className="py-16 bg-white">
+      {/* Business Insights Section - Enhanced */}
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-insightBlack">Business Insights</h2>
-              <p className="text-gray-600">The latest industry news and analysis</p>
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center px-3 py-1 bg-insightRed/10 text-insightRed rounded-full text-sm font-medium mb-4">
+              <TrendingUp className="w-4 h-4 mr-2" /> Executive Intelligence
             </div>
+            <h2 className="text-4xl font-bold text-insightBlack mb-4">Business Insights from Top Leaders</h2>
+            <p className="text-lg text-gray-600">
+              Expert analysis, market trends, and strategic perspectives from C-suite executives shaping the future of business.
+            </p>
           </div>
           
           <Tabs defaultValue={categories[0]} className="w-full">
-            <TabsList className="mb-8 flex justify-center bg-gray-100 p-1 rounded-lg">
+            <TabsList className="mb-8 flex justify-center bg-white/50 backdrop-blur-sm p-1 rounded-lg border border-gray-200 shadow-sm">
               {categories.map((category) => (
                 <TabsTrigger 
                   key={category} 
                   value={category} 
-                  className="px-6 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md data-[state=active]:text-insightBlack"
+                  className="px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-md rounded-md data-[state=active]:text-insightRed transition-all"
                 >
                   {category}
                 </TabsTrigger>
@@ -346,23 +356,24 @@ const Home = () => {
             
             {categories.map((category) => (
               <TabsContent key={category} value={category}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {getNewsByCategory(category).map((news: NewsItem) => (
-                    <Card key={news.id} className="overflow-hidden hover:shadow-lg transition-shadow group border-0 shadow-md">
+                    <Card key={news.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
                       <div className="relative overflow-hidden aspect-video">
                         <img
                           src={news.image}
                           alt={news.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         />
-                        <div className="absolute top-0 right-0 m-3">
-                          <span className="inline-flex items-center px-2 py-1 bg-gray-800 text-white text-xs font-semibold rounded">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div className="absolute top-0 right-0 m-4">
+                          <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-insightBlack text-sm font-semibold rounded-full">
                             {news.category}
                           </span>
                         </div>
                       </div>
                       <CardContent className="p-6">
-                        <h3 className="text-xl font-semibold mb-2 line-clamp-2 group-hover:text-insightRed transition-colors">{news.title}</h3>
+                        <h3 className="text-xl font-bold mb-3 group-hover:text-insightRed transition-colors line-clamp-2">{news.title}</h3>
                         <p className="text-gray-600 mb-4 line-clamp-2">{news.excerpt}</p>
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-500">{news.date}</span>
@@ -370,19 +381,19 @@ const Home = () => {
                             to={`/article/${news.id}`}
                             className="inline-flex items-center text-insightRed hover:text-insightBlack text-sm font-medium transition-colors"
                           >
-                            Read Article <ChevronRight className="ml-1 h-4 w-4" />
+                            Read Full Article <ChevronRight className="ml-1 h-4 w-4" />
                           </Link>
                         </div>
                       </CardContent>
                     </Card>
                   ))}
                 </div>
-                <div className="flex justify-center mt-8">
+                <div className="flex justify-center mt-12">
                   <Link
                     to={`/category/${category.toLowerCase()}`}
-                    className="inline-flex items-center px-6 py-3 border border-gray-300 hover:bg-gray-50 rounded-md font-medium transition-colors"
+                    className="inline-flex items-center px-8 py-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg font-medium transition-all hover:shadow-lg group"
                   >
-                    View All {category} Articles <ChevronRight className="ml-2 h-5 w-5" />
+                    View All {category} Articles <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </TabsContent>
