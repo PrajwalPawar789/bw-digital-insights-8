@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { newsData, NewsItem } from '../data/newsData';
@@ -155,7 +154,7 @@ const Home = () => {
               <div className="flex items-start space-x-4">
                 <span className="text-insightRed font-bold text-5xl">01</span>
                 <div>
-                  <h4 className="text-xl font-bold mb-2">{featuredNews[0].subtitle || "The Leadership Approach That's Reshaping Industries"}</h4>
+                  <h4 className="text-xl font-bold mb-2">The Leadership Approach That's Reshaping Industries</h4>
                   <p className="text-gray-600">Explore how today's C-level executives are implementing transformative strategies that drive unprecedented growth and innovation.</p>
                 </div>
               </div>
@@ -281,16 +280,17 @@ const Home = () => {
           
           <Carousel
             opts={{
-              align: "start",
+              align: "center",
               loop: true,
+              dragFree: true,
             }}
             className="w-full"
           >
             <CarouselContent className="-ml-4">
               {magazineData.map((magazine) => (
-                <CarouselItem key={magazine.id} className="pl-4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                <CarouselItem key={magazine.id} className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110">
                   <Link to={`/magazine/${magazine.id}`} className="block group">
-                    <div className="overflow-hidden rounded-lg shadow-lg bg-white h-full">
+                    <div className="overflow-hidden rounded-lg shadow-lg bg-white h-full transition-transform duration-300 group-hover:shadow-xl">
                       <div className="relative aspect-[3/4]">
                         <img
                           src={magazine.coverImage}
@@ -313,9 +313,9 @@ const Home = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="flex justify-center mt-8">
-              <CarouselPrevious className="relative static bg-gray-200 hover:bg-gray-300 text-insightBlack mr-2" />
-              <CarouselNext className="relative static bg-gray-200 hover:bg-gray-300 text-insightBlack ml-2" />
+            <div className="flex justify-center mt-8 space-x-4">
+              <CarouselPrevious className="relative static bg-white hover:bg-gray-100 text-insightBlack border-insightRed" />
+              <CarouselNext className="relative static bg-white hover:bg-gray-100 text-insightBlack border-insightRed" />
             </div>
           </Carousel>
         </div>
