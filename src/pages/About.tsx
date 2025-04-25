@@ -66,9 +66,9 @@ const About = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Enhanced Hero Banner with Dynamic Background */}
+      {/* Hero Banner */}
       <div className="relative bg-gradient-to-r from-gray-900 to-insightBlack text-white py-20">
-        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center transform hover:scale-105 transition-transform duration-[3000ms]"></div>
+        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">About InsightsBW</h1>

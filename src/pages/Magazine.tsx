@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { magazineData, Magazine } from '../data/magazineData';
@@ -61,23 +62,20 @@ const MagazinePage = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
-      {/* Added immersive hero background */}
-      <div className="relative h-[50vh] bg-gradient-to-r from-insightBlack to-gray-900 overflow-hidden mb-12">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] opacity-20 bg-cover bg-center transform hover:scale-105 transition-transform duration-[3000ms]"></div>
-        <div className="relative h-full flex items-center">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
-              Digital Magazine
-            </h1>
-            <p className="max-w-3xl mx-auto text-gray-300 text-lg md:text-xl leading-relaxed">
-              Explore our collection of thought leadership articles, interviews, and insights
-              from top technology executives and industry leaders.
-            </p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Section with Enhanced Design */}
+      <div className="relative bg-insightBlack text-white py-16 mb-12">
+        <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            Executive Insights Magazine
+          </h1>
+          <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-200 leading-relaxed">
+            Join the elite circle of C-suite leaders shaping tomorrow's business landscape. Discover exclusive interviews, strategic insights, and transformative ideas.
+          </p>
         </div>
       </div>
-
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Featured Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
