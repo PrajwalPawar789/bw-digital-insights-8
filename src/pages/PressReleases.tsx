@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { pressReleaseData } from '../data/pressReleaseData';
@@ -47,9 +48,9 @@ const PressReleases = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Enhanced Hero Section */}
+        {/* Enhanced Hero Section with Background */}
         <div className="relative bg-insightBlack text-white py-20 mb-12 rounded-b-3xl overflow-hidden">
-          <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center"></div>
+          <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center transform hover:scale-105 transition-transform duration-[3000ms]"></div>
           <div className="relative max-w-4xl mx-auto text-center px-4">
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight animate-fade-in">
               Press Releases

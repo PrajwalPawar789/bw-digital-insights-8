@@ -16,7 +16,7 @@ const Leadership = () => {
     <div className="min-h-screen">
       {/* Enhanced Hero Section with Parallax Effect */}
       <div className="relative h-[60vh] bg-gradient-to-r from-insightBlack to-gray-900 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] opacity-20 bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] opacity-20 bg-cover bg-center transform hover:scale-105 transition-transform duration-[3000ms]"></div>
         <div className="relative h-full flex items-center">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
