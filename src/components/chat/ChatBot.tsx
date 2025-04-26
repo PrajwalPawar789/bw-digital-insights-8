@@ -1,102 +1,93 @@
 
-import { useState, useEffect, useRef } from 'react';
-import { Bot, Loader } from 'lucide-react';
+import { useState } from 'react';
+import { Bot, X, Send } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-
-const BOTPRESS_CLIENT_ID = 'aaf0c61b-ef96-45c9-bbf5-db8ba11d2654';
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const ChatBot = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const scriptRef = useRef<HTMLScriptElement | null>(null);
+  const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([
+    { text: "Hello! I'm your AI assistant. How can I help you today?", isUser: false }
+  ]);
+  const [input, setInput] = useState("");
 
-  useEffect(() => {
-    // Check if script is already loaded to avoid duplicate injections
-    if (document.querySelector('script[src="https://cdn.botpress.cloud/webchat/v1/inject.js"]')) {
-      return;
-    }
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
 
-    // Initialize Botpress webchat
-    const script = document.createElement('script');
-    script.src = 'https://cdn.botpress.cloud/webchat/v1/inject.js';
-    script.async = true;
-    scriptRef.current = script;
+    // Add user message
+    setMessages(prev => [...prev, { text: input, isUser: true }]);
     
-    const handleScriptLoad = () => {
-      if (window.botpressWebChat) {
-        window.botpressWebChat.init({
-          "composerPlaceholder": "Chat with us",
-          "botConversationDescription": "Welcome to InsightsBW AI Assistant",
-          "botId": BOTPRESS_CLIENT_ID,
-          "hostUrl": "https://cdn.botpress.cloud/webchat/v1",
-          "messagingUrl": "https://messaging.botpress.cloud",
-          "clientId": BOTPRESS_CLIENT_ID,
-          "botName": "InsightsBW Assistant",
-          "stylesheet": "https://webchat-styler-css.botpress.app/prod/code/d3d431e9-e64c-4622-85e2-fb7fdb86c27b/v31097/style.css",
-          "useSessionStorage": true,
-          "showPoweredBy": false,
-          "theme": "prism",
-          "themeColor": "#EF4444"
-        });
+    // Simulate AI response
+    setTimeout(() => {
+      setMessages(prev => [...prev, {
+        text: "Thank you for your message. Our AI is currently in development. Please check back soon for interactive responses!",
+        isUser: false
+      }]);
+    }, 1000);
 
-        // Check if webchat is ready
-        const checkChatReady = setInterval(() => {
-          const widgetContainer = document.getElementById('bp-web-widget-container');
-          if (widgetContainer) {
-            setIsLoading(false);
-            clearInterval(checkChatReady);
-          }
-        }, 500);
-
-        // Clear check if it takes too long
-        setTimeout(() => {
-          clearInterval(checkChatReady);
-          setIsLoading(false);
-        }, 5000);
-      }
-    };
-
-    script.onload = handleScriptLoad;
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup script when component unmounts
-      if (scriptRef.current && document.body.contains(scriptRef.current)) {
-        document.body.removeChild(scriptRef.current);
-      }
-      
-      // Clean up Botpress chat
-      if (window.botpressWebChat) {
-        window.botpressWebChat.cleanup();
-      }
-      
-      // Remove any interval that might be running
-      const widgetContainer = document.getElementById('bp-web-widget-container');
-      if (widgetContainer && widgetContainer.parentNode) {
-        widgetContainer.parentNode.removeChild(widgetContainer);
-      }
-    };
-  }, []);
-
-  const toggleChat = () => {
-    if (window.botpressWebChat) {
-      window.botpressWebChat.sendEvent({ type: 'toggle' });
-      setIsOpen(!isOpen);
-    }
+    setInput("");
   };
 
   return (
-    <Button
-      onClick={toggleChat}
-      className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-insightRed hover:bg-insightRed/90 transition-all duration-300 transform hover:scale-110"
-      disabled={isLoading}
-    >
-      {isLoading ? (
-        <Loader className="h-6 w-6 text-white animate-spin" />
-      ) : (
+    <>
+      <Button
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-insightRed hover:bg-insightRed/90 transition-all duration-300 transform hover:scale-110"
+      >
         <Bot className="h-6 w-6 text-white" />
-      )}
-    </Button>
+      </Button>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-[425px] h-[600px] flex flex-col p-0">
+          <DialogHeader className="p-6 bg-gradient-to-r from-insightRed to-insightBlack">
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Bot className="h-5 w-5" />
+              InsightsBW Assistant
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[80%] p-3 rounded-lg ${
+                    message.isUser
+                      ? 'bg-insightRed text-white rounded-br-none'
+                      : 'bg-gray-100 text-gray-800 rounded-bl-none'
+                  }`}
+                >
+                  {message.text}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <form onSubmit={handleSend} className="p-4 border-t">
+            <div className="flex gap-2">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1"
+              />
+              <Button type="submit" className="bg-insightRed hover:bg-insightRed/90">
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
