@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { newsData, NewsItem } from '../data/newsData';
 import { magazineData } from '../data/magazineData';
@@ -20,50 +20,39 @@ const Home = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const latestMagazine = magazineData[0]; // Most recent magazine
   
-  // Categories for the news tabs
   const categories = ['Trending', 'Business', 'Technology'];
   
-  // Function to get news by category
   const getNewsByCategory = (category: string) => {
     return newsData
       .filter(news => news.category === category)
       .slice(0, 6);
   };
 
-  // Top executives from testimonials (using them as featured executives)
   const featuredExecutives = testimonialData.slice(0, 3);
 
-  // Carousel auto-play for top picks
+  const magazineSectionRef = useRef<HTMLDivElement>(null);
+  const [scrollY, setScrollY] = useState(0);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSlide((prevSlide) => (prevSlide + 1) % featuredNews.length);
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, [featuredNews.length]);
-  
-  // Carousel auto-play for testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveTestimonial((prevSlide) => (prevSlide + 1) % testimonialData.length);
-    }, 6000);
-    
-    return () => clearInterval(interval);
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
-  // Previous slide function
   const prevSlide = () => {
     setActiveSlide((prevSlide) => (prevSlide - 1 + featuredNews.length) % featuredNews.length);
   };
 
-  // Next slide function
   const nextSlide = () => {
     setActiveSlide((prevSlide) => (prevSlide + 1) % featuredNews.length);
   };
 
   return (
     <div className="min-h-screen">
-      {/* New Hero Section with Magazine Brand Statement */}
       <section className="bg-gradient-to-r from-insightBlack to-gray-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -115,7 +104,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Cover Story Section */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
@@ -179,7 +167,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Top Picks Carousel - More Focused */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
@@ -190,7 +177,6 @@ const Home = () => {
           </div>
           
           <div className="relative overflow-hidden rounded-lg shadow-lg">
-            {/* Carousel */}
             <div className="relative h-[400px] md:h-[500px]">
               {featuredNews.map((news, index) => (
                 <div
@@ -229,7 +215,6 @@ const Home = () => {
               ))}
             </div>
             
-            {/* Navigation Arrows */}
             <button
               onClick={prevSlide}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-3 text-white backdrop-blur-sm transition-colors"
@@ -245,7 +230,6 @@ const Home = () => {
               <ChevronRight className="h-6 w-6" />
             </button>
             
-            {/* Indicators */}
             <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
               {featuredNews.slice(0, 5).map((_, index) => (
                 <button
@@ -262,73 +246,141 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Publications Section - Enhanced */}
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-12">
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center px-3 py-1 bg-insightRed/10 text-insightRed rounded-full text-sm font-medium mb-4">
+      <section 
+        ref={magazineSectionRef}
+        className="relative py-20 overflow-hidden"
+      >
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{
+            backgroundImage: "linear-gradient(109.6deg, rgba(0,0,0,0.93) 11.2%, rgba(63,61,61,0.90) 78.9%)",
+            backgroundAttachment: "fixed",
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            transform: `translateY(${scrollY * 0.15}px)`,
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90"></div>
+          <div className="absolute inset-0 flex">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute opacity-20"
+                style={{
+                  width: `${Math.random() * 200 + 150}px`,
+                  height: `${Math.random() * 300 + 200}px`,
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  background: "radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%)",
+                  transform: `rotate(${Math.random() * 45}deg) translateY(${scrollY * (Math.random() * 0.05)}px)`,
+                  transition: "transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67)"
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col items-center justify-between mb-12">
+            <div className="text-center max-w-2xl">
+              <div className="inline-flex items-center px-3 py-1 bg-insightRed/30 text-white rounded-full text-sm font-medium mb-4 backdrop-blur-sm">
                 <BookOpen className="w-4 h-4 mr-2" /> Premium Business Publications
               </div>
-              <h2 className="text-4xl font-bold text-insightBlack mb-4">Our Exclusive C-Suite Magazine Collection</h2>
-              <p className="text-gray-600 text-lg">
+              <h2 className="text-5xl font-bold text-white mb-4 drop-shadow-lg tracking-tight">
+                Our Exclusive C-Suite Magazine Collection
+              </h2>
+              <p className="text-gray-300 text-lg">
                 Discover in-depth interviews, strategic insights, and success stories from the world's most influential business leaders.
               </p>
             </div>
           </div>
           
-          <Carousel
-            opts={{
-              align: "center",
-              loop: true,
-              dragFree: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-4">
-              {magazineData.map((magazine) => (
-                <CarouselItem 
-                  key={magazine.id} 
-                  className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110"
-                >
-                  <Link to={`/magazine/${magazine.id}`} className="block group perspective-1000">
-                    <div className="relative transform transition-all duration-500 group-hover:rotate-y-6 preserve-3d">
-                      <div className="overflow-hidden rounded-xl shadow-2xl bg-white">
-                        <div className="relative aspect-[3/4]">
-                          <img
-                            src={magazine.coverImage}
-                            alt={magazine.title}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                          <div className="absolute top-0 right-0 m-4">
-                            <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-insightBlack text-sm font-semibold rounded-full">
-                              {magazine.publicationDate}
-                            </span>
-                          </div>
-                          <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                            <h3 className="text-xl font-bold mb-2">{magazine.title}</h3>
-                            <p className="text-sm text-gray-200 line-clamp-2 mb-4">{magazine.description}</p>
-                            <span className="inline-flex items-center text-sm font-medium text-white">
-                              Read Issue <ChevronRight className="ml-1 h-4 w-4" />
-                            </span>
+          <div className="perspective-[1000px] py-12">
+            <Carousel
+              opts={{
+                align: "center",
+                loop: true,
+                dragFree: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-4">
+                {magazineData.map((magazine, index) => (
+                  <CarouselItem 
+                    key={magazine.id} 
+                    className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[state='active']:scale-110"
+                  >
+                    <Link to={`/magazine/${magazine.id}`} className="block group perspective-[1000px]">
+                      <div className="relative transform transition-all duration-500 group-hover:rotate-y-12 group-hover:shadow-2xl preserve-3d">
+                        <div className="overflow-hidden rounded-xl shadow-[0_20px_80px_-20px_rgba(255,0,0,0.4)] bg-black/30 backdrop-blur-md">
+                          <div className="relative aspect-[3/4]">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-white/5 via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10"></div>
+                            
+                            <img
+                              src={magazine.coverImage}
+                              alt={magazine.title}
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            
+                            <div className="absolute top-0 left-0 m-4 z-20">
+                              <span className="inline-flex items-center px-3 py-1.5 bg-insightRed text-white text-sm font-semibold rounded-md">
+                                Issue {magazineData.length - index}
+                              </span>
+                            </div>
+                            
+                            <div className="absolute top-0 right-0 m-4 z-20">
+                              <span className="inline-flex items-center px-3 py-1.5 bg-black/60 backdrop-blur-sm text-white text-sm font-semibold rounded-full">
+                                {magazine.publicationDate}
+                              </span>
+                            </div>
+                            
+                            <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                              <h3 className="text-xl font-bold mb-2">{magazine.title}</h3>
+                              <p className="text-sm text-gray-300 line-clamp-2 mb-4">{magazine.description}</p>
+                              <span className="inline-flex items-center text-sm font-medium text-insightRed bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-sm">
+                                Read Issue <ChevronRight className="ml-1 h-4 w-4" />
+                              </span>
+                            </div>
                           </div>
                         </div>
+                        
+                        <div className="absolute top-full left-0 right-0 h-20 bg-gradient-to-b from-black/50 to-transparent blur-md transform -translate-y-10 scale-y-50 opacity-50"></div>
                       </div>
-                    </div>
-                  </Link>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className="flex justify-center mt-12 space-x-4">
-              <CarouselPrevious className="relative static bg-white hover:bg-gray-50 text-insightBlack border-insightRed shadow-lg hover:shadow-xl transition-all" />
-              <CarouselNext className="relative static bg-white hover:bg-gray-50 text-insightBlack border-insightRed shadow-lg hover:shadow-xl transition-all" />
-            </div>
-          </Carousel>
+                    </Link>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              
+              <div className="flex justify-center mt-12 space-x-4">
+                <CarouselPrevious className="relative static bg-white/10 hover:bg-white/20 text-white border-white/20 shadow-lg hover:shadow-xl transition-all backdrop-blur-sm" />
+                <CarouselNext className="relative static bg-white/10 hover:bg-white/20 text-white border-white/20 shadow-lg hover:shadow-xl transition-all backdrop-blur-sm" />
+              </div>
+            </Carousel>
+          </div>
+          
+          <div className="flex justify-center mt-8 space-x-2">
+            {magazineData.map((_, index) => (
+              <button
+                key={index}
+                className="w-2 h-2 rounded-full bg-white/30 hover:bg-white/70 transition-colors duration-300"
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link 
+              to="/magazine" 
+              className="inline-flex items-center px-6 py-3 bg-insightRed hover:bg-red-700 text-white rounded-md font-medium transition-colors shadow-lg hover:shadow-xl"
+            >
+              Browse All Magazines <ChevronRight className="ml-2 h-5 w-5" />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Business Insights Section - Enhanced */}
       <section className="py-16 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
@@ -402,7 +454,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Executive Spotlight - NEW SECTION */}
       <section className="py-16 bg-insightBlack text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-10">
@@ -449,7 +500,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials - Improved version */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
@@ -489,7 +539,6 @@ const Home = () => {
               ))}
             </div>
             
-            {/* Indicators */}
             <div className="flex justify-center space-x-2 mt-8">
               {testimonialData.map((_, index) => (
                 <button
@@ -506,7 +555,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Call to Action */}
       <section className="py-16 bg-insightRed text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
