@@ -530,7 +530,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Our Prestigious Clients - ENHANCED WITH ANIMATIONS */}
+      {/* Our Prestigious Clients - ENHANCED WITH ANIMATIONS AND LINE BELOW NAMES */}
       <section className="py-16 bg-white relative overflow-hidden">
         {/* Subtle background pattern */}
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
