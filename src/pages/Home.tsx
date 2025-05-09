@@ -33,13 +33,13 @@ const Home = () => {
   // Top executives from testimonials (using them as featured executives)
   const featuredExecutives = testimonialData.slice(0, 3);
 
-  // Sample upcoming editions data - enhanced with more descriptive content
+  // Updated upcoming editions data with new images
   const upcomingEditions = [
     {
       id: 1,
       title: "Tech Disruption 2026",
       description: "How emerging technologies are reshaping global industries and transforming business models across sectors",
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+      image: "https://insightscare.in/wp-content/uploads/2023/09/Indias-10-Most-Trusted-Medical-Device-Companies-to-Know-1-scaled.jpg",
       releaseDate: "January 2026",
       status: "In Production"
     },
@@ -47,7 +47,7 @@ const Home = () => {
       id: 2,
       title: "Sustainable Business Leaders",
       description: "The executives pioneering environmental innovation and sustainable practices in the corporate landscape",
-      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
+      image: "https://insightscare.in/wp-content/uploads/2023/09/5-Most-Empowering-Women-Leaders-in-Healthcare-2023-min-1-scaled.jpg",
       releaseDate: "March 2026",
       status: "Content Development"
     },
@@ -55,43 +55,62 @@ const Home = () => {
       id: 3,
       title: "AI & Human Capital",
       description: "Exploring the balance between artificial intelligence advancement and workforce development strategies",
-      image: "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb",
+      image: "https://insightscare.in/wp-content/uploads/2023/09/10-Best-Companies-in-the-Nutraceutical-Market-2023-1-scaled.jpg",
       releaseDate: "May 2026",
       status: "Initial Planning"
     }
   ];
   
-  // Sample prestigious clients data with enhanced descriptions
+  // Updated client logo URLs
+  const clientLogos = [
+    "https://insightscare.in/wp-content/uploads/2025/03/12.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/13.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/14.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/2-1.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/1-1.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/15.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/16.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/4.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/5.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/6.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/7.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/8.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/9.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/10.png",
+    "https://insightscare.in/wp-content/uploads/2025/03/11.png"
+  ];
+  
+  // Sample prestigious clients data with client names (keeping original structure but updating logos)
   const prestigiousClients = [
     {
       id: 1,
       name: "Technovate",
       description: "Global Technology Leader",
-      logo: "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=300&h=300&fit=crop&q=80"
+      logo: clientLogos[0]
     },
     {
       id: 2,
       name: "EcoSphere",
       description: "Sustainable Solutions Provider",
-      logo: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=300&h=300&fit=crop&q=80"
+      logo: clientLogos[1]
     },
     {
       id: 3,
       name: "Quantum Financial",
       description: "Global Investment Leadership",
-      logo: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=300&h=300&fit=crop&q=80"
+      logo: clientLogos[2]
     },
     {
       id: 4,
       name: "Atlas Healthcare",
       description: "Transforming Patient Care",
-      logo: "https://images.unsplash.com/photo-1516876437184-593fda40c7ce?w=300&h=300&fit=crop&q=80"
+      logo: clientLogos[3]
     },
     {
       id: 5,
       name: "Nexus Partners",
       description: "Strategic Business Consulting",
-      logo: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=300&h=300&fit=crop&q=80"
+      logo: clientLogos[4]
     }
   ];
 
@@ -398,7 +417,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* UPCOMING EDITIONS - ENHANCED WITH BLUR EFFECTS */}
+      {/* UPCOMING EDITIONS - UPDATED WITH NEW IMAGES */}
       <section className="py-16 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
@@ -530,45 +549,58 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Our Prestigious Clients - ENHANCED WITH ANIMATIONS AND LINE BELOW NAMES */}
+      {/* Our Prestigious Clients - COMPLETELY REDESIGNED WITH NEW IMAGES */}
       <section className="py-16 bg-white relative overflow-hidden">
         {/* Subtle background pattern */}
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center mb-12">
             <div className="inline-flex items-center px-3 py-1 bg-insightRed/10 text-insightRed rounded-full text-sm font-medium mb-4">
               <Building className="w-4 h-4 mr-2" /> Trusted By Leaders
             </div>
             <h2 className="text-4xl font-bold text-insightBlack mb-4">Our Prestigious Clients</h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Global enterprises that trust InsightsBW for their executive marketing needs
             </p>
           </div>
           
-          {/* Client logos with left-to-right animation on scroll */}
-          <div className="client-logos-container overflow-hidden">
-            <div className="client-logos-wrapper flex items-center gap-16 animate-marquee">
-              {[...prestigiousClients, ...prestigiousClients].map((client, index) => (
-                <div 
-                  key={`${client.id}-${index}`} 
-                  className="flex flex-col items-center group min-w-[200px]"
-                >
-                  <div className="p-8 rounded-xl bg-white border border-gray-100 shadow-lg mb-4 transition-all duration-300 group-hover:shadow-xl group-hover:border-gray-200 w-36 h-36 flex items-center justify-center">
-                    <img 
-                      src={client.logo} 
-                      alt={client.name}
-                      className="max-w-full max-h-20 object-contain opacity-80 group-hover:opacity-100 transition-opacity" 
-                    />
+          {/* Client logos carousel based on provided design */}
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <div className="overflow-x-auto">
+              <div className="flex space-x-6 animate-marquee">
+                {clientLogos.map((logo, index) => (
+                  <div key={index} className="group flex flex-col items-center">
+                    <div className="h-20 min-w-48 flex items-center justify-center mb-3 bg-white border border-gray-100 rounded-lg p-4 hover:shadow-md transition-all duration-300">
+                      <img 
+                        src={logo} 
+                        alt={`Client ${index + 1}`}
+                        className="h-full w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity" 
+                      />
+                    </div>
+                    {/* Adding animated line below images as requested in previous conversation */}
+                    <div className="relative">
+                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-insightRed group-hover:w-full group-hover:left-0 group-hover:transform-none transition-all duration-500 ease-out"></div>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-bold text-insightBlack mb-1">{client.name}</h3>
-                  <div className="relative">
-                    <p className="text-sm text-gray-600 text-center">{client.description}</p>
-                    {/* Enhanced animated underline effect */}
-                    <div className="absolute -bottom-2 left-0 w-0 h-0.5 bg-insightRed group-hover:w-full transition-all duration-500 ease-out"></div>
+                ))}
+                {/* Duplicate logos to create continuous effect */}
+                {clientLogos.slice(0, 5).map((logo, index) => (
+                  <div key={`dup-${index}`} className="group flex flex-col items-center">
+                    <div className="h-20 min-w-48 flex items-center justify-center mb-3 bg-white border border-gray-100 rounded-lg p-4 hover:shadow-md transition-all duration-300">
+                      <img 
+                        src={logo} 
+                        alt={`Client ${index + 1}`}
+                        className="h-full w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity" 
+                      />
+                    </div>
+                    {/* Adding animated line below images as requested in previous conversation */}
+                    <div className="relative">
+                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-insightRed group-hover:w-full group-hover:left-0 group-hover:transform-none transition-all duration-500 ease-out"></div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
