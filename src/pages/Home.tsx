@@ -4,7 +4,7 @@ import { newsData, NewsItem } from '../data/newsData';
 import { magazineData } from '../data/magazineData';
 import { testimonialData } from '../data/testimonialsData';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronRight, ChevronLeft, BookOpen, Star, Award, TrendingUp } from 'lucide-react';
+import { ChevronRight, ChevronLeft, BookOpen, Star, Award, TrendingUp, Building } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -32,6 +32,65 @@ const Home = () => {
 
   // Top executives from testimonials (using them as featured executives)
   const featuredExecutives = testimonialData.slice(0, 3);
+
+  // Sample upcoming editions data
+  const upcomingEditions = [
+    {
+      id: 1,
+      title: "Tech Disruption 2026",
+      description: "How emerging technologies are reshaping global industries",
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+      releaseDate: "January 2026"
+    },
+    {
+      id: 2,
+      title: "Sustainable Business Leaders",
+      description: "The executives pioneering the green revolution in corporate America",
+      image: "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
+      releaseDate: "March 2026"
+    },
+    {
+      id: 3,
+      title: "AI & Human Capital",
+      description: "How artificial intelligence is transforming the workforce",
+      image: "https://images.unsplash.com/photo-1482938289607-e9573fc25ebb",
+      releaseDate: "May 2026"
+    }
+  ];
+  
+  // Sample prestigious clients data
+  const prestigiousClients = [
+    {
+      id: 1,
+      name: "Technovate",
+      description: "Global Technology Leader",
+      logo: "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=300&h=300&fit=crop&q=80"
+    },
+    {
+      id: 2,
+      name: "EcoSphere",
+      description: "Sustainable Solutions Provider",
+      logo: "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=300&h=300&fit=crop&q=80"
+    },
+    {
+      id: 3,
+      name: "Quantum Financial",
+      description: "Global Investment Leadership",
+      logo: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=300&h=300&fit=crop&q=80"
+    },
+    {
+      id: 4,
+      name: "Atlas Healthcare",
+      description: "Transforming Patient Care",
+      logo: "https://images.unsplash.com/photo-1516876437184-593fda40c7ce?w=300&h=300&fit=crop&q=80"
+    },
+    {
+      id: 5,
+      name: "Nexus Partners",
+      description: "Strategic Business Consulting",
+      logo: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=300&h=300&fit=crop&q=80"
+    }
+  ];
 
   // Carousel auto-play for top picks
   useEffect(() => {
@@ -262,15 +321,19 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Publications Section - Enhanced */}
-      <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Publications Section - Enhanced with Immersive Effects */}
+      <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] opacity-5 bg-fixed"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex items-center justify-between mb-12">
             <div className="max-w-2xl">
               <div className="inline-flex items-center px-3 py-1 bg-insightRed/10 text-insightRed rounded-full text-sm font-medium mb-4">
                 <BookOpen className="w-4 h-4 mr-2" /> Premium Business Publications
               </div>
-              <h2 className="text-4xl font-bold text-insightBlack mb-4">Our Exclusive C-Suite Magazine Collection</h2>
+              <h2 className="text-4xl font-bold text-insightBlack mb-4 relative">
+                Our Exclusive C-Suite Magazine Collection
+                <span className="absolute -bottom-2 left-0 w-24 h-1 bg-insightRed"></span>
+              </h2>
               <p className="text-gray-600 text-lg">
                 Discover in-depth interviews, strategic insights, and success stories from the world's most influential business leaders.
               </p>
@@ -301,6 +364,10 @@ const Home = () => {
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          
+                          {/* Reflection effect */}
+                          <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-white/20 to-transparent transform scale-y-[-1] opacity-0 group-hover:opacity-40 transition-opacity duration-500 blur-sm"></div>
+                          
                           <div className="absolute top-0 right-0 m-4">
                             <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-insightBlack text-sm font-semibold rounded-full">
                               {magazine.publicationDate}
@@ -321,10 +388,63 @@ const Home = () => {
               ))}
             </CarouselContent>
             <div className="flex justify-center mt-12 space-x-4">
-              <CarouselPrevious className="relative static bg-white hover:bg-gray-50 text-insightBlack border-insightRed shadow-lg hover:shadow-xl transition-all" />
-              <CarouselNext className="relative static bg-white hover:bg-gray-50 text-insightBlack border-insightRed shadow-lg hover:shadow-xl transition-all" />
+              <CarouselPrevious className="relative static bg-white hover:bg-gray-50 text-insightBlack border-insightRed shadow-lg hover:shadow-xl transition-all hover:scale-105" />
+              <CarouselNext className="relative static bg-white hover:bg-gray-50 text-insightBlack border-insightRed shadow-lg hover:shadow-xl transition-all hover:scale-105" />
             </div>
           </Carousel>
+        </div>
+      </section>
+
+      {/* UPCOMING EDITIONS - NEW SECTION */}
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center px-3 py-1 bg-insightRed/10 text-insightRed rounded-full text-sm font-medium mb-4">
+              <BookOpen className="w-4 h-4 mr-2" /> Coming Soon
+            </div>
+            <h2 className="text-4xl font-bold text-insightBlack mb-4">Upcoming Editions</h2>
+            <p className="text-lg text-gray-600">
+              A sneak peek at our future editions currently in development
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {upcomingEditions.map((edition) => (
+              <div key={edition.id} className="group relative overflow-hidden rounded-xl shadow-lg">
+                <div className="absolute inset-0 bg-black/40 z-10"></div>
+                
+                {/* Blurred image background */}
+                <img
+                  src={edition.image}
+                  alt={edition.title}
+                  className="w-full h-80 object-cover filter blur-sm scale-105 group-hover:scale-110 transition-transform duration-700"
+                />
+                
+                {/* Content overlay */}
+                <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 text-white">
+                  <div className="inline-flex items-center px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-3 w-fit">
+                    <span className="animate-pulse mr-2 h-2 w-2 bg-insightRed rounded-full"></span>
+                    {edition.releaseDate}
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2 group-hover:text-insightRed transition-colors">
+                    {edition.title}
+                  </h3>
+                  <p className="text-gray-200 mb-4">
+                    {edition.description}
+                  </p>
+                  <div className="flex items-center text-sm font-medium">
+                    <span className="border-b border-white/50 pb-0.5">Coming Soon</span>
+                  </div>
+                </div>
+                
+                <div className="absolute top-4 right-4 z-30">
+                  <span className="inline-flex items-center px-3 py-1 bg-insightRed/90 backdrop-blur-sm text-white text-sm font-bold rounded-full">
+                    In Production
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -399,6 +519,43 @@ const Home = () => {
               </TabsContent>
             ))}
           </Tabs>
+        </div>
+      </section>
+
+      {/* Our Prestigious Clients - NEW SECTION */}
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center px-3 py-1 bg-insightRed/10 text-insightRed rounded-full text-sm font-medium mb-4">
+              <Building className="w-4 h-4 mr-2" /> Trusted By Leaders
+            </div>
+            <h2 className="text-4xl font-bold text-insightBlack mb-4">Our Prestigious Clients</h2>
+            <p className="text-lg text-gray-600">
+              Global enterprises that trust InsightsBW for their executive marketing needs
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 md:gap-12">
+            {prestigiousClients.map((client) => (
+              <div 
+                key={client.id} 
+                className="flex flex-col items-center group"
+              >
+                <div className="p-6 rounded-full bg-white/80 shadow-lg mb-4 transition-all duration-300 group-hover:shadow-xl group-hover:bg-white group-hover:scale-105 w-32 h-32 flex items-center justify-center">
+                  <img 
+                    src={client.logo} 
+                    alt={client.name}
+                    className="max-w-full max-h-16 object-contain opacity-90 group-hover:opacity-100 transition-opacity" 
+                  />
+                </div>
+                <h3 className="text-lg font-bold text-insightBlack mb-1">{client.name}</h3>
+                <div className="relative">
+                  <p className="text-sm text-gray-600 text-center">{client.description}</p>
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-12 h-0.5 bg-insightRed/70 scale-x-0 group-hover:scale-x-100 transition-transform origin-center duration-300"></div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
