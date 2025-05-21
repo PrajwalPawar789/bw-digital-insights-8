@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Magazine from "./pages/Magazine";
 import MagazineDetail from "./pages/MagazineDetail";
 import Leadership from "./pages/Leadership";
+import LeadershipProfile from "./pages/LeadershipProfile";
 import PressReleases from "./pages/PressReleases";
 import PressReleaseDetail from "./pages/PressReleaseDetail";
 import ArticleDetail from "./pages/ArticleDetail";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/magazine" element={<Magazine />} />
             <Route path="/magazine/:id" element={<MagazineDetail />} />
             <Route path="/leadership" element={<Leadership />} />
+            <Route path="/leadership/:id" element={<LeadershipProfile />} />
             <Route path="/press-releases" element={<PressReleases />} />
             <Route path="/press-releases/:id" element={<PressReleaseDetail />} />
             <Route path="/article/:id" element={<ArticleDetail />} />
