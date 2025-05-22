@@ -18,6 +18,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Documentation from "./pages/Documentation";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -27,23 +28,28 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/magazine" element={<Magazine />} />
-            <Route path="/magazine/:slug" element={<MagazineDetail />} />
-            <Route path="/leadership" element={<Leadership />} />
-            <Route path="/leadership/:slug" element={<LeadershipProfile />} />
-            <Route path="/press-releases" element={<PressReleases />} />
-            <Route path="/press-releases/:slug" element={<PressReleaseDetail />} />
-            <Route path="/article/:slug" element={<ArticleDetail />} />
-            <Route path="/category/:categoryName" element={<CategoryPage />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/documentation" element={<Documentation />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
+        <Routes>
+          <Route path="/admin/*" element={<AdminDashboard />} />
+          <Route path="*" element={
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/magazine" element={<Magazine />} />
+                <Route path="/magazine/:slug" element={<MagazineDetail />} />
+                <Route path="/leadership" element={<Leadership />} />
+                <Route path="/leadership/:slug" element={<LeadershipProfile />} />
+                <Route path="/press-releases" element={<PressReleases />} />
+                <Route path="/press-releases/:slug" element={<PressReleaseDetail />} />
+                <Route path="/article/:slug" element={<ArticleDetail />} />
+                <Route path="/category/:categoryName" element={<CategoryPage />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/documentation" element={<Documentation />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Layout>
+          } />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
