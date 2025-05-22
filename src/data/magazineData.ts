@@ -6,6 +6,7 @@ export interface Magazine {
   publicationDate: string;
   coverImage: string;
   pdfUrl: string;
+  slug: string;
   articles: MagazineArticle[];
 }
 
@@ -16,6 +17,7 @@ export interface MagazineArticle {
     excerpt: string;
     pageNumber: number;
     thumbnailImage: string;
+    slug: string;
 }
 
 export const magazineData: Magazine[] = [
@@ -27,6 +29,7 @@ export const magazineData: Magazine[] = [
     publicationDate: "April 2025",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Successful-Chief-Growth-Officer-You-Should-Know.jpg",
     pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    slug: "future-of-digital-transformation",
     articles: [
       {
         id: 101,
@@ -34,7 +37,8 @@ export const magazineData: Magazine[] = [
         author: "Dr. Emily Carter",
         excerpt: "How artificial intelligence is transforming business decision-making processes.",
         pageNumber: 4,
-        thumbnailImage: "https://images.unsplash.com/photo-1519389950473-47a0f98a952a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dGVjaG5vbG9neXxlbnwwfHwwfHw%3D&w=1000&q=80"
+        thumbnailImage: "https://images.unsplash.com/photo-1519389950473-47a0f98a952a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dGVjaG5vbG9neXxlbnwwfHwwfHw%3D&w=1000&q=80",
+        slug: "ai-driven-business-strategies"
       },
       {
         id: 102,
@@ -42,7 +46,8 @@ export const magazineData: Magazine[] = [
         author: "Michael Lee",
         excerpt: "Exploring the impact of the Internet of Things on urban development and sustainability.",
         pageNumber: 12,
-        thumbnailImage: "https://media.istockphoto.com/id/1166475400/photo/abstract-image-visual-internet-of-things-concept.jpg?s=612x612&w=0&k=20&c=egKt_qEwjhYI_zsX-vjtjLumeK1xG-1wJS2m-Lhx_lc="
+        thumbnailImage: "https://media.istockphoto.com/id/1166475400/photo/abstract-image-visual-internet-of-things-concept.jpg?s=612x612&w=0&k=20&c=egKt_qEwjhYI_zsX-vjtjLumeK1xG-1wJS2m-Lhx_lc=",
+        slug: "role-of-iot-in-smart-cities"
       },
       {
         id: 103,
@@ -50,7 +55,8 @@ export const magazineData: Magazine[] = [
         author: "Sarah Johnson",
         excerpt: "An overview of the latest trends and innovations in cloud computing technology.",
         pageNumber: 20,
-        thumbnailImage: "https://www.simplilearn.com/ice9/free_resources_article_thumb/cloud-computing-an-overview-article.jpg"
+        thumbnailImage: "https://www.simplilearn.com/ice9/free_resources_article_thumb/cloud-computing-an-overview-article.jpg",
+        slug: "cloud-computing-trends"
       }
     ]
   },
@@ -62,6 +68,7 @@ export const magazineData: Magazine[] = [
     publicationDate: "March 2025",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Most-Influential-Leaders-in-Aerospace-Aviation-Industry-to-Watch.jpg",
     pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    slug: "sustainable-business-practices",
     articles: [
       {
         id: 201,
@@ -69,7 +76,8 @@ export const magazineData: Magazine[] = [
         author: "Dr. James Wilson",
         excerpt: "Strategies for businesses to minimize their environmental impact and reduce carbon emissions.",
         pageNumber: 6,
-        thumbnailImage: "https://www.shutterstock.com/image-photo/concept-ecological-footprint-260nw-1909740918.jpg"
+        thumbnailImage: "https://www.shutterstock.com/image-photo/concept-ecological-footprint-260nw-1909740918.jpg",
+        slug: "reducing-carbon-footprints"
       },
       {
         id: 202,
@@ -77,7 +85,8 @@ export const magazineData: Magazine[] = [
         author: "Maria Rodriguez",
         excerpt: "Ensuring fair labor practices and environmental responsibility in global supply chains.",
         pageNumber: 15,
-        thumbnailImage: "https://www.supplychaindive.com/imgproxy/SjxrZl9vdUqAWK42Ejw-V5_1tj1GyysjCa9KpEQC6_A/g:ce/rs:fill:770:364:0/bG9jYWw6Ly8vZGl2ZWltYWdlL0dldHR5SW1hZ2VzLTExNzY2MzQ4MzguanBn.jpg"
+        thumbnailImage: "https://www.supplychaindive.com/imgproxy/SjxrZl9vdUqAWK42Ejw-V5_1tj1GyysjCa9KpEQC6_A/g:ce/rs:fill:770:364:0/bG9jYWw6Ly8vZGl2ZWltYWdlL0dldHR5SW1hZ2VzLTExNzY2MzQ4MzguanBn.jpg",
+        slug: "ethical-supply-chain-management"
       },
       {
         id: 203,
@@ -85,7 +94,8 @@ export const magazineData: Magazine[] = [
         author: "David Brown",
         excerpt: "The importance of CSR initiatives in building a positive brand image and community relations.",
         pageNumber: 22,
-        thumbnailImage: "https://www.investopedia.com/thmb/QV-I2gMrGfxKJJwV0iwEaQ-ekME=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-1284994248-dbdfa5a8df1c45f5a594b799e3c04c24.jpg"
+        thumbnailImage: "https://www.investopedia.com/thmb/QV-I2gMrGfxKJJwV0iwEaQ-ekME=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-1284994248-dbdfa5a8df1c45f5a594b799e3c04c24.jpg",
+        slug: "corporate-social-responsibility"
       }
     ]
   },
@@ -97,6 +107,7 @@ export const magazineData: Magazine[] = [
     publicationDate: "February 2025",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Breaking-Barriers-with-Style-Rethink-Your-Brand-Approach-By-Ana-Maria-Ciubota.jpg",
     pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    slug: "global-market-trends",
     articles: [
       {
         id: 301,
@@ -104,7 +115,8 @@ export const magazineData: Magazine[] = [
         author: "Alexandra Morrison",
         excerpt: "Identifying high-growth potential markets for business expansion.",
         pageNumber: 5,
-        thumbnailImage: "https://www.trade.gov/sites/default/files/styles/opengraph_image/public/2023-03/emergingmarkets.jpg?itok=RjG5Kq4j"
+        thumbnailImage: "https://www.trade.gov/sites/default/files/styles/opengraph_image/public/2023-03/emergingmarkets.jpg?itok=RjG5Kq4j",
+        slug: "emerging-market-opportunities"
       },
       {
         id: 302,
@@ -112,7 +124,8 @@ export const magazineData: Magazine[] = [
         author: "Marcus Johnson",
         excerpt: "Expert predictions on the global economic outlook and key factors influencing market performance.",
         pageNumber: 14,
-        thumbnailImage: "https://images.moneycontrol.com/static-mcnews/2023/01/Budget-Session-economic-survey-770x433.jpg"
+        thumbnailImage: "https://images.moneycontrol.com/static-mcnews/2023/01/Budget-Session-economic-survey-770x433.jpg",
+        slug: "economic-forecasts-2025"
       },
       {
         id: 303,
@@ -120,7 +133,8 @@ export const magazineData: Magazine[] = [
         author: "Sophia Chen",
         excerpt: "Guidance on making informed investment decisions in a dynamic economic environment.",
         pageNumber: 21,
-        thumbnailImage: "https://www.fidelity.com/binaries/content/gallery/mobile/insights/how-to-invest-during-a-recession.jpg"
+        thumbnailImage: "https://www.fidelity.com/binaries/content/gallery/mobile/insights/how-to-invest-during-a-recession.jpg",
+        slug: "strategic-investment-recommendations"
       }
     ]
   },
@@ -132,6 +146,7 @@ export const magazineData: Magazine[] = [
     publicationDate: "January 2025",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Visionary-Leaders-Pioneering-Digital-Transformation-in-2024-December2024.jpg",
     pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    slug: "leadership-in-crisis",
     articles: [
       {
         id: 401,
@@ -139,7 +154,8 @@ export const magazineData: Magazine[] = [
         author: "Dr. James Wilson",
         excerpt: "Effective leadership strategies for navigating times of crisis and change.",
         pageNumber: 7,
-        thumbnailImage: "https://miro.medium.com/v2/resize:fit/1400/1*bJESdzWJu9joKqq9G9Jv9Q.jpeg"
+        thumbnailImage: "https://miro.medium.com/v2/resize:fit:1400/1*bJESdzWJu9joKqq9G9Jv9Q.jpeg",
+        slug: "leading-through-uncertainty"
       },
       {
         id: 402,
@@ -147,7 +163,8 @@ export const magazineData: Magazine[] = [
         author: "Maria Rodriguez",
         excerpt: "Creating strong, adaptable teams that can withstand challenges and setbacks.",
         pageNumber: 16,
-        thumbnailImage: "https://www.aihr.com/wp-content/uploads/Building-a-resilient-team.png"
+        thumbnailImage: "https://www.aihr.com/wp-content/uploads/Building-a-resilient-team.png",
+        slug: "building-resilient-teams"
       },
       {
         id: 403,
@@ -155,7 +172,8 @@ export const magazineData: Magazine[] = [
         author: "David Brown",
         excerpt: "Designing flexible business models that can quickly adapt to changing market conditions.",
         pageNumber: 23,
-        thumbnailImage: "https://www.strategy-business.com/media/image/19301-Quick-Read-Adaptable-Business-Models.jpg?w=1920"
+        thumbnailImage: "https://www.strategy-business.com/media/image/19301-Quick-Read-Adaptable-Business-Models.jpg?w=1920",
+        slug: "adaptive-business-models"
       }
     ]
   },
@@ -167,6 +185,7 @@ export const magazineData: Magazine[] = [
     publicationDate: "December 2024",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Middle-Easts-Top-Managing-Directors-Revolutionizing-Business.jpg",
     pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    slug: "innovation-ecosystems",
     articles: [
       {
         id: 501,
@@ -174,7 +193,8 @@ export const magazineData: Magazine[] = [
         author: "Alexandra Morrison",
         excerpt: "Building partnerships between corporations, startups, and academic institutions.",
         pageNumber: 8,
-        thumbnailImage: "https://www.daglobal.com/wp-content/uploads/2023/02/Innovation-ecosystem.jpg"
+        thumbnailImage: "https://www.daglobal.com/wp-content/uploads/2023/02/Innovation-ecosystem.jpg",
+        slug: "collaborative-innovation-networks"
       },
       {
         id: 502,
@@ -182,7 +202,8 @@ export const magazineData: Magazine[] = [
         author: "Marcus Johnson",
         excerpt: "Strategies for speeding up the innovation process and bringing new products to market faster.",
         pageNumber: 17,
-        thumbnailImage: "https://www.innosight.com/wp-content/uploads/2017/08/Exhibit-3-New-model-for-corporate-innovation-ecosystem.jpg"
+        thumbnailImage: "https://www.innosight.com/wp-content/uploads/2017/08/Exhibit-3-New-model-for-corporate-innovation-ecosystem.jpg",
+        slug: "accelerating-innovation"
       },
       {
         id: 503,
@@ -190,7 +211,8 @@ export const magazineData: Magazine[] = [
         author: "Sophia Chen",
         excerpt: "Insights into creating innovation ecosystems that drive growth and competitive advantage.",
         pageNumber: 24,
-        thumbnailImage: "https://www.mckinsey.com/~/media/mckinsey/industries/high%20tech/our%20insights/building%20innovation%20ecosystems/svgz-building-innovation-ecosystems-ex1a.svg"
+        thumbnailImage: "https://www.mckinsey.com/~/media/mckinsey/industries/high%20tech/our%20insights/building%20innovation%20ecosystems/svgz-building-innovation-ecosystems-ex1a.svg",
+        slug: "effective-innovation-ecosystems"
       }
     ]
   },
@@ -202,6 +224,7 @@ export const magazineData: Magazine[] = [
     publicationDate: "November 2024",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/The-Most-Successful-Chief-Growth-Officer-You-Should-Know.jpg",
     pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    slug: "building-resilient-organizations",
     articles: [
       {
         id: 601,
@@ -209,7 +232,8 @@ export const magazineData: Magazine[] = [
         author: "Dr. Emily Wilson",
         excerpt: "Developing robust systems for anticipating and responding to organizational crises.",
         pageNumber: 8,
-        thumbnailImage: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3"
+        thumbnailImage: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3",
+        slug: "crisis-management-frameworks"
       },
       {
         id: 602,
@@ -217,7 +241,8 @@ export const magazineData: Magazine[] = [
         author: "Marcus Thompson",
         excerpt: "Leadership approaches that embrace uncertainty and foster continuous adaptation.",
         pageNumber: 17,
-        thumbnailImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3"
+        thumbnailImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3",
+        slug: "adaptive-leadership"
       },
       {
         id: 603,
@@ -225,7 +250,8 @@ export const magazineData: Magazine[] = [
         author: "Sophia Chen",
         excerpt: "Building structures that respond quickly to market shifts and customer needs.",
         pageNumber: 24,
-        thumbnailImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3"
+        thumbnailImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3",
+        slug: "organizational-agility"
       }
     ]
   },
@@ -237,6 +263,7 @@ export const magazineData: Magazine[] = [
     publicationDate: "October 2024",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Middle-Easts-Top-Managing-Directors-Revolutionizing-Business.jpg",
     pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    slug: "customer-experience-transformation",
     articles: [
       {
         id: 701,
@@ -244,7 +271,8 @@ export const magazineData: Magazine[] = [
         author: "Rebecca Adams",
         excerpt: "Advanced methods for understanding and optimizing the customer journey.",
         pageNumber: 5,
-        thumbnailImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3"
+        thumbnailImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3",
+        slug: "journey-mapping-techniques"
       },
       {
         id: 702,
@@ -252,7 +280,8 @@ export const magazineData: Magazine[] = [
         author: "Daniel Lee",
         excerpt: "Balancing customized experiences with operational efficiency.",
         pageNumber: 14,
-        thumbnailImage: "https://images.unsplash.com/photo-1552581234-26160f608093?ixlib=rb-4.0.3"
+        thumbnailImage: "https://images.unsplash.com/photo-1552581234-26160f608093?ixlib=rb-4.0.3",
+        slug: "personalization-at-scale"
       },
       {
         id: 703,
@@ -260,7 +289,8 @@ export const magazineData: Magazine[] = [
         author: "Maya Patel",
         excerpt: "Creating authentic brand experiences that build lasting customer loyalty.",
         pageNumber: 21,
-        thumbnailImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3"
+        thumbnailImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3",
+        slug: "emotional-brand-connections"
       }
     ]
   },
@@ -272,6 +302,7 @@ export const magazineData: Magazine[] = [
     publicationDate: "September 2024",
     coverImage: "https://thecioworld.com/wp-content/uploads/2024/12/Breaking-Barriers-with-Style-Rethink-Your-Brand-Approach-By-Ana-Maria-Ciubota.jpg",
     pdfUrl: "http://www.africau.edu/images/default/sample.pdf",
+    slug: "global-supply-chain-innovation",
     articles: [
       {
         id: 801,
@@ -279,7 +310,8 @@ export const magazineData: Magazine[] = [
         author: "James Wilson",
         excerpt: "Moving from linear supply chains to interconnected digital networks.",
         pageNumber: 7,
-        thumbnailImage: "https://images.unsplash.com/photo-1621768216845-172b5c6fe7fc?ixlib=rb-4.0.3"
+        thumbnailImage: "https://images.unsplash.com/photo-1621768216845-172b5c6fe7fc?ixlib=rb-4.0.3",
+        slug: "digital-supply-networks"
       },
       {
         id: 802,
@@ -287,7 +319,8 @@ export const magazineData: Magazine[] = [
         author: "Lisa Johnson",
         excerpt: "Using data science to anticipate supply chain disruptions and optimize operations.",
         pageNumber: 16,
-        thumbnailImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3"
+        thumbnailImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3",
+        slug: "predictive-analytics-in-supply"
       },
       {
         id: 803,
@@ -295,7 +328,8 @@ export const magazineData: Magazine[] = [
         author: "Robert Chang",
         excerpt: "Building ethical, traceable supply chains that strengthen brand reputation.",
         pageNumber: 23,
-        thumbnailImage: "https://images.unsplash.com/photo-1494412651409-8963ce7935a7?ixlib=rb-4.0.3"
+        thumbnailImage: "https://images.unsplash.com/photo-1494412651409-8963ce7935a7?ixlib=rb-4.0.3",
+        slug: "supply-chain-transparency"
       }
     ]
   }

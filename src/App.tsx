@@ -30,12 +30,12 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/magazine" element={<Magazine />} />
-            <Route path="/magazine/:id" element={<MagazineDetail />} />
+            <Route path="/magazine/:slug" element={<MagazineDetail />} />
             <Route path="/leadership" element={<Leadership />} />
-            <Route path="/leadership/:id" element={<LeadershipProfile />} />
+            <Route path="/leadership/:slug" element={<LeadershipProfile />} />
             <Route path="/press-releases" element={<PressReleases />} />
-            <Route path="/press-releases/:id" element={<PressReleaseDetail />} />
-            <Route path="/article/:id" element={<ArticleDetail />} />
+            <Route path="/press-releases/:slug" element={<PressReleaseDetail />} />
+            <Route path="/article/:slug" element={<ArticleDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/documentation" element={<Documentation />} />

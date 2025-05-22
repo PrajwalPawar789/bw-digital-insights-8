@@ -1,166 +1,404 @@
 
-export interface LeaderProfile {
+import { slugify } from "../lib/slugify";
+
+export interface Leader {
   id: number;
   name: string;
   title: string;
   company: string;
   bio: string;
   image: string;
+  slug: string;
+  expertise: string[];
+  linkedin?: string;
+  twitter?: string;
+  email?: string;
+  website?: string;
+  education?: {
+    degree: string;
+    institution: string;
+    year?: string;
+  }[];
+  awards?: {
+    title: string;
+    year: string;
+  }[];
+  quotes?: {
+    text: string;
+    source?: string;
+  }[];
+  articles?: {
+    title: string;
+    date: string;
+    slug: string;
+  }[];
 }
 
-export interface LeadershipArticle {
-  id: number;
-  title: string;
-  excerpt: string;
-  content: string;
-  author: string;
-  date: string;
-  image: string;
-  type: 'philosophy' | 'interview' | 'feature';
-  url?: string;
-}
-
-export const leaderProfiles: LeaderProfile[] = [
+export const leadershipData: Leader[] = [
   {
     id: 1,
-    name: "Sarah Johnson",
-    title: "Chief Information Officer",
-    company: "Global Tech Innovations",
-    bio: "Sarah Johnson is a pioneering technology executive with over 20 years of experience transforming enterprise IT operations. At Global Tech Innovations, she leads digital transformation initiatives that have revolutionized the company's operational efficiency and customer experience. Sarah is recognized for her expertise in AI implementation and secure cloud migration strategies.",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHByb2Zlc3Npb25hbCUyMHdvbWFufGVufDB8fDB8fHww"
+    name: "Maria Rodriguez",
+    title: "Chief Executive Officer",
+    company: "InsightsBW",
+    bio: "Maria Rodriguez is a visionary business leader with over 20 years of experience in market intelligence and business strategy. As the CEO of InsightsBW, she has transformed the company from a traditional market research firm into a global leader in business intelligence and strategic insights.\n\nUnder her leadership, InsightsBW has expanded its global footprint to 15 countries and developed innovative data analytics platforms that serve Fortune 500 clients across industries. Maria is particularly passionate about helping organizations leverage data to drive strategic decision-making and sustainable growth.\n\nPrior to joining InsightsBW, Maria held executive positions at Global Strategy Partners and Insight Ventures. She began her career as a management consultant at McKinsey & Company, where she advised clients on corporate strategy and organizational transformation.",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    slug: "maria-rodriguez",
+    expertise: ["Business Strategy", "Market Intelligence", "Organizational Leadership", "Digital Transformation"],
+    linkedin: "https://linkedin.com/in/mariarodriguez",
+    twitter: "https://twitter.com/mariarodriguez",
+    email: "maria.rodriguez@insightsbw.com",
+    education: [
+      {
+        degree: "MBA",
+        institution: "Harvard Business School",
+        year: "2005"
+      },
+      {
+        degree: "Bachelor of Science in Economics",
+        institution: "University of Pennsylvania",
+        year: "1999"
+      }
+    ],
+    awards: [
+      {
+        title: "Business Intelligence Leader of the Year",
+        year: "2024"
+      },
+      {
+        title: "Top 50 Women in Business",
+        year: "2022"
+      },
+      {
+        title: "Innovation in Data Analytics Award",
+        year: "2020"
+      }
+    ],
+    quotes: [
+      {
+        text: "In today's data-rich environment, the competitive advantage lies not in having information, but in extracting meaningful insights from it.",
+        source: "InsightsBW Annual Conference, 2024"
+      },
+      {
+        text: "The most successful organizations are those that align their data strategy with their business strategy, creating a feedback loop that continuously informs decision-making.",
+        source: "Harvard Business Review Interview"
+      }
+    ],
+    articles: [
+      {
+        title: "The Future of Business Intelligence",
+        date: "February 15, 2025",
+        slug: "future-of-business-intelligence"
+      },
+      {
+        title: "Data-Driven Decision Making for Executive Teams",
+        date: "November 8, 2024",
+        slug: "data-driven-decision-making-executive-teams"
+      }
+    ]
   },
   {
     id: 2,
-    name: "Michael Chen",
-    title: "Chief Information Officer",
-    company: "Nexus Financial Group",
-    bio: "Michael Chen brings a unique blend of financial acumen and technological innovation to his role at Nexus Financial Group. His leadership has been instrumental in developing proprietary fintech solutions that have positioned the company as an industry leader. Michael previously held senior positions at major technology companies before transitioning to financial services.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHByb2Zlc3Npb25hbCUyMG1hbnxlbnwwfHwwfHx8MA%3D%3D"
-  },
-  {
-    id: 3,
-    name: "Elena Rodriguez",
-    title: "Chief Information Officer",
-    company: "Healthcare Innovations",
-    bio: "Elena Rodriguez is transforming healthcare delivery through strategic technology initiatives. Her focus on interoperable systems and patient data security has established new industry standards. Elena's background in both clinical practice and information technology gives her a comprehensive understanding of healthcare's unique challenges and opportunities.",
-    image: "https://images.unsplash.com/photo-1605664041952-4a803269b2c3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHByb2Zlc3Npb25hbCUyMGxhdGluYXxlbnwwfHwwfHx8MA%3D%3D"
-  },
-  {
-    id: 4,
-    name: "David Williams",
-    title: "Chief Information Officer",
-    company: "Retail Evolution Corp",
-    bio: "David Williams is leading the digital transformation of retail through innovative omnichannel strategies and data analytics. His implementation of AI-driven inventory management and personalized shopping experiences has set new benchmarks in the industry. David is a frequent speaker on retail technology and customer experience innovation.",
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cHJvZmVzc2lvbmFsJTIwbWFufGVufDB8fDB8fHww"
-  },
-  {
-    id: 5,
-    name: "Priya Sharma",
-    title: "Chief Information Officer",
-    company: "Global Manufacturing Solutions",
-    bio: "Priya Sharma is revolutionizing manufacturing through Industry 4.0 implementations that connect smart factories and supply chains. Her expertise in IoT, robotics, and predictive analytics has delivered significant operational efficiencies and quality improvements. Priya is recognized for her ability to align technology investments with strategic business objectives.",
-    image: "https://images.unsplash.com/photo-1593104547489-5cfb3839a3b5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmVzc2lvbmFsJTIwaW5kaWFuJTIwd29tYW58ZW58MHx8MHx8fDA%3D"
-  },
-  {
-    id: 6,
     name: "James Wilson",
-    title: "Chief Information Officer",
-    company: "Energy Innovations",
-    bio: "James Wilson is leading digital transformation in the energy sector, implementing smart grid technologies and advanced analytics solutions. His initiatives have significantly improved operational efficiency while supporting sustainability goals. James brings extensive experience in both traditional and renewable energy technology integration.",
-    image: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fHByb2Zlc3Npb25hbCUyMG1hbnxlbnwwfHwwfHx8MA%3D%3D"
-  }
-];
-
-export const leadershipArticles: LeadershipArticle[] = [
-  {
-    id: 1,
-    title: "Technology Leadership in Volatile Times",
-    excerpt: "Strategies for CIOs navigating uncertainty while driving innovation and maintaining operational resilience.",
-    content: "In today's rapidly changing business environment, technology leaders face unprecedented challenges. This article examines proven approaches for maintaining strategic focus amid volatility, with insights on prioritizing investments, building adaptive teams, and developing robust business continuity frameworks. Drawing on interviews with successful CIOs who navigated recent global disruptions, we present a blueprint for technology leadership that balances innovation with operational stability. Key topics include flexible architecture decisions, vendor management during uncertainty, and talent strategies for retaining critical skills during challenging periods.",
-    author: "Sarah Johnson",
-    date: "2025-03-15",
-    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxlYWRlcnNoaXB8ZW58MHx8MHx8fDA%3D",
-    type: "philosophy"
-  },
-  {
-    id: 2,
-    title: "Building Digital-First Organizations",
-    excerpt: "How leading CIOs are restructuring teams and processes to create truly digital-native enterprises.",
-    content: "The transition from traditional to digital-first business models requires fundamental changes in organizational structure, culture, and leadership approaches. This comprehensive analysis explores how successful CIOs are reimagining their functions to enable enterprise-wide digital transformation. Topics include evolving governance models, creating product-oriented technology teams, implementing agile methodologies at scale, and developing digital fluency across the organization. The article features case studies from multiple industries, highlighting both successful transformations and lessons learned from common challenges encountered during these complex organizational changes.",
-    author: "Michael Chen",
-    date: "2025-03-10",
-    image: "https://images.unsplash.com/photo-1484156818044-c040038b0719?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8b3JnYW5pemF0aW9ufGVufDB8fDB8fHww",
-    type: "philosophy"
+    title: "Chief Technology Officer",
+    company: "InsightsBW",
+    bio: "James Wilson leads the technological innovation at InsightsBW, overseeing the development of advanced analytics platforms and data intelligence solutions. With a background in computer science and artificial intelligence, James has pioneered the integration of machine learning algorithms into business intelligence applications.\n\nSince joining InsightsBW in 2018, James has built a world-class engineering team and led the development of the company's flagship InsightIQ platform, which has transformed how clients access and utilize market intelligence. His focus on user experience and practical application of complex technologies has been instrumental in making sophisticated data analysis accessible to business users.\n\nBefore InsightsBW, James was the founder and CTO of DataVision Analytics, a startup acquired by Google in 2017. He also held senior engineering roles at Microsoft and Amazon, where he worked on cloud computing and machine learning initiatives.",
+    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    slug: "james-wilson",
+    expertise: ["Artificial Intelligence", "Machine Learning", "Data Engineering", "Product Development"],
+    linkedin: "https://linkedin.com/in/jameswilson",
+    twitter: "https://twitter.com/jameswilson",
+    website: "https://jameswilson.tech",
+    education: [
+      {
+        degree: "Ph.D. in Computer Science",
+        institution: "Stanford University",
+        year: "2011"
+      },
+      {
+        degree: "Master of Science in Artificial Intelligence",
+        institution: "Massachusetts Institute of Technology",
+        year: "2007"
+      },
+      {
+        degree: "Bachelor of Science in Computer Science",
+        institution: "Carnegie Mellon University",
+        year: "2005"
+      }
+    ],
+    awards: [
+      {
+        title: "Technology Innovator of the Year",
+        year: "2023"
+      },
+      {
+        title: "AI Breakthrough Award",
+        year: "2021"
+      }
+    ],
+    quotes: [
+      {
+        text: "The future of business intelligence isn't about more data—it's about smarter analysis and actionable insights delivered at the right moment.",
+        source: "Tech Summit 2024"
+      }
+    ],
+    articles: [
+      {
+        title: "AI and Machine Learning Transforming Business Operations",
+        date: "April 12, 2025",
+        slug: "ai-machine-learning-transforming-business-operations"
+      },
+      {
+        title: "Practical Applications of NLP in Business Intelligence",
+        date: "January 22, 2025",
+        slug: "practical-applications-nlp-business-intelligence"
+      }
+    ]
   },
   {
     id: 3,
-    title: "The Evolving CIO-CEO Relationship",
-    excerpt: "As technology becomes central to business strategy, how the partnership between CIOs and CEOs is being redefined.",
-    content: "The relationship between Chief Information Officers and Chief Executive Officers has undergone a profound transformation as technology has become inseparable from business strategy. This article examines how successful CIO-CEO partnerships are navigating this evolution, creating alignment between technology initiatives and strategic business objectives. Drawing on interviews with executive pairs from leading organizations, we explore communication strategies, collaborative decision-making frameworks, and approaches for managing the tension between innovation and risk management. The piece offers practical guidance for technology leaders seeking to strengthen their strategic influence and build productive relationships with their executive colleagues.",
-    author: "Elena Rodriguez",
-    date: "2025-03-05",
-    image: "https://images.unsplash.com/photo-1454923634634-bd1614719a7b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2VvfGVufDB8fDB8fHww",
-    type: "philosophy"
+    name: "Sarah Johnson",
+    title: "Chief Research Officer",
+    company: "InsightsBW",
+    bio: "Sarah Johnson oversees InsightsBW's global research operations, ensuring methodological rigor and analytical excellence across all industry sectors. With a background in economics and statistical methods, Sarah has established InsightsBW as a trusted source for business insights based on robust data analysis and thoughtful interpretation.\n\nSarah joined InsightsBW in 2015 and has transformed the research department by implementing advanced statistical modeling techniques and establishing partnerships with academic institutions to enhance the company's research capabilities. Her team of analysts produces over 200 in-depth industry reports annually, covering emerging trends and strategic opportunities across global markets.\n\nPreviously, Sarah served as the Director of Economic Research at the Federal Reserve Bank of San Francisco and held senior positions at leading economic consulting firms. She is widely published in academic journals and is a frequent speaker at industry conferences on topics related to market forecasting and economic trends.",
+    image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    slug: "sarah-johnson",
+    expertise: ["Economic Analysis", "Market Research", "Statistical Methods", "Industry Forecasting"],
+    linkedin: "https://linkedin.com/in/sarahjohnson",
+    email: "sarah.johnson@insightsbw.com",
+    education: [
+      {
+        degree: "Ph.D. in Economics",
+        institution: "University of Chicago",
+        year: "2008"
+      },
+      {
+        degree: "Master of Science in Statistics",
+        institution: "University of California, Berkeley",
+        year: "2004"
+      },
+      {
+        degree: "Bachelor of Arts in Economics",
+        institution: "Yale University",
+        year: "2002"
+      }
+    ],
+    awards: [
+      {
+        title: "Research Excellence Award",
+        year: "2023"
+      },
+      {
+        title: "Women in Economics Leadership Award",
+        year: "2020"
+      }
+    ],
+    quotes: [
+      {
+        text: "Good research isn't just about finding answers—it's about asking the right questions in the first place.",
+        source: "Research Methodology Conference 2024"
+      },
+      {
+        text: "The most valuable insights often emerge at the intersection of quantitative analysis and qualitative understanding.",
+        source: "Market Research Quarterly"
+      }
+    ],
+    articles: [
+      {
+        title: "Global Market Trends for 2025",
+        date: "March 5, 2025",
+        slug: "global-market-trends-2025"
+      },
+      {
+        title: "Emerging Economies: Opportunities and Challenges",
+        date: "October 15, 2024",
+        slug: "emerging-economies-opportunities-challenges"
+      }
+    ]
   },
   {
     id: 4,
-    title: "Data as a Strategic Asset: The CIO's Guide",
-    excerpt: "Frameworks for developing data governance, analytics capabilities, and a data-driven decision culture.",
-    content: "While most organizations recognize data as a critical asset, few have successfully implemented the governance structures and analytical capabilities needed to deliver on this potential. This comprehensive guide explores how forward-thinking CIOs are building the technical foundations, organizational capabilities, and cultural elements required for data-driven transformation. Topics include modern data architecture approaches, balancing centralized and federated analytics models, developing data literacy across the enterprise, and ethical considerations in data strategy. The article provides practical frameworks and implementation roadmaps adaptable to different organizational contexts and maturity levels.",
-    author: "David Williams",
-    date: "2025-02-28",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGRhdGElMjBhbmFseXRpY3N8ZW58MHx8MHx8fDA%3D",
-    type: "philosophy"
+    name: "Michael Chen",
+    title: "Chief Strategy Officer",
+    company: "InsightsBW",
+    bio: "Michael Chen leads strategic planning and business development at InsightsBW, guiding the company's expansion into new markets and service offerings. With expertise in corporate strategy and international business, Michael has been instrumental in growing InsightsBW's global presence and diversifying its portfolio of solutions.\n\nSince joining the executive team in 2019, Michael has orchestrated several strategic acquisitions that have strengthened the company's capabilities in specific industry verticals and geographic regions. He has also established key strategic partnerships with technology providers and consulting firms that have created new revenue streams and enhanced the value proposition for clients.\n\nPrior to InsightsBW, Michael was a Partner at Bain & Company, where he led the firm's Strategy practice in Asia-Pacific. He began his career in investment banking at Goldman Sachs before transitioning to management consulting. Michael serves on the boards of several technology startups and is an advisor to venture capital firms focused on business intelligence and analytics.",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    slug: "michael-chen",
+    expertise: ["Corporate Strategy", "Mergers & Acquisitions", "Business Development", "International Expansion"],
+    linkedin: "https://linkedin.com/in/michaelchen",
+    twitter: "https://twitter.com/michaelchen",
+    email: "michael.chen@insightsbw.com",
+    education: [
+      {
+        degree: "MBA",
+        institution: "INSEAD",
+        year: "2010"
+      },
+      {
+        degree: "Master of International Business",
+        institution: "The Fletcher School, Tufts University",
+        year: "2006"
+      },
+      {
+        degree: "Bachelor of Science in Economics",
+        institution: "London School of Economics",
+        year: "2004"
+      }
+    ],
+    awards: [
+      {
+        title: "Global Strategy Leader Award",
+        year: "2024"
+      },
+      {
+        title: "Asia-Pacific Business Innovator",
+        year: "2021"
+      }
+    ],
+    quotes: [
+      {
+        text: "Strategic advantage in today's business environment comes from seeing connections others miss and acting decisively on those insights.",
+        source: "Strategic Leadership Forum 2024"
+      }
+    ],
+    articles: [
+      {
+        title: "Supply Chain Resilience: Lessons from Global Disruptions",
+        date: "April 5, 2025",
+        slug: "supply-chain-resilience-lessons-from-global-disruptions"
+      },
+      {
+        title: "Strategic Partnerships in the Digital Economy",
+        date: "December 10, 2024",
+        slug: "strategic-partnerships-digital-economy"
+      }
+    ]
   },
   {
     id: 5,
-    title: "Transforming Manufacturing Through Industry 4.0",
-    excerpt: "Interview with Priya Sharma on implementing connected factory initiatives and digital supply chains.",
-    content: "In this exclusive interview, Priya Sharma discusses her groundbreaking work implementing Industry 4.0 technologies across global manufacturing operations. She shares insights on connecting factory systems with digital supply chains, implementing predictive maintenance programs that have reduced downtime by 35%, and developing digital twins that optimize production processes in real-time. Priya also addresses the human side of digital transformation, describing approaches for workforce upskilling and change management that have been critical to her success. The conversation concludes with her perspective on emerging manufacturing technologies and their potential impact on global production models.",
-    author: "InsightsBW Editorial Team",
-    date: "2025-02-22",
-    image: "https://images.unsplash.com/photo-1581091196737-a4e3c335efa8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fG1hbnVmYWN0dXJpbmd8ZW58MHx8MHx8fDA%3D",
-    type: "interview"
+    name: "Emily Brown",
+    title: "Chief People Officer",
+    company: "InsightsBW",
+    bio: "Emily Brown oversees human resources and talent development at InsightsBW, fostering a culture of innovation, inclusion, and continuous learning. With a background in organizational psychology and leadership development, Emily has implemented progressive people practices that have made InsightsBW a recognized employer of choice in the business intelligence industry.\n\nSince joining the company in 2020, Emily has transformed InsightsBW's approach to talent management, implementing data-driven recruitment strategies, comprehensive leadership development programs, and innovative performance management systems. Her initiatives have reduced employee turnover by 35% and increased employee engagement scores to industry-leading levels.\n\nBefore joining InsightsBW, Emily was the Global Head of Leadership Development at LinkedIn and previously held senior HR roles at Deloitte and Google. She is a certified executive coach and speaks regularly at conferences on the future of work, organizational culture, and talent strategy.",
+    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    slug: "emily-brown",
+    expertise: ["Organizational Development", "Talent Management", "Leadership Coaching", "Workplace Culture"],
+    linkedin: "https://linkedin.com/in/emilybrown",
+    twitter: "https://twitter.com/emilybrown",
+    email: "emily.brown@insightsbw.com",
+    education: [
+      {
+        degree: "Ph.D. in Organizational Psychology",
+        institution: "Columbia University",
+        year: "2012"
+      },
+      {
+        degree: "Master of Science in Human Resources Management",
+        institution: "Cornell University",
+        year: "2007"
+      },
+      {
+        degree: "Bachelor of Arts in Psychology",
+        institution: "University of Michigan",
+        year: "2005"
+      }
+    ],
+    awards: [
+      {
+        title: "HR Executive of the Year",
+        year: "2023"
+      },
+      {
+        title: "Most Innovative People Practices",
+        year: "2022"
+      }
+    ],
+    quotes: [
+      {
+        text: "The organizations that will thrive in the future are those that recognize talent as their most strategic asset and culture as their most sustainable competitive advantage.",
+        source: "Future of Work Summit 2024"
+      },
+      {
+        text: "Leadership development isn't about creating better managers—it's about cultivating individuals who can navigate complexity, inspire others, and drive meaningful change.",
+        source: "Harvard Business Review Interview"
+      }
+    ],
+    articles: [
+      {
+        title: "Remote Work Revolution: Building Effective Virtual Teams",
+        date: "March 15, 2025",
+        slug: "remote-work-revolution-building-effective-virtual-teams"
+      },
+      {
+        title: "The Evolution of Performance Management",
+        date: "September 28, 2024",
+        slug: "evolution-of-performance-management"
+      }
+    ]
   },
   {
     id: 6,
-    title: "Technology Leadership in Healthcare Transformation",
-    excerpt: "How Elena Rodriguez is revolutionizing patient care through strategic technology initiatives.",
-    content: "This in-depth profile examines Elena Rodriguez's transformative work as CIO of Healthcare Innovations. Under her leadership, the organization has implemented an integrated health information system that connects disparate care settings, developed advanced analytics capabilities that identify at-risk patients before conditions worsen, and deployed telehealth solutions that have expanded access to specialized care in underserved regions. Elena shares her philosophy on healthcare technology design, emphasizing patient-centered approaches and clinical workflow integration. The article also explores how her background in both clinical practice and information technology has shaped her unique approach to digital healthcare transformation.",
-    author: "InsightsBW Editorial Team",
-    date: "2025-02-18",
-    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fGhlYWx0aGNhcmUlMjB0ZWNofGVufDB8fDB8fHww",
-    type: "feature"
-  },
-  {
-    id: 7,
-    title: "Leading Digital Transformation in Financial Services",
-    excerpt: "Michael Chen discusses balancing innovation with security in the rapidly evolving fintech landscape.",
-    content: "In this exclusive interview, Michael Chen describes his approach to digital transformation in the heavily regulated financial services industry. He shares strategies for accelerating innovation while maintaining robust security and compliance frameworks, including the development of API-based architectures, implementation of advanced fraud detection systems, and creation of fintech partnership models that extend capabilities while managing risk. Michael also discusses the changing competitive landscape in financial services and how traditional institutions can leverage their scale and customer relationships while adopting the agility of fintech startups. The conversation concludes with his perspective on emerging technologies that will shape the future of financial services.",
-    author: "InsightsBW Editorial Team",
-    date: "2025-02-12",
-    image: "https://images.unsplash.com/photo-1556741533-6e6a62bd8b49?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8ZmludGVjaHxlbnwwfHwwfHx8MA%3D%3D",
-    type: "interview"
-  },
-  {
-    id: 8,
-    title: "The Future of Retail Technology",
-    excerpt: "David Williams featured in exclusive CNN Business segment on omnichannel innovation.",
-    content: "David Williams was recently featured in CNN Business's 'Future Forward' series, discussing the technological transformation of retail experiences. In the 15-minute segment, he demonstrated how Retail Evolution Corp is implementing technologies that seamlessly blend physical and digital shopping experiences, including augmented reality product visualization, computer vision-powered checkout systems, and personalized in-store experiences driven by customer data. David emphasized how these innovations are not just technological showcases but strategic responses to changing consumer expectations and competitive pressures. The segment has garnered significant attention within the retail industry and highlights David's position as a thought leader in retail technology innovation.",
-    author: "InsightsBW Editorial Team",
-    date: "2025-02-08",
-    image: "https://images.unsplash.com/photo-1604754742629-3e5728249d73?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHJldGFpbCUyMHRlY2h8ZW58MHx8MHx8fDA%3D",
-    type: "feature",
-    url: "https://example.com/cnn-business-interview"
-  },
-  {
-    id: 9,
-    title: "Sustainable Energy Through Digital Transformation",
-    excerpt: "James Wilson shares how technology is accelerating the transition to renewable energy systems.",
-    content: "In this comprehensive industry report, James Wilson outlines how Energy Innovations is leveraging digital technologies to accelerate the transition to sustainable energy systems. He details the implementation of advanced grid management solutions that integrate renewable energy sources, the development of energy consumption optimization algorithms that reduce waste, and the creation of digital platforms that enable new business models such as virtual power plants and peer-to-peer energy trading. James also addresses the challenges of this transition, including legacy infrastructure integration and cybersecurity considerations for critical energy systems. The report concludes with his vision for a fully digitalized, decarbonized energy ecosystem enabled by emerging technologies.",
-    author: "InsightsBW Editorial Team",
-    date: "2025-02-04",
-    image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2xpbWF0ZXxlbnwwfHwwfHx8MA%3D%3D",
-    type: "feature"
+    name: "David Patel",
+    title: "Chief Financial Officer",
+    company: "InsightsBW",
+    bio: "David Patel leads financial strategy and operations at InsightsBW, ensuring the company's sustainable growth and financial health. With expertise in financial planning, investment analysis, and corporate finance, David has played a critical role in scaling the company while maintaining strong profitability and shareholder value.\n\nSince joining InsightsBW in 2017, David has modernized the company's financial infrastructure, implemented sophisticated forecasting models, and secured strategic funding for global expansion initiatives. His prudent financial management enabled the company to navigate market volatility while continuing to invest in innovation and talent development.\n\nPrior to InsightsBW, David was the Finance Director at Salesforce and previously held senior finance positions at Oracle and PwC. He began his career in investment banking at Morgan Stanley, specializing in technology and software sectors. David serves on the audit committee of several nonprofit organizations and is a frequent speaker on financial strategy for high-growth companies.",
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80",
+    slug: "david-patel",
+    expertise: ["Financial Strategy", "Investment Analysis", "Risk Management", "Corporate Finance"],
+    linkedin: "https://linkedin.com/in/davidpatel",
+    email: "david.patel@insightsbw.com",
+    education: [
+      {
+        degree: "MBA, Finance",
+        institution: "Wharton School, University of Pennsylvania",
+        year: "2008"
+      },
+      {
+        degree: "Master of Accounting",
+        institution: "University of Michigan",
+        year: "2004"
+      },
+      {
+        degree: "Bachelor of Science in Finance",
+        institution: "New York University",
+        year: "2002"
+      }
+    ],
+    awards: [
+      {
+        title: "CFO of the Year, Technology Sector",
+        year: "2023"
+      },
+      {
+        title: "Financial Excellence Award",
+        year: "2021"
+      }
+    ],
+    quotes: [
+      {
+        text: "Financial strategy is no longer just about managing costs and capital—it's about enabling innovation and creating long-term value in a rapidly changing business landscape.",
+        source: "CFO Summit 2024"
+      }
+    ],
+    articles: [
+      {
+        title: "Emerging Markets: Growth Opportunities and Strategic Considerations",
+        date: "March 8, 2025",
+        slug: "emerging-markets-growth-opportunities-strategic-considerations"
+      },
+      {
+        title: "Financial Strategies for Global Expansion",
+        date: "August 15, 2024",
+        slug: "financial-strategies-global-expansion"
+      }
+    ]
   }
 ];
+
+// Use the slugify function to generate slugs for each leader if needed
+// This is just a utility function for data maintenance
+export function regenerateSlugsForLeaders(): Leader[] {
+  return leadershipData.map(leader => ({
+    ...leader,
+    slug: slugify(leader.name)
+  }));
+}

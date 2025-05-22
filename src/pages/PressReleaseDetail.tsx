@@ -1,11 +1,61 @@
 
 import { useParams, Link } from 'react-router-dom';
-import { pressReleaseData } from '../data/pressReleaseData';
-import { ChevronLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { pressReleaseData, PressRelease } from '../data/pressReleaseData';
+import { ChevronLeft, Calendar, Share2, ArrowUpRight, Globe, FileText } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 
 const PressReleaseDetail = () => {
-  const { id } = useParams<{ id: string }>();
-  const pressRelease = pressReleaseData.find(pr => pr.id === Number(id));
+  const { slug } = useParams<{ slug: string }>();
+  const [pressRelease, setPressRelease] = useState<PressRelease | undefined>(
+    pressReleaseData.find(pr => pr.slug === slug)
+  );
+  const [relatedPressReleases, setRelatedPressReleases] = useState<PressRelease[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (pressRelease) {
+      // Find related press releases from the same category
+      const related = pressReleaseData
+        .filter(pr => pr.id !== pressRelease.id && pr.category === pressRelease.category)
+        .slice(0, 2);
+      setRelatedPressReleases(related);
+    }
+
+    // Simulate loading delay
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 700);
+
+    return () => clearTimeout(timer);
+  }, [pressRelease]);
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: pressRelease?.title,
+        text: pressRelease?.excerpt,
+        url: window.location.href,
+      })
+      .catch((error) => console.log('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link copied!",
+        description: "Press release link copied to clipboard",
+        duration: 3000,
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
+      </div>
+    );
+  }
 
   if (!pressRelease) {
     return (
@@ -24,10 +74,17 @@ const PressReleaseDetail = () => {
     );
   }
 
+  // Format the date for display
+  const formattedDate = new Date(pressRelease.date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+
   return (
-    <div className="min-h-screen py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-4">
+    <div className="min-h-screen py-12 bg-gradient-to-b from-white to-gray-50">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-6">
           <Link
             to="/press-releases"
             className="inline-flex items-center text-insightRed hover:text-insightBlack transition-colors text-sm font-medium"
@@ -35,31 +92,127 @@ const PressReleaseDetail = () => {
             <ChevronLeft className="mr-1 h-4 w-4" /> Back to Press Releases
           </Link>
         </div>
-        
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+
+        <div className="mb-8">
+          <span className="inline-block px-3 py-1 text-sm font-semibold bg-insightRed text-white rounded-full mb-4">
+            {pressRelease.category}
+          </span>
+          <h1 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4 leading-tight">
+            {pressRelease.title}
+          </h1>
+          
+          <div className="flex items-center text-sm text-gray-600 mb-6">
+            <Calendar className="h-4 w-4 mr-1" />
+            {formattedDate}
+          </div>
+          
+          <p className="text-lg text-gray-700 mb-6 leading-relaxed">{pressRelease.excerpt}</p>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleShare}
+            className="flex items-center"
+          >
+            <Share2 className="h-4 w-4 mr-1.5" /> Share Press Release
+          </Button>
+        </div>
+
+        <div className="rounded-lg overflow-hidden mb-8 shadow-md">
           <img
             src={pressRelease.image}
             alt={pressRelease.title}
-            className="w-full h-96 object-cover"
+            className="w-full h-auto object-cover"
           />
-          
-          <div className="p-8">
-            <div className="flex justify-between items-start mb-4">
-              <span className="inline-block px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-md">
-                {pressRelease.category}
-              </span>
-              <span className="text-sm text-gray-500">{pressRelease.date}</span>
-            </div>
-            
-            <h1 className="text-3xl font-bold text-insightBlack mb-4">{pressRelease.title}</h1>
-            
-            <div className="prose max-w-none text-gray-600">
-              {pressRelease.content.split('\n').map((paragraph, index) => (
-                <p key={index} className="mb-4">{paragraph}</p>
+        </div>
+
+        <div className="prose max-w-none mb-12">
+          {pressRelease.content.split('\n\n').map((paragraph, index) => (
+            <p key={index} className="text-gray-700 mb-4 leading-relaxed">
+              {paragraph}
+            </p>
+          ))}
+        </div>
+
+        <div className="bg-gray-50 p-6 rounded-lg shadow-sm mb-12">
+          <div className="flex items-center mb-4">
+            <Globe className="h-5 w-5 mr-2 text-insightRed" />
+            <h3 className="text-lg font-semibold text-insightBlack">About InsightsBW</h3>
+          </div>
+          <p className="text-gray-600 mb-4">
+            InsightsBW is a leading global research and advisory firm, providing executives with actionable insights, strategic guidance, and data-driven analysis to make informed decisions in rapidly evolving markets. 
+            With a global network of industry experts and innovative research methodologies, we help organizations navigate complexity and drive sustainable growth.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center"
+              asChild
+            >
+              <Link to="/about">
+                Learn More <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
+              </Link>
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center"
+              asChild
+            >
+              <Link to="/contact">
+                Contact Us <ArrowUpRight className="h-3.5 w-3.5 ml-1" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+
+        {relatedPressReleases.length > 0 && (
+          <div className="border-t border-gray-200 pt-10">
+            <h2 className="text-2xl font-bold text-insightBlack mb-6">Related Press Releases</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {relatedPressReleases.map(relatedPR => (
+                <Link
+                  key={relatedPR.id}
+                  to={`/press-releases/${relatedPR.slug}`}
+                  className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
+                >
+                  <div className="h-40 overflow-hidden">
+                    <img
+                      src={relatedPR.image}
+                      alt={relatedPR.title}
+                      className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <div className="flex-1">
+                      <span className="inline-block px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded mb-2">
+                        {relatedPR.category}
+                      </span>
+                      <h3 className="font-semibold text-insightBlack hover:text-insightRed transition-colors mb-2 line-clamp-2">
+                        {relatedPR.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-3">{relatedPR.excerpt}</p>
+                    </div>
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+                      <span className="text-xs text-gray-500">
+                        {new Date(relatedPR.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </span>
+                      <div className="flex items-center text-insightRed text-sm font-medium">
+                        <FileText className="w-3.5 h-3.5 mr-1" />
+                        Read More
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

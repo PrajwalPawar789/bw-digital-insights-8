@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 
 const ArticleDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [article, setArticle] = useState(newsData.find(article => article.id === Number(id)));
+  const [article, setArticle] = useState(newsData.find(article => article.slug === slug));
   const [loading, setLoading] = useState(true);
   const [relatedArticles, setRelatedArticles] = useState<typeof newsData>([]);
 
@@ -58,10 +58,10 @@ const ArticleDetail = () => {
     });
   };
 
-  const handleRelatedArticleClick = (articleId: number) => {
+  const handleRelatedArticleClick = (articleSlug: string) => {
     // Navigate to the selected article and force a reload of the component
-    navigate(`/article/${articleId}`);
-    setArticle(newsData.find(a => a.id === articleId));
+    navigate(`/article/${articleSlug}`);
+    setArticle(newsData.find(a => a.slug === articleSlug));
     window.scrollTo(0, 0);
   };
 
@@ -195,7 +195,7 @@ const ArticleDetail = () => {
               {relatedArticles.map(relatedArticle => (
                 <div 
                   key={relatedArticle.id}
-                  onClick={() => handleRelatedArticleClick(relatedArticle.id)}
+                  onClick={() => handleRelatedArticleClick(relatedArticle.slug)}
                   className="cursor-pointer group"
                 >
                   <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">

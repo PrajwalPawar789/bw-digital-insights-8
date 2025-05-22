@@ -121,7 +121,7 @@ const MagazinePage = () => {
             currentMagazines.map((magazine: Magazine) => (
               <Link
                 key={magazine.id}
-                to={`/magazine/${magazine.id}`}
+                to={`/magazine/${magazine.slug}`}
                 className="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
                 <div className="relative">

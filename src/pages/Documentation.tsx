@@ -1,1181 +1,1136 @@
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ChevronDown, ChevronUp, ExternalLink, FileCode, FileText, HelpCircle, Layout, Layers, Server } from 'lucide-react';
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import { ChevronDown, ChevronUp, Copy, Check, Code, FileJson, BookOpen } from "lucide-react";
 
 const Documentation = () => {
-  const [activeSection, setActiveSection] = useState<string | null>('overview');
+  // Track which items are expanded
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
-  
-  const toggleSection = (section: string) => {
-    setActiveSection(activeSection === section ? null : section);
-  };
-  
-  const toggleItem = (item: string) => {
+
+  const toggleItem = (id: string) => {
     setExpandedItems(prev => ({
       ...prev,
-      [item]: !prev[item]
+      [id]: !prev[id]
     }));
   };
 
+  // Code block for syntax highlighting
+  const CodeBlock = ({ language = "json", children }: { language?: string; children: React.ReactNode }) => {
+    const [copied, setCopied] = useState(false);
+    
+    const copyToClipboard = () => {
+      const text = children?.toString() || "";
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
+    
+    return (
+      <div className="relative mt-4 mb-8">
+        <div className="absolute right-4 top-4">
+          <button 
+            onClick={copyToClipboard} 
+            className="p-2 rounded-md bg-gray-800 hover:bg-gray-700 text-gray-300 transition-colors"
+            aria-label="Copy code"
+          >
+            {copied ? <Check size={15} /> : <Copy size={15} />}
+          </button>
+        </div>
+        <pre className="p-4 bg-gray-900 text-gray-100 rounded-lg overflow-x-auto">
+          <code className={`language-${language}`}>{children}</code>
+        </pre>
+      </div>
+    );
+  };
+
+  // Expandable section component
+  const ExpandableSection = ({ 
+    id,
+    title, 
+    children,
+    defaultExpanded = false,
+    className
+  }: { 
+    id: string;
+    title: string; 
+    children: React.ReactNode;
+    defaultExpanded?: boolean;
+    className?: string;
+  }) => {
+    // Use the id to track expansion state
+    const isExpanded = expandedItems[id] === undefined ? defaultExpanded : expandedItems[id];
+    
+    return (
+      <div className={cn("border border-gray-200 rounded-lg mb-4", className)}>
+        <button
+          onClick={() => toggleItem(id)}
+          className="w-full flex justify-between items-center p-4 text-left hover:bg-gray-50 rounded-t-lg transition-colors"
+        >
+          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </button>
+        {isExpanded && (
+          <div className="p-4 pt-0 border-t border-gray-200">
+            {children}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Renders API parameter table
+  const ParameterTable = ({ parameters }: { parameters: { name: string; type: string; description: string; required?: boolean }[] }) => (
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
+        <thead>
+          <tr className="bg-gray-50">
+            <th className="px-4 py-2 text-left text-gray-700 font-semibold border-b">Parameter</th>
+            <th className="px-4 py-2 text-left text-gray-700 font-semibold border-b">Type</th>
+            <th className="px-4 py-2 text-left text-gray-700 font-semibold border-b">Required</th>
+            <th className="px-4 py-2 text-left text-gray-700 font-semibold border-b">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {parameters.map((param, i) => (
+            <tr key={i} className="border-b">
+              <td className="px-4 py-2 font-medium text-gray-900">{param.name}</td>
+              <td className="px-4 py-2 text-gray-700 font-mono text-sm">{param.type}</td>
+              <td className="px-4 py-2 text-gray-700">{param.required === false ? "No" : "Yes"}</td>
+              <td className="px-4 py-2 text-gray-700">{param.description}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
+        <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">InsightsBW Documentation</h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Comprehensive guide to the InsightsBW business magazine website, including architecture, page functionality, and API documentation.
+            Comprehensive documentation for developers working with the InsightsBW platform, 
+            API, and components.
           </p>
         </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Navigation */}
-          <div className="lg:w-64 flex-shrink-0">
-            <div className="sticky top-8 bg-gray-50 rounded-lg shadow p-4">
-              <nav className="space-y-1">
-                <button
-                  onClick={() => setActiveSection('overview')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeSection === 'overview' ? 'bg-insightRed text-white' : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <Layout className="mr-3 h-5 w-5" />
-                  Overview
-                </button>
-                <button
-                  onClick={() => setActiveSection('architecture')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeSection === 'architecture' ? 'bg-insightRed text-white' : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <Layers className="mr-3 h-5 w-5" />
-                  Architecture
-                </button>
-                <button
-                  onClick={() => setActiveSection('pageFlow')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeSection === 'pageFlow' ? 'bg-insightRed text-white' : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <FileText className="mr-3 h-5 w-5" />
-                  Page Flow & Functionality
-                </button>
-                <button
-                  onClick={() => setActiveSection('api')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeSection === 'api' ? 'bg-insightRed text-white' : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <Server className="mr-3 h-5 w-5" />
-                  API Documentation
-                </button>
-                <button
-                  onClick={() => setActiveSection('components')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeSection === 'components' ? 'bg-insightRed text-white' : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <FileCode className="mr-3 h-5 w-5" />
-                  Component Library
-                </button>
-                <button
-                  onClick={() => setActiveSection('faq')}
-                  className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md ${
-                    activeSection === 'faq' ? 'bg-insightRed text-white' : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <HelpCircle className="mr-3 h-5 w-5" />
-                  FAQ
-                </button>
-              </nav>
-            </div>
+        
+        <Tabs defaultValue="overview" className="space-y-8">
+          <div className="bg-white p-4 rounded-lg shadow-sm">
+            <TabsList className="grid grid-cols-2 md:grid-cols-5 gap-2">
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <BookOpen size={16} /> Overview
+              </TabsTrigger>
+              <TabsTrigger value="architecture" className="flex items-center gap-2">
+                <FileJson size={16} /> Architecture
+              </TabsTrigger>
+              <TabsTrigger value="api" className="flex items-center gap-2">
+                <Code size={16} /> API Reference
+              </TabsTrigger>
+              <TabsTrigger value="components" className="flex items-center gap-2">
+                <FileJson size={16} /> Components
+              </TabsTrigger>
+              <TabsTrigger value="guidelines" className="flex items-center gap-2">
+                <BookOpen size={16} /> Guidelines
+              </TabsTrigger>
+            </TabsList>
           </div>
-
-          {/* Main Content */}
-          <div className="flex-1 bg-white rounded-lg shadow-md">
-            {/* Overview Section */}
-            {activeSection === 'overview' && (
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">InsightsBW Website Overview</h2>
-                <p className="mb-4">
-                  InsightsBW is a business magazine website built with React, TypeScript, and Tailwind CSS. It provides 
-                  a platform for business professionals to access articles, leadership profiles, magazine issues, 
-                  and press releases. The website has several key sections:
-                </p>
-                
-                <div className="grid md:grid-cols-2 gap-6 my-8">
-                  <div className="bg-gray-50 p-5 rounded-lg">
-                    <h3 className="font-bold text-lg mb-2">Home Page</h3>
-                    <p>Landing page featuring highlights, featured articles, and navigation to other sections.</p>
-                  </div>
-                  <div className="bg-gray-50 p-5 rounded-lg">
-                    <h3 className="font-bold text-lg mb-2">Magazine</h3>
-                    <p>Current and archived magazine issues with digital viewing capability.</p>
-                  </div>
-                  <div className="bg-gray-50 p-5 rounded-lg">
-                    <h3 className="font-bold text-lg mb-2">Leadership</h3>
-                    <p>Profiles of business leaders with their articles and insights.</p>
-                  </div>
-                  <div className="bg-gray-50 p-5 rounded-lg">
-                    <h3 className="font-bold text-lg mb-2">Press Releases</h3>
-                    <p>Latest news and announcements from featured companies.</p>
-                  </div>
-                  <div className="bg-gray-50 p-5 rounded-lg">
-                    <h3 className="font-bold text-lg mb-2">Articles</h3>
-                    <p>Detailed articles on business topics, industry trends, and thought leadership.</p>
-                  </div>
-                  <div className="bg-gray-50 p-5 rounded-lg">
-                    <h3 className="font-bold text-lg mb-2">About & Contact</h3>
-                    <p>Information about InsightsBW and ways to get in touch with the team.</p>
-                  </div>
+        
+          {/* OVERVIEW TAB */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">InsightsBW Platform Overview</h2>
+              <p className="text-gray-700 mb-6">
+                InsightsBW is a comprehensive business intelligence and insights platform designed for C-suite executives, 
+                business leaders, and industry professionals seeking data-driven insights and strategic guidance.
+              </p>
+              
+              <h3 className="text-xl font-semibold mb-3">Core Features</h3>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-6">
+                <li>Digital magazines with exclusive executive interviews and industry insights</li>
+                <li>News and analysis articles covering emerging business trends</li>
+                <li>Leadership profiles and thought-leader content</li>
+                <li>Press releases and corporate communications</li>
+                <li>Research reports and white papers</li>
+              </ul>
+              
+              <h3 className="text-xl font-semibold mb-3">Technology Stack</h3>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                <li><span className="font-medium">Frontend:</span> React, TypeScript, Tailwind CSS</li>
+                <li><span className="font-medium">UI Components:</span> shadcn/ui, Lucide Icons</li>
+                <li><span className="font-medium">State Management:</span> React Query</li>
+                <li><span className="font-medium">Routing:</span> React Router</li>
+                <li><span className="font-medium">PDF Handling:</span> react-pdf</li>
+                <li><span className="font-medium">Data Visualization:</span> Recharts</li>
+              </ul>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Page Structure and Flow</h2>
+              <p className="text-gray-700 mb-6">
+                The InsightsBW platform consists of several key sections, each serving a specific purpose within the overall user experience.
+              </p>
+              
+              <h3 className="text-xl font-semibold mb-3">Main Sections</h3>
+              <div className="space-y-4">
+                <div className="p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900">Home Page</h4>
+                  <p className="text-gray-700">Entry point featuring latest content, featured articles, and section navigation.</p>
                 </div>
                 
-                <div className="border-l-4 border-insightRed pl-4 italic bg-gray-50 p-4 my-6">
-                  <p className="text-gray-700">
-                    InsightsBW serves as a comprehensive business resource for executives, entrepreneurs, and business 
-                    professionals looking to stay informed about industry trends, leadership strategies, and business insights.
+                <div className="p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900">Magazine Section</h4>
+                  <p className="text-gray-700">Collection of digital publications with industry insights, categorized by topic.</p>
+                  <p className="text-gray-600 text-sm mt-2">URL Pattern: /magazine and /magazine/:slug</p>
+                </div>
+                
+                <div className="p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900">Articles</h4>
+                  <p className="text-gray-700">Individual insight pieces on specific business topics and trends.</p>
+                  <p className="text-gray-600 text-sm mt-2">URL Pattern: /article/:slug</p>
+                </div>
+                
+                <div className="p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900">Leadership Profiles</h4>
+                  <p className="text-gray-700">Profiles of business leaders and industry experts with their insights and experiences.</p>
+                  <p className="text-gray-600 text-sm mt-2">URL Pattern: /leadership and /leadership/:slug</p>
+                </div>
+                
+                <div className="p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900">Press Releases</h4>
+                  <p className="text-gray-700">Corporate announcements, news, and updates.</p>
+                  <p className="text-gray-600 text-sm mt-2">URL Pattern: /press-releases and /press-releases/:slug</p>
+                </div>
+                
+                <div className="p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900">About & Contact</h4>
+                  <p className="text-gray-700">Company information and contact methods.</p>
+                  <p className="text-gray-600 text-sm mt-2">URL Pattern: /about and /contact</p>
+                </div>
+                
+                <div className="p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900">Documentation</h4>
+                  <p className="text-gray-700">Technical documentation for developers and integrators.</p>
+                  <p className="text-gray-600 text-sm mt-2">URL Pattern: /documentation</p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        
+          {/* ARCHITECTURE TAB */}
+          <TabsContent value="architecture" className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Application Architecture</h2>
+              <p className="text-gray-700 mb-6">
+                InsightsBW follows a modern React component-based architecture with a focus on reusability, 
+                maintainability, and performance.
+              </p>
+              
+              <h3 className="text-xl font-semibold mb-3">Directory Structure</h3>
+              <div className="bg-gray-900 text-gray-100 p-4 rounded-lg mb-6 overflow-x-auto">
+<pre className="text-sm">
+{`src/
+├── components/
+│   ├── layout/         # Core layout components
+│   │   ├── Layout.tsx  # Main application layout
+│   │   ├── Navbar.tsx  # Navigation bar
+│   │   └── Footer.tsx  # Footer component
+│   ├── ui/             # UI component library (shadcn/ui)
+│   └── chat/           # Chat and interactive components
+├── pages/              # Page components
+│   ├── Home.tsx        # Home page
+│   ├── Magazine.tsx    # Magazine listing page
+│   ├── MagazineDetail.tsx  # Single magazine view
+│   └── ...             # Other page components
+├── data/               # Data models and static data
+│   ├── magazineData.ts # Magazine content
+│   ├── newsData.ts     # Articles and news
+│   └── ...             # Other data sources
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions and helpers
+└── App.tsx             # Main application component with routing`}
+</pre>
+              </div>
+              
+              <h3 className="text-xl font-semibold mb-3">Data Flow</h3>
+              <p className="text-gray-700 mb-4">
+                The application follows a unidirectional data flow pattern:
+              </p>
+              <div className="flex flex-col md:flex-row gap-4 mb-6">
+                <div className="flex-1 p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900 mb-2">Data Sources</h4>
+                  <p className="text-gray-700">Static data files for development, API endpoints in production.</p>
+                </div>
+                <div className="flex-1 p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900 mb-2">State Management</h4>
+                  <p className="text-gray-700">React Query for server state, React hooks for local UI state.</p>
+                </div>
+                <div className="flex-1 p-4 border border-gray-200 rounded-md">
+                  <h4 className="font-medium text-gray-900 mb-2">UI Components</h4>
+                  <p className="text-gray-700">Render data and handle user interactions.</p>
+                </div>
+              </div>
+              
+              <h3 className="text-xl font-semibold mb-3">Component Architecture</h3>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700 mb-4">
+                <li><span className="font-medium">Page Components:</span> High-level components with their own routes</li>
+                <li><span className="font-medium">Feature Components:</span> Complex UI elements with business logic</li>
+                <li><span className="font-medium">UI Components:</span> Reusable presentational components</li>
+                <li><span className="font-medium">Layout Components:</span> Structure and organize the UI</li>
+              </ul>
+              
+              <h3 className="text-xl font-semibold mb-3">Routing</h3>
+              <p className="text-gray-700 mb-4">
+                The application uses React Router for client-side routing with the following pattern:
+              </p>
+              <div className="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto">
+<pre className="text-sm">
+{`// Primary routes
+/                           # Home page
+/magazine                   # Magazine listing
+/magazine/:slug             # Magazine detail page by slug
+/article/:slug              # Article detail page by slug
+/leadership                 # Leadership listing page
+/leadership/:slug           # Leadership profile page by slug
+/press-releases             # Press releases listing
+/press-releases/:slug       # Press release detail page by slug
+/about                      # About page
+/contact                    # Contact page
+/documentation              # Documentation page`}
+</pre>
+              </div>
+            </div>
+          </TabsContent>
+        
+          {/* API REFERENCE TAB */}
+          <TabsContent value="api" className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">API Reference</h2>
+              <p className="text-gray-700 mb-8">
+                The InsightsBW API provides access to magazines, articles, leadership profiles, 
+                and press releases. All endpoints return JSON responses and support standard HTTP methods.
+              </p>
+              
+              <div className="space-y-6">
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="text-lg font-semibold text-blue-800 mb-2">Base URL</h3>
+                  <p className="font-mono bg-white p-2 rounded border border-blue-100">
+                    https://api.insightsbw.com/v1
                   </p>
-                </div>
-              </div>
-            )}
-
-            {/* Architecture Section */}
-            {activeSection === 'architecture' && (
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">System Architecture</h2>
-                
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold mb-4">Technology Stack</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-bold text-insightRed">Frontend</h4>
-                      <ul className="mt-2 space-y-2 list-disc list-inside">
-                        <li>React 18.3.x (UI library)</li>
-                        <li>TypeScript (Type safety)</li>
-                        <li>React Router 6.x (Routing)</li>
-                        <li>Tailwind CSS (Styling)</li>
-                        <li>shadcn/ui (UI component library)</li>
-                        <li>Lucide React (Icons)</li>
-                        <li>Recharts (Data visualization)</li>
-                        <li>TanStack React Query (Data fetching)</li>
-                      </ul>
-                    </div>
-                    <div className="border border-gray-200 rounded-lg p-4">
-                      <h4 className="font-bold text-insightRed">Build Tools</h4>
-                      <ul className="mt-2 space-y-2 list-disc list-inside">
-                        <li>Vite (Build tool)</li>
-                        <li>PostCSS (CSS processing)</li>
-                        <li>ESLint (Code linting)</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold mb-4">Application Architecture</h3>
-                  <div className="bg-gray-50 p-5 rounded-lg mb-6">
-                    <h4 className="font-bold mb-2 text-insightRed">Component Structure</h4>
-                    <p className="mb-4">
-                      The application follows a component-based architecture with the following folder structure:
-                    </p>
-                    <pre className="bg-gray-900 text-gray-100 p-4 rounded text-sm overflow-x-auto">
-{`insightsbw/
-├── src/
-│   ├── components/          # Reusable UI components
-│   │   ├── chat/            # Chat components
-│   │   ├── layout/          # Layout components (Navbar, Footer)
-│   │   └── ui/              # UI components (shadcn/ui)
-│   ├── data/                # Mock data for the application
-│   ├── hooks/               # Custom React hooks
-│   ├── lib/                 # Utility functions
-│   └── pages/               # Page components for each route
-└── public/                  # Static assets`}
-                    </pre>
-                  </div>
-                  
-                  <div className="bg-gray-50 p-5 rounded-lg mb-6">
-                    <h4 className="font-bold mb-2 text-insightRed">Data Flow</h4>
-                    <p>
-                      The application currently uses static data imported from files in the <code>data/</code> directory.
-                      This simulates API responses but could be replaced with actual API calls in the future.
-                    </p>
-                    <div className="mt-4 border border-gray-200 rounded-lg p-4">
-                      <p className="font-semibold">Data Flow Process:</p>
-                      <ol className="mt-2 space-y-2 list-decimal list-inside">
-                        <li>Page component requests data</li>
-                        <li>Data is imported from corresponding data files</li>
-                        <li>Component state is updated with the data</li>
-                        <li>UI renders based on the state</li>
-                      </ol>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">State Management</h3>
-                  <p className="mb-4">
-                    The application primarily uses React's built-in state management (useState, useEffect) for component-level state.
-                    For more complex data fetching and caching, TanStack React Query is available in the codebase.
-                  </p>
-                  
-                  <div className="border-l-4 border-yellow-500 pl-4 bg-yellow-50 p-4">
-                    <h4 className="font-bold text-yellow-700">Future Enhancement</h4>
-                    <p className="text-yellow-700">
-                      For future development, consider implementing a global state management solution like Redux or Zustand
-                      if the application complexity increases.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Page Flow Section */}
-            {activeSection === 'pageFlow' && (
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Page Flow & Functionality</h2>
-                
-                {/* Page Flow Diagram */}
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold mb-4">User Flow Diagram</h3>
-                  <div className="bg-gray-50 p-4 rounded-lg overflow-x-auto">
-                    <div className="min-w-[700px]">
-                      <pre className="text-sm text-gray-700">
-{`Home
-  ├─► Magazine ──────┬─► Magazine Detail
-  │                  └─► Article Detail
-  │
-  ├─► Leadership ────┬─► Leadership Profile
-  │                  └─► Article Detail
-  │
-  ├─► Press Releases ─► Press Release Detail
-  │
-  ├─► Article Detail
-  │
-  ├─► About
-  │
-  └─► Contact`}
-                      </pre>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Page Descriptions */}
-                <div className="space-y-8">
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Home Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      The landing page showcases featured content, recent articles, and navigation to other sections of the website.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Hero section with featured article or magazine issue</li>
-                        <li>Latest articles section</li>
-                        <li>Leadership highlights</li>
-                        <li>Magazine issue showcase</li>
-                        <li>Client logos section</li>
-                        <li>Newsletter subscription</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Magazine Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /magazine</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Lists all magazine issues with cover images, publication dates, and brief descriptions.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Grid display of magazine issues</li>
-                        <li>Filtering options by date or topic</li>
-                        <li>Click to view detailed magazine information</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Magazine Detail Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /magazine/:id</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Detailed view of a specific magazine issue with table of contents and PDF viewer.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Magazine cover display</li>
-                        <li>Publication information</li>
-                        <li>Table of contents</li>
-                        <li>PDF viewer for reading the magazine</li>
-                        <li>Links to featured articles</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Leadership Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /leadership</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Showcases profiles of business leaders and executives with their contributions.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Featured technology leaders section</li>
-                        <li>Leadership philosophy articles</li>
-                        <li>Interviews and media coverage</li>
-                        <li>Hover cards with brief bios</li>
-                        <li>Statistics about featured leaders</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Leadership Profile Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /leadership/:id</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Detailed profile of a specific business leader with their articles and insights.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Leader's bio and information</li>
-                        <li>Image and company information</li>
-                        <li>Articles written by the leader</li>
-                        <li>Related leadership profiles</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Press Releases Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /press-releases</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Collection of press releases from various companies, sorted by date.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>List of press releases with images</li>
-                        <li>Filtering by company or category</li>
-                        <li>Date and category indicators</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Press Release Detail Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /press-releases/:id</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Full content of a specific press release with company information.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Full press release content</li>
-                        <li>Company information</li>
-                        <li>Publication date and category</li>
-                        <li>Featured image</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Article Detail Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /article/:id</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Full content of an article with author information and related content.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Article title and featured image</li>
-                        <li>Author information and publication date</li>
-                        <li>Full article content</li>
-                        <li>Social sharing options</li>
-                        <li>Related articles section</li>
-                        <li>Tags and categories</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">About Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /about</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Information about InsightsBW, its mission, and the team behind it.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Company mission and values</li>
-                        <li>Team member profiles</li>
-                        <li>Company history</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Contact Page</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Route: /contact</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Contact form and information for reaching out to InsightsBW.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Contact form</li>
-                        <li>Office locations and contact information</li>
-                        <li>Subscription options</li>
-                      </ul>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-xl font-semibold">Chatbot</h3>
-                      <span className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Global Component</span>
-                    </div>
-                    <p className="mt-2 text-gray-600">
-                      Interactive chatbot available across all pages to assist users.
-                    </p>
-                    <div className="mt-4">
-                      <h4 className="font-medium text-gray-700">Key Features:</h4>
-                      <ul className="mt-2 list-disc list-inside space-y-1 text-gray-600">
-                        <li>Fixed position button to open chat</li>
-                        <li>Pre-defined prompt suggestions</li>
-                        <li>Quick responses to common questions</li>
-                        <li>Magazine subscription and information assistance</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* API Documentation */}
-            {activeSection === 'api' && (
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">API Documentation</h2>
-                
-                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-8">
-                  <h3 className="font-semibold text-yellow-800">Note:</h3>
-                  <p className="text-yellow-700">
-                    Currently, the application uses static mock data from local data files. This section outlines the expected API 
-                    structure for future implementation of a backend API.
+                  <p className="text-sm text-blue-700 mt-2">
+                    All API requests must use HTTPS and include the base URL.
                   </p>
                 </div>
                 
-                <div className="space-y-12">
-                  {/* Articles API */}
-                  <div className="border-b pb-8">
-                    <div className="flex items-center mb-4">
-                      <div className="bg-insightRed text-white p-2 rounded mr-3">
-                        <FileText size={20} />
-                      </div>
-                      <h3 className="text-xl font-bold">Articles API</h3>
-                    </div>
-                    
-                    <div className="space-y-6">
-                      {/* Get All Articles */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">GET</span>
-                          <code className="text-sm font-semibold">/api/articles</code>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">Retrieves a list of all articles with pagination support.</p>
-                        
-                        <div onClick={() => toggleItem('articles-get-params')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Query Parameters</span>
-                          {expandedItems['articles-get-params'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['articles-get-params'] && (
-                          <div className="bg-white p-3 rounded border border-gray-200 text-sm mb-3">
-                            <div className="grid grid-cols-3 gap-2">
-                              <div className="font-medium">Parameter</div>
-                              <div className="font-medium">Type</div>
-                              <div className="font-medium">Description</div>
-                            </div>
-                            <div className="h-[1px] bg-gray-200 my-2"></div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <div>page</div>
-                              <div>number</div>
-                              <div>Page number for pagination (default: 1)</div>
-                            </div>
-                            <div className="h-[1px] bg-gray-100 my-2"></div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <div>limit</div>
-                              <div>number</div>
-                              <div>Number of articles per page (default: 10)</div>
-                            </div>
-                            <div className="h-[1px] bg-gray-100 my-2"></div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <div>category</div>
-                              <div>string</div>
-                              <div>Filter by category</div>
-                            </div>
-                          </div>
-                        )}
-                        
-                        <div onClick={() => toggleItem('articles-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Response Format</span>
-                          {expandedItems['articles-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['articles-get-response'] && (
-                          <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
-{`{
-  "data": [
-    {
-      "id": 1,
-      "title": "The Future of Remote Work",
-      "excerpt": "How companies are adapting to the new normal...",
-      "content": "Full article content...",
-      "author": "Jane Smith",
-      "date": "May 15, 2023",
-      "category": "Business Strategy",
-      "image": "/path/to/image.jpg"
-    },
-    // More articles...
-  ],
-  "meta": {
-    "total": 45,
-    "page": 1,
-    "limit": 10,
-    "totalPages": 5
-  }
-}`}
-                          </pre>
-                        )}
-                      </div>
-                      
-                      {/* Get Single Article */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">GET</span>
-                          <code className="text-sm font-semibold">/api/articles/:id</code>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">Retrieves a single article by ID.</p>
-                        
-                        <div onClick={() => toggleItem('article-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Response Format</span>
-                          {expandedItems['article-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['article-get-response'] && (
-                          <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
-{`{
-  "data": {
-    "id": 1,
-    "title": "The Future of Remote Work",
-    "excerpt": "How companies are adapting to the new normal...",
-    "content": "Full article content...",
-    "author": "Jane Smith",
-    "date": "May 15, 2023",
-    "category": "Business Strategy",
-    "image": "/path/to/image.jpg",
-    "relatedArticles": [
-      {
-        "id": 2,
-        "title": "Hybrid Workplace Challenges",
-        "excerpt": "Navigating the challenges of hybrid work...",
-        "image": "/path/to/related-image.jpg"
-      }
-      // More related articles...
-    ]
-  }
-}`}
-                          </pre>
-                        )}
-                      </div>
-                    </div>
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <h3 className="text-lg font-semibold text-green-800 mb-2">Authentication</h3>
+                  <p className="text-green-700 mb-2">
+                    All API requests require an API key passed in the header.
+                  </p>
+                  <div className="font-mono bg-white p-2 rounded border border-green-100">
+                    <p>Authorization: Bearer YOUR_API_KEY</p>
                   </div>
+                </div>
+                
+                {/* Articles Endpoints */}
+                <ExpandableSection id="articles-endpoints" title="Articles Endpoints">
+                  <p className="text-gray-700 mb-4">
+                    Access and retrieve article content with the following endpoints.
+                  </p>
                   
-                  {/* Magazine API */}
-                  <div className="border-b pb-8">
-                    <div className="flex items-center mb-4">
-                      <div className="bg-insightRed text-white p-2 rounded mr-3">
-                        <FileText size={20} />
-                      </div>
-                      <h3 className="text-xl font-bold">Magazine API</h3>
-                    </div>
+                  <ExpandableSection 
+                    id="articles-get-params"
+                    title="GET /articles"
+                    className="ml-4 border-gray-100"
+                  >
+                    <p className="text-gray-700 mb-3">
+                      Returns a paginated list of articles that can be filtered by category.
+                    </p>
                     
-                    <div className="space-y-6">
-                      {/* Get All Magazines */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">GET</span>
-                          <code className="text-sm font-semibold">/api/magazines</code>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">Retrieves a list of all magazine issues.</p>
-                        
-                        <div onClick={() => toggleItem('magazines-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Response Format</span>
-                          {expandedItems['magazines-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['magazines-get-response'] && (
-                          <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
-{`{
-  "data": [
-    {
-      "id": 1,
-      "title": "The Innovation Issue",
-      "description": "Exploring breakthrough technologies...",
-      "coverImage": "/path/to/cover.jpg",
-      "date": "May 2023",
-      "pdfUrl": "/path/to/magazine.pdf",
-      "featured": true
-    },
-    // More magazines...
-  ]
-}`}
-                          </pre>
-                        )}
-                      </div>
-                      
-                      {/* Get Single Magazine */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">GET</span>
-                          <code className="text-sm font-semibold">/api/magazines/:id</code>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">Retrieves a single magazine issue by ID.</p>
-                        
-                        <div onClick={() => toggleItem('magazine-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Response Format</span>
-                          {expandedItems['magazine-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['magazine-get-response'] && (
-                          <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
-{`{
-  "data": {
-    "id": 1,
-    "title": "The Innovation Issue",
-    "description": "Exploring breakthrough technologies...",
-    "coverImage": "/path/to/cover.jpg",
-    "date": "May 2023",
-    "pdfUrl": "/path/to/magazine.pdf",
-    "featured": true,
-    "tableOfContents": [
-      {
-        "title": "The AI Revolution",
-        "page": 12
-      },
-      // More entries...
-    ],
-    "featuredArticles": [
-      {
-        "id": 5,
-        "title": "Blockchain in Enterprise",
-        "excerpt": "How blockchain is transforming business..."
-      }
-      // More featured articles...
-    ]
+                    <h4 className="font-semibold text-gray-800 mb-2">Query Parameters</h4>
+                    <ParameterTable parameters={[
+                      { name: "page", type: "number", description: "Page number for pagination", required: false },
+                      { name: "limit", type: "number", description: "Number of items per page (max: 50)", required: false },
+                      { name: "category", type: "string", description: "Filter by article category", required: false },
+                      { name: "sort", type: "string", description: "Sort field (date, title)", required: false },
+                      { name: "order", type: "string", description: "Sort order (asc, desc)", required: false }
+                    ]} />
+                    
+                    <h4 className="font-semibold text-gray-800 mt-4 mb-2">Example Request</h4>
+                    <CodeBlock language="javascript">
+{`fetch("https://api.insightsbw.com/v1/articles?page=1&limit=10&category=technology", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
   }
-}`}
-                          </pre>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+})`}
+                    </CodeBlock>
+                  </ExpandableSection>
                   
-                  {/* Leadership API */}
-                  <div className="border-b pb-8">
-                    <div className="flex items-center mb-4">
-                      <div className="bg-insightRed text-white p-2 rounded mr-3">
-                        <FileText size={20} />
-                      </div>
-                      <h3 className="text-xl font-bold">Leadership API</h3>
-                    </div>
-                    
-                    <div className="space-y-6">
-                      {/* Get All Leaders */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">GET</span>
-                          <code className="text-sm font-semibold">/api/leaders</code>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">Retrieves a list of all featured leaders.</p>
-                        
-                        <div onClick={() => toggleItem('leaders-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Response Format</span>
-                          {expandedItems['leaders-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['leaders-get-response'] && (
-                          <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
+                  <ExpandableSection 
+                    id="articles-get-response"
+                    title="GET /articles Response"
+                    className="ml-4 border-gray-100"
+                  >
+                    <h4 className="font-semibold text-gray-800 mb-2">Response Example</h4>
+                    <CodeBlock language="json">
 {`{
-  "data": [
-    {
-      "id": 1,
-      "name": "John Smith",
-      "title": "Chief Executive Officer",
-      "company": "TechCorp",
-      "image": "/path/to/leader.jpg",
-      "bio": "Brief biography..."
-    },
-    // More leaders...
-  ]
-}`}
-                          </pre>
-                        )}
-                      </div>
-                      
-                      {/* Get Single Leader */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">GET</span>
-                          <code className="text-sm font-semibold">/api/leaders/:id</code>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">Retrieves a single leader profile by ID.</p>
-                        
-                        <div onClick={() => toggleItem('leader-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Response Format</span>
-                          {expandedItems['leader-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['leader-get-response'] && (
-                          <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
-{`{
+  "status": "success",
   "data": {
-    "id": 1,
-    "name": "John Smith",
-    "title": "Chief Executive Officer",
-    "company": "TechCorp",
-    "image": "/path/to/leader.jpg",
-    "bio": "Full biography...",
     "articles": [
       {
-        "id": 12,
-        "title": "Leadership in Crisis",
-        "excerpt": "How to lead during challenging times...",
-        "date": "April 10, 2023",
-        "image": "/path/to/article.jpg"
+        "id": 1,
+        "title": "AI-Driven Business Strategies",
+        "slug": "ai-driven-business-strategies",
+        "author": "Dr. Emily Carter",
+        "date": "2025-04-01",
+        "category": "technology",
+        "excerpt": "How artificial intelligence is transforming business decision-making processes.",
+        "image": "https://example.com/images/ai-business.jpg"
+      },
+      {
+        "id": 2,
+        "title": "The Role of IoT in Smart Cities",
+        "slug": "role-of-iot-in-smart-cities",
+        "author": "Michael Lee",
+        "date": "2025-03-28",
+        "category": "technology",
+        "excerpt": "Exploring the impact of the Internet of Things on urban development and sustainability.",
+        "image": "https://example.com/images/iot-cities.jpg"
       }
       // More articles...
     ],
-    "relatedLeaders": [
-      {
-        "id": 2,
-        "name": "Jane Roberts",
-        "title": "CTO",
-        "company": "InnovateX",
-        "image": "/path/to/related.jpg"
-      }
-      // More related leaders...
-    ]
-  }
-}`}
-                          </pre>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Press Releases API */}
-                  <div>
-                    <div className="flex items-center mb-4">
-                      <div className="bg-insightRed text-white p-2 rounded mr-3">
-                        <FileText size={20} />
-                      </div>
-                      <h3 className="text-xl font-bold">Press Releases API</h3>
-                    </div>
-                    
-                    <div className="space-y-6">
-                      {/* Get All Press Releases */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">GET</span>
-                          <code className="text-sm font-semibold">/api/press-releases</code>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">Retrieves a list of all press releases.</p>
-                        
-                        <div onClick={() => toggleItem('press-get-params')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Query Parameters</span>
-                          {expandedItems['press-get-params'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['press-get-params'] && (
-                          <div className="bg-white p-3 rounded border border-gray-200 text-sm mb-3">
-                            <div className="grid grid-cols-3 gap-2">
-                              <div className="font-medium">Parameter</div>
-                              <div className="font-medium">Type</div>
-                              <div className="font-medium">Description</div>
-                            </div>
-                            <div className="h-[1px] bg-gray-200 my-2"></div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <div>category</div>
-                              <div>string</div>
-                              <div>Filter by category</div>
-                            </div>
-                            <div className="h-[1px] bg-gray-100 my-2"></div>
-                            <div className="grid grid-cols-3 gap-2">
-                              <div>company</div>
-                              <div>string</div>
-                              <div>Filter by company name</div>
-                            </div>
-                          </div>
-                        )}
-                        
-                        <div onClick={() => toggleItem('press-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Response Format</span>
-                          {expandedItems['press-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['press-get-response'] && (
-                          <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
-{`{
-  "data": [
-    {
-      "id": 1,
-      "title": "TechCorp Announces New AI Platform",
-      "date": "June 5, 2023",
-      "company": "TechCorp",
-      "category": "Product Launch",
-      "image": "/path/to/press.jpg",
-      "excerpt": "TechCorp unveils breakthrough AI platform..."
-    },
-    // More press releases...
-  ]
-}`}
-                          </pre>
-                        )}
-                      </div>
-                      
-                      {/* Get Single Press Release */}
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">GET</span>
-                          <code className="text-sm font-semibold">/api/press-releases/:id</code>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">Retrieves a single press release by ID.</p>
-                        
-                        <div onClick={() => toggleItem('press-single-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
-                          <span>Response Format</span>
-                          {expandedItems['press-single-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                        </div>
-                        
-                        {expandedItems['press-single-response'] && (
-                          <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
-{`{
-  "data": {
-    "id": 1,
-    "title": "TechCorp Announces New AI Platform",
-    "date": "June 5, 2023",
-    "company": "TechCorp",
-    "category": "Product Launch",
-    "image": "/path/to/press.jpg",
-    "content": "Full press release content...",
-    "contactInfo": {
-      "name": "Media Relations",
-      "email": "media@techcorp.com",
-      "phone": "555-123-4567"
+    "pagination": {
+      "total": 42,
+      "pages": 5,
+      "current_page": 1,
+      "limit": 10
     }
   }
 }`}
-                          </pre>
-                        )}
-                      </div>
-                    </div>
+                    </CodeBlock>
+                  </ExpandableSection>
+                  
+                  <ExpandableSection 
+                    id="article-get-response" 
+                    title="GET /articles/:slug"
+                    className="ml-4 border-gray-100"
+                  >
+                    <p className="text-gray-700 mb-3">
+                      Returns detailed information for a specific article by its slug.
+                    </p>
+                    
+                    <h4 className="font-semibold text-gray-800 mb-2">Path Parameters</h4>
+                    <ParameterTable parameters={[
+                      { name: "slug", type: "string", description: "Unique article slug identifier", required: true }
+                    ]} />
+                    
+                    <h4 className="font-semibold text-gray-800 mt-4 mb-2">Example Request</h4>
+                    <CodeBlock language="javascript">
+{`fetch("https://api.insightsbw.com/v1/articles/ai-driven-business-strategies", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+  }
+})`}
+                    </CodeBlock>
+                    
+                    <h4 className="font-semibold text-gray-800 mt-4 mb-2">Response Example</h4>
+                    <CodeBlock language="json">
+{`{
+  "status": "success",
+  "data": {
+    "article": {
+      "id": 1,
+      "title": "AI-Driven Business Strategies",
+      "slug": "ai-driven-business-strategies",
+      "author": "Dr. Emily Carter",
+      "date": "2025-04-01",
+      "category": "technology",
+      "excerpt": "How artificial intelligence is transforming business decision-making processes.",
+      "content": "Artificial intelligence is fundamentally changing how businesses operate and make decisions. In this article, we explore...",
+      "image": "https://example.com/images/ai-business.jpg",
+      "read_time": 5,
+      "tags": ["AI", "Business Strategy", "Technology"],
+      "related_articles": [
+        {
+          "id": 5,
+          "title": "Machine Learning for Business Forecasting",
+          "slug": "machine-learning-business-forecasting",
+          "excerpt": "How predictive analytics are revolutionizing business planning."
+        }
+        // More related articles...
+      ]
+    }
+  }
+}`}
+                    </CodeBlock>
+                  </ExpandableSection>
+                </ExpandableSection>
+                
+                {/* Magazines Endpoints */}
+                <ExpandableSection id="magazines-endpoints" title="Magazines Endpoints">
+                  <p className="text-gray-700 mb-4">
+                    Access and retrieve magazine content with the following endpoints.
+                  </p>
+                  
+                  <ExpandableSection 
+                    id="magazines-get-response"
+                    title="GET /magazines"
+                    className="ml-4 border-gray-100"
+                  >
+                    <p className="text-gray-700 mb-3">
+                      Returns a paginated list of magazines that can be filtered by category.
+                    </p>
+                    
+                    <h4 className="font-semibold text-gray-800 mb-2">Query Parameters</h4>
+                    <ParameterTable parameters={[
+                      { name: "page", type: "number", description: "Page number for pagination", required: false },
+                      { name: "limit", type: "number", description: "Number of items per page (max: 20)", required: false },
+                      { name: "category", type: "string", description: "Filter by magazine category", required: false },
+                      { name: "sort", type: "string", description: "Sort field (publicationDate, title)", required: false },
+                      { name: "order", type: "string", description: "Sort order (asc, desc)", required: false }
+                    ]} />
+                    
+                    <h4 className="font-semibold text-gray-800 mt-4 mb-2">Response Example</h4>
+                    <CodeBlock language="json">
+{`{
+  "status": "success",
+  "data": {
+    "magazines": [
+      {
+        "id": 1,
+        "title": "The Future of Digital Transformation",
+        "slug": "future-of-digital-transformation",
+        "description": "Explore how companies are leveraging artificial intelligence, IoT, and cloud computing...",
+        "category": "technology",
+        "publicationDate": "April 2025",
+        "coverImage": "https://example.com/covers/digital-transformation.jpg",
+        "articlesCount": 3
+      },
+      {
+        "id": 2,
+        "title": "Sustainable Business Practices",
+        "slug": "sustainable-business-practices",
+        "description": "Discover how leading organizations are implementing sustainable practices...",
+        "category": "sustainability",
+        "publicationDate": "March 2025",
+        "coverImage": "https://example.com/covers/sustainability.jpg",
+        "articlesCount": 3
+      }
+      // More magazines...
+    ],
+    "pagination": {
+      "total": 8,
+      "pages": 1,
+      "current_page": 1,
+      "limit": 20
+    }
+  }
+}`}
+                    </CodeBlock>
+                  </ExpandableSection>
+                  
+                  <ExpandableSection 
+                    id="magazine-get-response"
+                    title="GET /magazines/:slug"
+                    className="ml-4 border-gray-100"
+                  >
+                    <p className="text-gray-700 mb-3">
+                      Returns detailed information for a specific magazine by its slug.
+                    </p>
+                    
+                    <h4 className="font-semibold text-gray-800 mb-2">Path Parameters</h4>
+                    <ParameterTable parameters={[
+                      { name: "slug", type: "string", description: "Unique magazine slug identifier", required: true }
+                    ]} />
+                    
+                    <h4 className="font-semibold text-gray-800 mt-4 mb-2">Response Example</h4>
+                    <CodeBlock language="json">
+{`{
+  "status": "success",
+  "data": {
+    "magazine": {
+      "id": 1,
+      "title": "The Future of Digital Transformation",
+      "slug": "future-of-digital-transformation",
+      "description": "Explore how companies are leveraging artificial intelligence, IoT, and cloud computing...",
+      "category": "technology",
+      "publicationDate": "April 2025",
+      "coverImage": "https://example.com/covers/digital-transformation.jpg",
+      "pdfUrl": "https://example.com/magazines/digital-transformation.pdf",
+      "articles": [
+        {
+          "id": 101,
+          "title": "AI-Driven Business Strategies",
+          "slug": "ai-driven-business-strategies",
+          "author": "Dr. Emily Carter",
+          "excerpt": "How artificial intelligence is transforming business decision-making processes.",
+          "pageNumber": 4,
+          "thumbnailImage": "https://example.com/articles/ai-business-thumb.jpg"
+        },
+        {
+          "id": 102,
+          "title": "The Role of IoT in Smart Cities",
+          "slug": "role-of-iot-in-smart-cities",
+          "author": "Michael Lee",
+          "excerpt": "Exploring the impact of the Internet of Things on urban development and sustainability.",
+          "pageNumber": 12,
+          "thumbnailImage": "https://example.com/articles/iot-cities-thumb.jpg"
+        }
+        // More articles...
+      ]
+    }
+  }
+}`}
+                    </CodeBlock>
+                  </ExpandableSection>
+                </ExpandableSection>
+                
+                {/* Leadership Endpoints */}
+                <ExpandableSection id="leadership-endpoints" title="Leadership Endpoints">
+                  <p className="text-gray-700 mb-4">
+                    Access and retrieve leadership profiles with the following endpoints.
+                  </p>
+                  
+                  <ExpandableSection 
+                    id="leaders-get-response"
+                    title="GET /leaders"
+                    className="ml-4 border-gray-100"
+                  >
+                    <p className="text-gray-700 mb-3">
+                      Returns a paginated list of leadership profiles.
+                    </p>
+                    
+                    <h4 className="font-semibold text-gray-800 mb-2">Query Parameters</h4>
+                    <ParameterTable parameters={[
+                      { name: "page", type: "number", description: "Page number for pagination", required: false },
+                      { name: "limit", type: "number", description: "Number of items per page (max: 50)", required: false },
+                      { name: "industry", type: "string", description: "Filter by industry", required: false },
+                      { name: "role", type: "string", description: "Filter by role (CEO, CTO, etc.)", required: false }
+                    ]} />
+                    
+                    <h4 className="font-semibold text-gray-800 mt-4 mb-2">Response Example</h4>
+                    <CodeBlock language="json">
+{`{
+  "status": "success",
+  "data": {
+    "leaders": [
+      {
+        "id": 1,
+        "name": "Maria Rodriguez",
+        "slug": "maria-rodriguez",
+        "title": "CEO, InsightsBW",
+        "company": "InsightsBW",
+        "industry": "Business Intelligence",
+        "summary": "Over 20 years of experience in business intelligence and market analysis.",
+        "image": "https://example.com/leaders/maria-rodriguez.jpg"
+      },
+      {
+        "id": 2,
+        "name": "James Wilson",
+        "slug": "james-wilson",
+        "title": "CTO, TechVision",
+        "company": "TechVision Inc.",
+        "industry": "Technology",
+        "summary": "Leading technology innovation with a focus on AI and machine learning.",
+        "image": "https://example.com/leaders/james-wilson.jpg"
+      }
+      // More leaders...
+    ],
+    "pagination": {
+      "total": 28,
+      "pages": 3,
+      "current_page": 1,
+      "limit": 10
+    }
+  }
+}`}
+                    </CodeBlock>
+                  </ExpandableSection>
+                  
+                  <ExpandableSection 
+                    id="leader-get-response"
+                    title="GET /leaders/:slug"
+                    className="ml-4 border-gray-100"
+                  >
+                    <p className="text-gray-700 mb-3">
+                      Returns detailed information for a specific leadership profile by slug.
+                    </p>
+                    
+                    <h4 className="font-semibold text-gray-800 mb-2">Path Parameters</h4>
+                    <ParameterTable parameters={[
+                      { name: "slug", type: "string", description: "Unique leader slug identifier", required: true }
+                    ]} />
+                    
+                    <h4 className="font-semibold text-gray-800 mt-4 mb-2">Response Example</h4>
+                    <CodeBlock language="json">
+{`{
+  "status": "success",
+  "data": {
+    "leader": {
+      "id": 1,
+      "name": "Maria Rodriguez",
+      "slug": "maria-rodriguez",
+      "title": "CEO",
+      "company": "InsightsBW",
+      "industry": "Business Intelligence",
+      "bio": "Maria Rodriguez has over 20 years of experience in business intelligence and market analysis...",
+      "image": "https://example.com/leaders/maria-rodriguez.jpg",
+      "expertise": ["Business Strategy", "Market Analysis", "Executive Leadership"],
+      "education": [
+        {
+          "degree": "MBA",
+          "institution": "Harvard Business School",
+          "year": "2005"
+        },
+        {
+          "degree": "Bachelor of Science in Economics",
+          "institution": "University of Pennsylvania",
+          "year": "1999"
+        }
+      ],
+      "articles": [
+        {
+          "id": 42,
+          "title": "The Future of Business Intelligence",
+          "slug": "future-of-business-intelligence",
+          "date": "2025-02-15"
+        }
+        // More articles...
+      ],
+      "quotes": [
+        {
+          "text": "In today's data-rich environment, the competitive advantage lies not in having information, but in extracting meaningful insights from it.",
+          "source": "InsightsBW Annual Conference, 2024"
+        }
+        // More quotes...
+      ]
+    }
+  }
+}`}
+                    </CodeBlock>
+                  </ExpandableSection>
+                </ExpandableSection>
+                
+                {/* Press Releases Endpoints */}
+                <ExpandableSection id="press-endpoints" title="Press Releases Endpoints">
+                  <p className="text-gray-700 mb-4">
+                    Access and retrieve press releases with the following endpoints.
+                  </p>
+                  
+                  <ExpandableSection 
+                    id="press-get-params"
+                    title="GET /press-releases"
+                    className="ml-4 border-gray-100"
+                  >
+                    <p className="text-gray-700 mb-3">
+                      Returns a paginated list of press releases that can be filtered by category.
+                    </p>
+                    
+                    <h4 className="font-semibold text-gray-800 mb-2">Query Parameters</h4>
+                    <ParameterTable parameters={[
+                      { name: "page", type: "number", description: "Page number for pagination", required: false },
+                      { name: "limit", type: "number", description: "Number of items per page (max: 50)", required: false },
+                      { name: "category", type: "string", description: "Filter by press release category", required: false },
+                      { name: "startDate", type: "string", description: "Filter by date range start (YYYY-MM-DD)", required: false },
+                      { name: "endDate", type: "string", description: "Filter by date range end (YYYY-MM-DD)", required: false }
+                    ]} />
+                    
+                    <h4 className="font-semibold text-gray-800 mt-4 mb-2">Example Request</h4>
+                    <CodeBlock language="javascript">
+{`fetch("https://api.insightsbw.com/v1/press-releases?category=Partnership&limit=5", {
+  method: "GET",
+  headers: {
+    "Authorization": "Bearer YOUR_API_KEY",
+    "Content-Type": "application/json"
+  }
+})`}
+                    </CodeBlock>
+                  </ExpandableSection>
+                  
+                  <ExpandableSection 
+                    id="press-get-response"
+                    title="GET /press-releases Response"
+                    className="ml-4 border-gray-100"
+                  >
+                    <h4 className="font-semibold text-gray-800 mb-2">Response Example</h4>
+                    <CodeBlock language="json">
+{`{
+  "status": "success",
+  "data": {
+    "pressReleases": [
+      {
+        "id": 1,
+        "title": "InsightsBW Launches Advanced Analytics Platform for Business Intelligence",
+        "slug": "insightsbw-launches-advanced-analytics-platform",
+        "date": "2025-04-15",
+        "category": "Product Launch",
+        "excerpt": "New cloud-based solution provides enterprises with real-time market insights and predictive trend analysis.",
+        "image": "https://example.com/press/analytics-platform.jpg"
+      },
+      {
+        "id": 4,
+        "title": "InsightsBW Partners with Global Sustainability Alliance to Advance ESG Reporting Standards",
+        "slug": "global-sustainability-alliance-partnership",
+        "date": "2025-03-22",
+        "category": "Partnership",
+        "excerpt": "Collaboration aims to develop comprehensive framework for measuring and reporting environmental and social impact.",
+        "image": "https://example.com/press/sustainability-partnership.jpg"
+      }
+      // More press releases...
+    ],
+    "pagination": {
+      "total": 8,
+      "pages": 2,
+      "current_page": 1,
+      "limit": 5
+    }
+  }
+}`}
+                    </CodeBlock>
+                  </ExpandableSection>
+                  
+                  <ExpandableSection 
+                    id="press-single-response"
+                    title="GET /press-releases/:slug"
+                    className="ml-4 border-gray-100"
+                  >
+                    <p className="text-gray-700 mb-3">
+                      Returns detailed information for a specific press release by its slug.
+                    </p>
+                    
+                    <h4 className="font-semibold text-gray-800 mb-2">Path Parameters</h4>
+                    <ParameterTable parameters={[
+                      { name: "slug", type: "string", description: "Unique press release slug identifier", required: true }
+                    ]} />
+                    
+                    <h4 className="font-semibold text-gray-800 mt-4 mb-2">Response Example</h4>
+                    <CodeBlock language="json">
+{`{
+  "status": "success",
+  "data": {
+    "pressRelease": {
+      "id": 1,
+      "title": "InsightsBW Launches Advanced Analytics Platform for Business Intelligence",
+      "slug": "insightsbw-launches-advanced-analytics-platform",
+      "date": "2025-04-15",
+      "category": "Product Launch",
+      "excerpt": "New cloud-based solution provides enterprises with real-time market insights and predictive trend analysis.",
+      "content": "BOSTON, April 15, 2025 — InsightsBW today announced the launch of InsightsBW Analytics, an advanced cloud-based platform designed to provide enterprises with real-time market intelligence and predictive trend analysis. The new offering combines proprietary data models with artificial intelligence to deliver actionable insights across industries...",
+      "image": "https://example.com/press/analytics-platform.jpg",
+      "relatedPressReleases": [
+        {
+          "id": 3,
+          "title": "InsightsBW Annual Technology Impact Report Identifies Emerging Trends Reshaping Industries",
+          "slug": "technology-impact-report-2025",
+          "date": "2025-03-30"
+        }
+        // More related press releases...
+      ]
+    }
+  }
+}`}
+                    </CodeBlock>
+                  </ExpandableSection>
+                </ExpandableSection>
+                
+                {/* Error Handling */}
+                <ExpandableSection id="error-handling" title="Error Handling">
+                  <p className="text-gray-700 mb-3">
+                    The API uses standard HTTP status codes and returns error objects with details 
+                    when something goes wrong.
+                  </p>
+                  
+                  <h4 className="font-semibold text-gray-800 mb-2">Common Error Codes</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="px-4 py-2 text-left text-gray-700 font-semibold border-b">Status Code</th>
+                          <th className="px-4 py-2 text-left text-gray-700 font-semibold border-b">Description</th>
+                          <th className="px-4 py-2 text-left text-gray-700 font-semibold border-b">Example Cause</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b">
+                          <td className="px-4 py-2 font-medium text-gray-900">400 Bad Request</td>
+                          <td className="px-4 py-2 text-gray-700">Invalid request parameters</td>
+                          <td className="px-4 py-2 text-gray-700">Invalid date format, missing required field</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="px-4 py-2 font-medium text-gray-900">401 Unauthorized</td>
+                          <td className="px-4 py-2 text-gray-700">Authentication failure</td>
+                          <td className="px-4 py-2 text-gray-700">Invalid or missing API key</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="px-4 py-2 font-medium text-gray-900">403 Forbidden</td>
+                          <td className="px-4 py-2 text-gray-700">Insufficient permissions</td>
+                          <td className="px-4 py-2 text-gray-700">API key doesn't have access to the resource</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="px-4 py-2 font-medium text-gray-900">404 Not Found</td>
+                          <td className="px-4 py-2 text-gray-700">Resource not found</td>
+                          <td className="px-4 py-2 text-gray-700">Invalid slug or ID</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="px-4 py-2 font-medium text-gray-900">429 Too Many Requests</td>
+                          <td className="px-4 py-2 text-gray-700">Rate limit exceeded</td>
+                          <td className="px-4 py-2 text-gray-700">Too many requests in a given time period</td>
+                        </tr>
+                        <tr className="border-b">
+                          <td className="px-4 py-2 font-medium text-gray-900">500 Internal Server Error</td>
+                          <td className="px-4 py-2 text-gray-700">Server-side error</td>
+                          <td className="px-4 py-2 text-gray-700">Unexpected server condition</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
+                  
+                  <h4 className="font-semibold text-gray-800 mt-4 mb-2">Error Response Example</h4>
+                  <CodeBlock language="json">
+{`{
+  "status": "error",
+  "error": {
+    "code": "resource_not_found",
+    "message": "The requested press release could not be found",
+    "details": {
+      "slug": "invalid-press-release-slug"
+    }
+  }
+}`}
+                  </CodeBlock>
+                </ExpandableSection>
+              </div>
+            </div>
+          </TabsContent>
+        
+          {/* COMPONENTS TAB */}
+          <TabsContent value="components" className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Component Library</h2>
+              <p className="text-gray-700 mb-6">
+                InsightsBW uses a consistent set of UI components based on the shadcn/ui library to 
+                create a cohesive and accessible user interface.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Layout Components</h3>
+                  <ul className="space-y-1 text-gray-700">
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-green-100 border border-green-400 mr-2"></span>
+                      Layout.tsx
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-green-100 border border-green-400 mr-2"></span>
+                      Navbar.tsx
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-green-100 border border-green-400 mr-2"></span>
+                      Footer.tsx
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Interactive Components</h3>
+                  <ul className="space-y-1 text-gray-700">
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-blue-100 border border-blue-400 mr-2"></span>
+                      Button
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-blue-100 border border-blue-400 mr-2"></span>
+                      Tabs
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-blue-100 border border-blue-400 mr-2"></span>
+                      Pagination
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-blue-100 border border-blue-400 mr-2"></span>
+                      ChatBot
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Display Components</h3>
+                  <ul className="space-y-1 text-gray-700">
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-purple-100 border border-purple-400 mr-2"></span>
+                      Card
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-purple-100 border border-purple-400 mr-2"></span>
+                      Carousel
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-purple-100 border border-purple-400 mr-2"></span>
+                      Table
+                    </li>
+                  </ul>
+                </div>
+                
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Feedback Components</h3>
+                  <ul className="space-y-1 text-gray-700">
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-yellow-100 border border-yellow-400 mr-2"></span>
+                      Toast
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-yellow-100 border border-yellow-400 mr-2"></span>
+                      Alert
+                    </li>
+                    <li className="flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-yellow-100 border border-yellow-400 mr-2"></span>
+                      Dialog
+                    </li>
+                  </ul>
                 </div>
               </div>
-            )}
+              
+              <h3 className="text-xl font-semibold text-gray-800 mt-8 mb-4">Component Usage Example</h3>
+              <CodeBlock language="typescript">
+{`import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { Share2 } from 'lucide-react';
 
-            {/* Component Library */}
-            {activeSection === 'components' && (
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Component Library</h2>
+const ShareButton = () => {
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: "Link copied!",
+      description: "Article link copied to clipboard",
+      duration: 3000,
+    });
+  };
+
+  return (
+    <Button variant="outline" size="sm" onClick={handleShare}>
+      <Share2 className="h-4 w-4 mr-1" /> Share
+    </Button>
+  );
+};`}
+              </CodeBlock>
+            </div>
+          </TabsContent>
+        
+          {/* GUIDELINES TAB */}
+          <TabsContent value="guidelines" className="space-y-6">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Development Guidelines</h2>
+              <p className="text-gray-700 mb-6">
+                Follow these guidelines when working with the InsightsBW codebase to maintain 
+                consistency and quality.
+              </p>
+              
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Code Style</h3>
+                  <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                    <li>Use TypeScript for all new components and features</li>
+                    <li>Follow the ESLint configuration present in the project</li>
+                    <li>Use proper typing for components, props, and functions</li>
+                    <li>Organize imports alphabetically</li>
+                    <li>Use named exports for components</li>
+                    <li>Keep components focused and single-purpose</li>
+                  </ul>
+                </div>
                 
-                <p className="mb-8 text-gray-600">
-                  InsightsBW uses a combination of custom components and components from the shadcn/ui library.
-                  This section documents the key components used throughout the application.
-                </p>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Component Structure</h3>
+                  <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                    <li>One component per file</li>
+                    <li>Use functional components with hooks</li>
+                    <li>Place related components in the same directory</li>
+                    <li>Use explicit prop typing with interfaces</li>
+                    <li>Include proper comments for complex logic</li>
+                  </ul>
+                </div>
                 
-                <div className="space-y-8">
-                  <div className="border-b pb-6">
-                    <h3 className="text-xl font-semibold mb-4">Layout Components</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">Layout</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Main layout wrapper that includes the Navbar, Footer, and ChatBot.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/components/layout/Layout.tsx
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          Props: <span className="italic">{'{ children: ReactNode }'}</span>
-                        </p>
-                      </div>
-                      
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">Navbar</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Navigation bar component with responsive menu.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/components/layout/Navbar.tsx
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          No props required.
-                        </p>
-                      </div>
-                      
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">Footer</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Footer component with navigation links and subscription form.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/components/layout/Footer.tsx
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          No props required.
-                        </p>
-                      </div>
-                      
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">ChatBot</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Interactive chat assistant for user queries.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/components/chat/ChatBot.tsx
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          No props required.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="border-b pb-6">
-                    <h3 className="text-xl font-semibold mb-4">UI Components</h3>
-                    
-                    <p className="text-gray-600 mb-4">
-                      The application uses shadcn/ui components for common UI elements. Here are some key components:
-                    </p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">Button</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Styled button component with variants.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/components/ui/button.tsx
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          Props: variant, size, and standard button props
-                        </p>
-                      </div>
-                      
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">Input</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Styled input component.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/components/ui/input.tsx
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          Standard input props
-                        </p>
-                      </div>
-                      
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">Dialog</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Modal dialog component used for the chatbot.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/components/ui/dialog.tsx
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          Includes DialogContent, DialogHeader, etc.
-                        </p>
-                      </div>
-                      
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">HoverCard</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Card that appears on hover, used for leadership profiles.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/components/ui/hover-card.tsx
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          Includes HoverCardTrigger and HoverCardContent
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                      <p className="text-blue-700">
-                        For full component documentation, refer to the 
-                        <a 
-                          href="https://ui.shadcn.com/docs" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline hover:text-blue-800 mx-1"
-                        >
-                          shadcn/ui documentation
-                        </a>
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4">Custom Hooks</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">use-toast</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Hook for displaying toast notifications.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/hooks/use-toast.ts
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          Provides toast() function to show notifications.
-                        </p>
-                      </div>
-                      
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <h4 className="font-bold text-lg mb-2">use-mobile</h4>
-                        <p className="text-sm text-gray-600 mb-2">
-                          Hook for detecting mobile viewport.
-                        </p>
-                        <code className="text-xs bg-gray-200 p-1 rounded block mb-2">
-                          src/hooks/use-mobile.tsx
-                        </code>
-                        <p className="text-sm text-gray-700">
-                          Returns boolean indicating if viewport is mobile.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">State Management</h3>
+                  <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                    <li>Use React Query for server state management</li>
+                    <li>Keep local UI state close to where it's used</li>
+                    <li>Extract complex state logic into custom hooks</li>
+                    <li>Avoid prop drilling by using context where appropriate</li>
+                    <li>Implement proper error handling and loading states</li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Performance</h3>
+                  <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                    <li>Memoize expensive calculations and renders with useMemo and useCallback</li>
+                    <li>Implement virtualization for long lists</li>
+                    <li>Use proper image optimization</li>
+                    <li>Implement code-splitting for large components</li>
+                    <li>Minimize re-renders by managing state efficiently</li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Accessibility</h3>
+                  <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                    <li>Use semantic HTML elements</li>
+                    <li>Include proper ARIA attributes</li>
+                    <li>Ensure keyboard navigation works</li>
+                    <li>Maintain sufficient color contrast</li>
+                    <li>Test with screen readers</li>
+                  </ul>
                 </div>
               </div>
-            )}
-
-            {/* FAQ Section */}
-            {activeSection === 'faq' && (
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">FAQ</h2>
+              
+              <div className="space-y-4">
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">How do I create a new page?</h3>
+                  <p className="text-gray-700">
+                    Create a new component in the <code className="text-sm bg-gray-100 px-1 py-0.5 rounded">pages</code> directory and add its route to <code className="text-sm bg-gray-100 px-1 py-0.5 rounded">App.tsx</code>.
+                  </p>
+                </div>
                 
-                <div className="space-y-6">
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold mb-2">How is data managed in the application?</h3>
-                    <p className="text-gray-600">
-                      Currently, the application uses static data imported from files in the <code>data/</code> directory. 
-                      This approach simulates API responses, but in a production environment, these would be replaced with 
-                      actual API calls to a backend service.
-                    </p>
-                  </div>
-                  
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold mb-2">How is routing handled?</h3>
-                    <p className="text-gray-600">
-                      Routing is handled using React Router v6, with routes defined in <code>App.tsx</code>. 
-                      Each route maps to a specific page component in the <code>pages/</code> directory.
-                    </p>
-                  </div>
-                  
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold mb-2">How do I add a new page to the application?</h3>
-                    <p className="text-gray-600">
-                      To add a new page:
-                    </p>
-                    <ol className="list-decimal pl-5 mt-2 space-y-1 text-gray-600">
-                      <li>Create a new component in the <code>pages/</code> directory</li>
-                      <li>Add a new route in <code>App.tsx</code></li>
-                      <li>Add navigation links in the Navbar or elsewhere as needed</li>
-                    </ol>
-                  </div>
-                  
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold mb-2">How is styling managed?</h3>
-                    <p className="text-gray-600">
-                      The application uses Tailwind CSS for styling, with custom colors defined in <code>tailwind.config.ts</code>.
-                      Some components from shadcn/ui are also used, which come with their own styling that integrates with Tailwind.
-                    </p>
-                  </div>
-                  
-                  <div className="border-b pb-4">
-                    <h3 className="text-lg font-semibold mb-2">How does the chatbot work?</h3>
-                    <p className="text-gray-600">
-                      The chatbot currently uses pattern matching to respond to predefined user queries. It analyzes 
-                      keywords in the user's input and provides relevant responses from a set of predefined answers.
-                      In a production environment, this could be enhanced with a more sophisticated AI system.
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">How can I extend the application?</h3>
-                    <p className="text-gray-600">
-                      The application is designed with modularity in mind. To extend:
-                    </p>
-                    <ul className="list-disc pl-5 mt-2 space-y-1 text-gray-600">
-                      <li>Create new components in appropriate directories</li>
-                      <li>Add new routes in <code>App.tsx</code></li>
-                      <li>Add or modify data models in <code>data/</code></li>
-                      <li>Create new hooks for custom functionality</li>
-                      <li>Integrate with backend services by replacing static data with API calls</li>
-                    </ul>
-                  </div>
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">How should I handle API calls?</h3>
+                  <p className="text-gray-700">
+                    Use React Query hooks in the component or create custom hooks in the <code className="text-sm bg-gray-100 px-1 py-0.5 rounded">hooks</code> directory.
+                  </p>
+                </div>
+                
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Where should I add new data models?</h3>
+                  <p className="text-gray-700">
+                    Add new interfaces and types to the appropriate file in the <code className="text-sm bg-gray-100 px-1 py-0.5 rounded">data</code> directory.
+                  </p>
+                </div>
+                
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">How do I create a new UI component?</h3>
+                  <p className="text-gray-700">
+                    Follow the shadcn/ui pattern by creating a new component in the <code className="text-sm bg-gray-100 px-1 py-0.5 rounded">components/ui</code> directory.
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">How do I contribute to the documentation?</h3>
+                  <p className="text-gray-700">
+                    Update the <code className="text-sm bg-gray-100 px-1 py-0.5 rounded">Documentation.tsx</code> component with any new features or changes.
+                  </p>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-
-        <div className="mt-12 text-center">
-          <p className="text-sm text-gray-500">
-            InsightsBW Documentation • Last Updated: May 21, 2025
-          </p>
-          <div className="mt-4 flex justify-center space-x-4">
-            <Link to="/" className="text-sm text-insightRed hover:text-insightBlack transition-colors">
-              Back to Home
-            </Link>
-            <a 
-              href="https://docs.example.com/insightsbw" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-sm text-insightRed hover:text-insightBlack transition-colors inline-flex items-center"
-            >
-              External Docs <ExternalLink className="ml-1 h-3 w-3" />
-            </a>
-          </div>
-        </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

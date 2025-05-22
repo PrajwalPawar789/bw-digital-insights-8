@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 const MagazineDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const [magazine, setMagazine] = useState<Magazine | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -23,8 +23,8 @@ const MagazineDetail = () => {
   const [fullScreen, setFullScreen] = useState<boolean>(false);
 
   useEffect(() => {
-    // Find the magazine by ID
-    const foundMagazine = magazineData.find(mag => mag.id === Number(id));
+    // Find the magazine by slug
+    const foundMagazine = magazineData.find(mag => mag.slug === slug);
     if (foundMagazine) {
       setMagazine(foundMagazine);
       // Reset state when magazine changes
@@ -41,7 +41,7 @@ const MagazineDetail = () => {
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, [id]);
+  }, [slug]);
 
   // Retry loading PDF if there was an error
   useEffect(() => {
