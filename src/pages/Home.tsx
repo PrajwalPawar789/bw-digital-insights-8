@@ -153,7 +153,7 @@ const Home = () => {
               <p className="text-gray-600">Our most impactful feature of the month</p>
             </div>
             <Link 
-              to={`/article/${featuredNews[0].id}`} 
+              to={`/article/${featuredNews[0].slug}`} 
               className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium transition-colors"
             >
               Read Full Story <ChevronRight className="ml-1 h-4 w-4" />
@@ -247,7 +247,7 @@ const Home = () => {
                       <h3 className="text-3xl md:text-4xl font-bold mb-3">{news.title}</h3>
                       <p className="text-base md:text-lg mb-6 text-gray-200">{news.excerpt}</p>
                       <Link
-                        to={`/article/${news.id}`}
+                        to={`/article/${news.slug}`}
                         className="inline-flex items-center text-white bg-insightRed hover:bg-red-700 px-6 py-3 rounded-md text-base font-medium transition-colors"
                       >
                         Read Full Article <ChevronRight className="ml-2 h-5 w-5" />
@@ -473,7 +473,7 @@ const Home = () => {
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-gray-500">{news.date}</span>
                           <Link
-                            to={`/article/${news.id}`}
+                            to={`/article/${news.slug}`}
                             className="inline-flex items-center text-insightRed hover:text-insightBlack text-sm font-medium transition-colors"
                           >
                             Read Full Article <ChevronRight className="ml-1 h-4 w-4" />
