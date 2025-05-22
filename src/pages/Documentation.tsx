@@ -5,9 +5,17 @@ import { ChevronDown, ChevronUp, ExternalLink, FileCode, FileText, HelpCircle, L
 
 const Documentation = () => {
   const [activeSection, setActiveSection] = useState<string | null>('overview');
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
   
   const toggleSection = (section: string) => {
     setActiveSection(activeSection === section ? null : section);
+  };
+  
+  const toggleItem = (item: string) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [item]: !prev[item]
+    }));
   };
 
   return (
@@ -499,12 +507,12 @@ const Documentation = () => {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">Retrieves a list of all articles with pagination support.</p>
                         
-                        <div onClick={() => toggleSection('articles-get-params')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('articles-get-params')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Query Parameters</span>
-                          {activeSection === 'articles-get-params' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['articles-get-params'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'articles-get-params' && (
+                        {expandedItems['articles-get-params'] && (
                           <div className="bg-white p-3 rounded border border-gray-200 text-sm mb-3">
                             <div className="grid grid-cols-3 gap-2">
                               <div className="font-medium">Parameter</div>
@@ -532,12 +540,12 @@ const Documentation = () => {
                           </div>
                         )}
                         
-                        <div onClick={() => toggleSection('articles-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('articles-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Response Format</span>
-                          {activeSection === 'articles-get-response' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['articles-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'articles-get-response' && (
+                        {expandedItems['articles-get-response'] && (
                           <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
 {`{
   "data": [
@@ -572,12 +580,12 @@ const Documentation = () => {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">Retrieves a single article by ID.</p>
                         
-                        <div onClick={() => toggleSection('article-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('article-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Response Format</span>
-                          {activeSection === 'article-get-response' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['article-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'article-get-response' && (
+                        {expandedItems['article-get-response'] && (
                           <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
 {`{
   "data": {
@@ -624,12 +632,12 @@ const Documentation = () => {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">Retrieves a list of all magazine issues.</p>
                         
-                        <div onClick={() => toggleSection('magazines-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('magazines-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Response Format</span>
-                          {activeSection === 'magazines-get-response' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['magazines-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'magazines-get-response' && (
+                        {expandedItems['magazines-get-response'] && (
                           <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
 {`{
   "data": [
@@ -657,12 +665,12 @@ const Documentation = () => {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">Retrieves a single magazine issue by ID.</p>
                         
-                        <div onClick={() => toggleSection('magazine-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('magazine-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Response Format</span>
-                          {activeSection === 'magazine-get-response' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['magazine-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'magazine-get-response' && (
+                        {expandedItems['magazine-get-response'] && (
                           <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
 {`{
   "data": {
@@ -714,12 +722,12 @@ const Documentation = () => {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">Retrieves a list of all featured leaders.</p>
                         
-                        <div onClick={() => toggleSection('leaders-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('leaders-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Response Format</span>
-                          {activeSection === 'leaders-get-response' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['leaders-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'leaders-get-response' && (
+                        {expandedItems['leaders-get-response'] && (
                           <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
 {`{
   "data": [
@@ -746,12 +754,12 @@ const Documentation = () => {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">Retrieves a single leader profile by ID.</p>
                         
-                        <div onClick={() => toggleSection('leader-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('leader-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Response Format</span>
-                          {activeSection === 'leader-get-response' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['leader-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'leader-get-response' && (
+                        {expandedItems['leader-get-response'] && (
                           <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
 {`{
   "data": {
@@ -807,12 +815,12 @@ const Documentation = () => {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">Retrieves a list of all press releases.</p>
                         
-                        <div onClick={() => toggleSection('press-get-params')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('press-get-params')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Query Parameters</span>
-                          {activeSection === 'press-get-params' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['press-get-params'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'press-get-params' && (
+                        {expandedItems['press-get-params'] && (
                           <div className="bg-white p-3 rounded border border-gray-200 text-sm mb-3">
                             <div className="grid grid-cols-3 gap-2">
                               <div className="font-medium">Parameter</div>
@@ -834,12 +842,12 @@ const Documentation = () => {
                           </div>
                         )}
                         
-                        <div onClick={() => toggleSection('press-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('press-get-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Response Format</span>
-                          {activeSection === 'press-get-response' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['press-get-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'press-get-response' && (
+                        {expandedItems['press-get-response'] && (
                           <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
 {`{
   "data": [
@@ -867,12 +875,12 @@ const Documentation = () => {
                         </div>
                         <p className="text-sm text-gray-600 mb-2">Retrieves a single press release by ID.</p>
                         
-                        <div onClick={() => toggleSection('press-single-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
+                        <div onClick={() => toggleItem('press-single-response')} className="cursor-pointer flex items-center text-sm text-gray-700 font-semibold mt-3 mb-2">
                           <span>Response Format</span>
-                          {activeSection === 'press-single-response' ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+                          {expandedItems['press-single-response'] ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
                         </div>
                         
-                        {activeSection === 'press-single-response' && (
+                        {expandedItems['press-single-response'] && (
                           <pre className="bg-gray-900 text-gray-100 p-3 rounded text-xs overflow-x-auto">
 {`{
   "data": {
