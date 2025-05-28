@@ -9,7 +9,213 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      articles: {
+        Row: {
+          author: string
+          category: string
+          content: string
+          created_at: string | null
+          date: string
+          excerpt: string | null
+          featured: boolean | null
+          id: string
+          image_url: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author: string
+          category: string
+          content: string
+          created_at?: string | null
+          date?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author?: string
+          category?: string
+          content?: string
+          created_at?: string | null
+          date?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      documentation: {
+        Row: {
+          category: string
+          content: string
+          created_at: string | null
+          id: string
+          order_index: number | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string | null
+          id?: string
+          order_index?: number | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          order_index?: number | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      leadership_profiles: {
+        Row: {
+          bio: string
+          company: string | null
+          created_at: string | null
+          featured: boolean | null
+          id: string
+          image_url: string | null
+          linkedin_url: string | null
+          name: string
+          slug: string
+          title: string
+          twitter_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          bio: string
+          company?: string | null
+          created_at?: string | null
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          linkedin_url?: string | null
+          name: string
+          slug: string
+          title: string
+          twitter_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          bio?: string
+          company?: string | null
+          created_at?: string | null
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          linkedin_url?: string | null
+          name?: string
+          slug?: string
+          title?: string
+          twitter_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      magazines: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          featured: boolean | null
+          id: string
+          issue_number: number | null
+          pdf_url: string | null
+          publish_date: string
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          issue_number?: number | null
+          pdf_url?: string | null
+          publish_date: string
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          featured?: boolean | null
+          id?: string
+          issue_number?: number | null
+          pdf_url?: string | null
+          publish_date?: string
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      press_releases: {
+        Row: {
+          author: string
+          content: string
+          created_at: string | null
+          date: string
+          excerpt: string | null
+          featured: boolean | null
+          id: string
+          image_url: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author: string
+          content: string
+          created_at?: string | null
+          date?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author?: string
+          content?: string
+          created_at?: string | null
+          date?: string
+          excerpt?: string | null
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

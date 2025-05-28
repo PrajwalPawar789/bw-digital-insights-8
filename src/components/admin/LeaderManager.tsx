@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Route, Routes, Link, useNavigate } from "react-router-dom";
+import { Route, Routes, Link, useNavigate, useParams } from "react-router-dom";
 import { 
   ChevronLeft, 
   Plus, 
@@ -12,7 +12,8 @@ import {
   Upload,
   Building,
   Briefcase,
-  User as UserIcon
+  User as UserIcon,
+  Image as ImageIcon
 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -30,48 +31,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { toast } from "sonner";
-
-// Mock data for demo purposes
-const mockLeaders = [
-  {
-    id: 1,
-    name: "Jennifer Miller",
-    title: "Chief Executive Officer",
-    company: "GreenTech Innovations",
-    avatar: "https://example.com/avatar1.jpg",
-    bio: "Jennifer Miller is a visionary leader with over 20 years of experience in sustainable technology.",
-    featured: true,
-    slug: "jennifer-miller"
-  },
-  {
-    id: 2,
-    name: "David Chen",
-    title: "Chief Technology Officer",
-    company: "QuantumData Systems",
-    avatar: "https://example.com/avatar2.jpg",
-    bio: "David Chen leads product innovation with expertise in AI and machine learning technologies.",
-    featured: true,
-    slug: "david-chen"
-  },
-  {
-    id: 3,
-    name: "Sarah Johnson",
-    title: "Chief Financial Officer",
-    company: "Global Finance Partners",
-    avatar: "https://example.com/avatar3.jpg",
-    bio: "Sarah Johnson brings financial expertise to the evolving digital marketplace.",
-    featured: false,
-    slug: "sarah-johnson"
-  }
-];
+import { useLeadershipProfiles, useCreateLeadership, useUpdateLeadership, useDeleteLeadership } from "@/hooks/useLeadership";
+import { useImageUpload } from "@/hooks/useImageUpload";
+import { slugify } from "@/lib/slugify";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   title: z.string().min(2, "Job title is required"),
   company: z.string().min(2, "Company name is required"),
   bio: z.string().min(10, "Bio must be at least 10 characters"),
-  featured: z.boolean().default(false)
+  featured: z.boolean().default(false),
+  linkedin_url: z.string().optional(),
+  twitter_url: z.string().optional(),
 });
 
 const LeaderManager = () => {
@@ -79,7 +50,7 @@ const LeaderManager = () => {
     <Routes>
       <Route path="/" element={<LeaderList />} />
       <Route path="/create" element={<LeaderForm />} />
-      <Route path="/edit/:id" element={<LeaderForm />} />
+      <Route path="/edit/:id" element={<LeaderForm isEditing />} />
     </Routes>
   );
 };
@@ -90,11 +61,14 @@ const LeaderList = () => {
   const [sortField, setSortField] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   
-  const filteredLeaders = mockLeaders
+  const { data: leaders = [], isLoading } = useLeadershipProfiles();
+  const deleteLeader = useDeleteLeadership();
+  
+  const filteredLeaders = leaders
     .filter(leader => 
       leader.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       leader.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      leader.company.toLowerCase().includes(searchTerm.toLowerCase())
+      (leader.company && leader.company.toLowerCase().includes(searchTerm.toLowerCase()))
     )
     .sort((a, b) => {
       const fieldA = a[sortField as keyof typeof a];
@@ -120,10 +94,15 @@ const LeaderList = () => {
     }
   };
 
-  const handleDelete = (id: number) => {
-    // In a real app, this would call an API to delete the leader profile
-    toast.success("Profile deleted successfully");
+  const handleDelete = (id: string) => {
+    if (confirm("Are you sure you want to delete this profile?")) {
+      deleteLeader.mutate(id);
+    }
   };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-64">Loading leadership profiles...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -187,9 +166,9 @@ const LeaderList = () => {
                     <td className="px-4 py-3">
                       <div className="flex items-center">
                         <div className="relative h-10 w-10 rounded-full bg-muted">
-                          {leader.avatar ? (
+                          {leader.image_url ? (
                             <img
-                              src={leader.avatar}
+                              src={leader.image_url}
                               alt={leader.name}
                               className="h-full w-full rounded-full object-cover"
                             />
@@ -232,6 +211,7 @@ const LeaderList = () => {
                           variant="ghost" 
                           size="icon"
                           onClick={() => handleDelete(leader.id)}
+                          disabled={deleteLeader.isPending}
                         >
                           <Trash className="h-4 w-4" />
                           <span className="sr-only">Delete</span>
@@ -255,10 +235,16 @@ const LeaderList = () => {
   );
 };
 
-const LeaderForm = () => {
+const LeaderForm = ({ isEditing = false }: { isEditing?: boolean }) => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [avatar, setAvatar] = useState<string | null>(null);
-  const [associatedArticles, setAssociatedArticles] = useState<string[]>([]);
+
+  const { data: leaders = [] } = useLeadershipProfiles();
+  const existingLeader = leaders.find(leader => leader.id === id);
+  const createLeader = useCreateLeadership();
+  const updateLeader = useUpdateLeadership();
+  const { uploadImage, uploading } = useImageUpload();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -268,30 +254,56 @@ const LeaderForm = () => {
       company: "",
       bio: "",
       featured: false,
+      linkedin_url: "",
+      twitter_url: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real app, this would call an API to save the leader profile
-    console.log(values);
-    toast.success("Profile saved successfully");
-    navigate("/admin/leadership");
-  }
+  // Set form values when editing
+  useState(() => {
+    if (isEditing && existingLeader) {
+      form.reset({
+        name: existingLeader.name,
+        title: existingLeader.title,
+        company: existingLeader.company || "",
+        bio: existingLeader.bio,
+        featured: existingLeader.featured || false,
+        linkedin_url: existingLeader.linkedin_url || "",
+        twitter_url: existingLeader.twitter_url || "",
+      });
+      setAvatar(existingLeader.image_url);
+    }
+  });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // In a real app, this would upload the image to a server
-    // Here we just simulate setting the image URL
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setAvatar(e.target.result.toString());
-          toast.success("Avatar uploaded");
-        }
-      };
-      reader.readAsDataURL(e.target.files[0]);
+      try {
+        const imageUrl = await uploadImage(e.target.files[0], "leadership");
+        setAvatar(imageUrl);
+      } catch (error) {
+        console.error("Failed to upload image:", error);
+      }
     }
   };
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    const slug = slugify(values.name);
+    const leaderData = {
+      ...values,
+      slug,
+      image_url: avatar,
+    };
+
+    if (isEditing && existingLeader) {
+      updateLeader.mutate({ id: existingLeader.id, ...leaderData }, {
+        onSuccess: () => navigate("/admin/leadership")
+      });
+    } else {
+      createLeader.mutate(leaderData, {
+        onSuccess: () => navigate("/admin/leadership")
+      });
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -300,14 +312,13 @@ const LeaderForm = () => {
           <ChevronLeft className="h-4 w-4" />
           <span>Back</span>
         </Button>
-        <h1 className="text-3xl font-bold">New Leadership Profile</h1>
+        <h1 className="text-3xl font-bold">{isEditing ? "Edit Leadership Profile" : "New Leadership Profile"}</h1>
       </div>
 
       <Tabs defaultValue="basic" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-3">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
           <TabsTrigger value="bio">Biography</TabsTrigger>
-          <TabsTrigger value="content">Related Content</TabsTrigger>
         </TabsList>
         
         <Form {...form}>
@@ -332,6 +343,7 @@ const LeaderForm = () => {
                     size="icon"
                     className="absolute bottom-0 right-0 h-8 w-8 rounded-full shadow"
                     onClick={() => document.getElementById('avatar-upload')?.click()}
+                    disabled={uploading}
                   >
                     <Upload className="h-4 w-4" />
                   </Button>
@@ -345,7 +357,9 @@ const LeaderForm = () => {
                 </div>
                 <div>
                   <h2 className="text-lg font-medium">Profile Photo</h2>
-                  <p className="text-sm text-muted-foreground">Upload a professional photo</p>
+                  <p className="text-sm text-muted-foreground">
+                    {uploading ? "Uploading..." : "Upload a professional photo"}
+                  </p>
                 </div>
               </div>
               
@@ -458,99 +472,36 @@ const LeaderForm = () => {
                 )}
               />
               
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium">Additional Information</h3>
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Social Links</h3>
                 
-                <div>
-                  <label className="text-sm font-medium leading-none mb-1 block">
-                    Education
-                  </label>
-                  <Input placeholder="MBA, Harvard Business School" />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="linkedin_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>LinkedIn Profile</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://linkedin.com/in/username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 
-                <div>
-                  <label className="text-sm font-medium leading-none mb-1 block">
-                    Areas of Expertise
-                  </label>
-                  <Input placeholder="Digital Transformation, Leadership, Innovation" />
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium leading-none mb-1 block">
-                    LinkedIn Profile
-                  </label>
-                  <Input placeholder="https://linkedin.com/in/username" />
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium leading-none mb-1 block">
-                    Twitter/X Handle
-                  </label>
-                  <Input placeholder="@username" />
-                </div>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="content" className="space-y-4">
-              <div>
-                <h2 className="text-lg font-medium">Related Content</h2>
-                <p className="text-sm text-muted-foreground">
-                  Connect articles and content authored by this leader.
-                </p>
-              </div>
-              
-              <div className="space-y-4 border rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-md font-medium">Associated Articles</h3>
-                  <Button type="button" variant="outline" size="sm">
-                    <Plus className="mr-1 h-4 w-4" />
-                    Add Article
-                  </Button>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="rounded-md border bg-muted/50 p-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">AI and Machine Learning Transforming Business Operations</h4>
-                        <p className="text-sm text-muted-foreground">April 12, 2025</p>
-                      </div>
-                      <Button type="button" variant="ghost" size="sm">
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="rounded-md border bg-muted/50 p-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium">Leadership Strategies for the Digital Age</h4>
-                        <p className="text-sm text-muted-foreground">March 5, 2025</p>
-                      </div>
-                      <Button type="button" variant="ghost" size="sm">
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="border rounded-lg p-4">
-                <h3 className="text-md font-medium mb-2">Interview Highlights</h3>
-                <div className="space-y-2">
-                  <div>
-                    <label className="text-sm font-medium leading-none mb-1 block">
-                      Key Quote
-                    </label>
-                    <Input placeholder='e.g. "Innovation is not just about technology..."' />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium leading-none mb-1 block">
-                      Featured Video URL
-                    </label>
-                    <Input placeholder="https://youtube.com/..." />
-                  </div>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="twitter_url"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Twitter/X Handle</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://twitter.com/username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </TabsContent>
             
@@ -562,7 +513,15 @@ const LeaderForm = () => {
               >
                 Cancel
               </Button>
-              <Button type="submit">Save Profile</Button>
+              <Button 
+                type="submit" 
+                disabled={createLeader.isPending || updateLeader.isPending}
+              >
+                {createLeader.isPending || updateLeader.isPending 
+                  ? "Saving..." 
+                  : isEditing ? "Update Profile" : "Save Profile"
+                }
+              </Button>
             </div>
           </form>
         </Form>
