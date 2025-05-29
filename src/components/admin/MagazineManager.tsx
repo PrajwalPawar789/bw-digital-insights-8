@@ -42,8 +42,9 @@ const MagazineManager = () => {
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [pdfUrl, setPdfUrl] = useState('');
   const [publishDate, setPublishDate] = useState('');
-  const [issueNumber, setIssueNumber] = useState<number | ''>('');
+  const [issueNumber, setIssueNumber] = useState<number | ''>('' as number | '');
   const [featured, setFeatured] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState<'image' | 'pdf' | null>(null);
 
   useEffect(() => {
     if (selectedMagazine) {
@@ -65,7 +66,7 @@ const MagazineManager = () => {
       setCoverImageUrl('');
       setPdfUrl('');
       setPublishDate('');
-      setIssueNumber('');
+      setIssueNumber('' as number | '');
       setFeatured(false);
     }
   }, [selectedMagazine]);
@@ -79,75 +80,108 @@ const MagazineManager = () => {
     setCoverImageUrl('');
     setPdfUrl('');
     setPublishDate('');
-    setIssueNumber('');
+    setIssueNumber('' as number | '');
     setFeatured(false);
+    setUploadingFile(null);
   };
 
   const handleCreateMagazine = async () => {
     if (!title || !description || !publishDate) {
-      toast.error('Please fill in all fields.');
+      toast.error('Please fill in all required fields (title, description, publish date).');
       return;
     }
 
-    const newMagazine = {
-      title,
-      slug: slug || slugify(title),
-      description,
-      cover_image_url: coverImageUrl,
-      pdf_url: pdfUrl,
-      publish_date: publishDate,
-      issue_number: issueNumber !== '' ? Number(issueNumber) : null,
-      featured,
-    };
+    try {
+      const newMagazine = {
+        title,
+        slug: slug || slugify(title),
+        description,
+        cover_image_url: coverImageUrl,
+        pdf_url: pdfUrl,
+        publish_date: publishDate,
+        issue_number: issueNumber !== '' ? Number(issueNumber) : null,
+        featured,
+      };
 
-    createMagazine(newMagazine);
-    setOpen(false);
-    resetForm();
-    refetch();
+      createMagazine(newMagazine);
+      setOpen(false);
+      resetForm();
+      refetch();
+    } catch (error) {
+      console.error('Error creating magazine:', error);
+      toast.error('Failed to create magazine');
+    }
   };
 
   const handleUpdateMagazine = async () => {
     if (!selectedMagazine?.id) return;
 
-    const updatedMagazine = {
-      id: selectedMagazine.id,
-      title,
-      slug: slug || slugify(title),
-      description,
-      cover_image_url: coverImageUrl,
-      pdf_url: pdfUrl,
-      publish_date: publishDate,
-      issue_number: issueNumber !== '' ? Number(issueNumber) : null,
-      featured,
-    };
+    if (!title || !description || !publishDate) {
+      toast.error('Please fill in all required fields (title, description, publish date).');
+      return;
+    }
 
-    updateMagazine(updatedMagazine);
-    setOpen(false);
-    resetForm();
-    refetch();
+    try {
+      const updatedMagazine = {
+        id: selectedMagazine.id,
+        title,
+        slug: slug || slugify(title),
+        description,
+        cover_image_url: coverImageUrl,
+        pdf_url: pdfUrl,
+        publish_date: publishDate,
+        issue_number: issueNumber !== '' ? Number(issueNumber) : null,
+        featured,
+      };
+
+      updateMagazine(updatedMagazine);
+      setOpen(false);
+      resetForm();
+      refetch();
+    } catch (error) {
+      console.error('Error updating magazine:', error);
+      toast.error('Failed to update magazine');
+    }
   };
 
   const handleDeleteMagazine = async (id: string) => {
-    deleteMagazine(id);
+    if (window.confirm("Are you sure you want to delete this magazine? This action cannot be undone.")) {
+      try {
+        deleteMagazine(id);
+      } catch (error) {
+        console.error('Error deleting magazine:', error);
+        toast.error('Failed to delete magazine');
+      }
+    }
   };
 
   const handleImageUpload = async (file: File) => {
     try {
+      setUploadingFile('image');
+      console.log('Uploading cover image:', file.name);
       const imageUrl = await uploadImage(file, "magazines");
       setCoverImageUrl(imageUrl);
       toast.success("Cover image uploaded successfully");
+      setUploadingFile(null);
     } catch (error) {
+      console.error('Error uploading image:', error);
       toast.error("Failed to upload image");
+      setUploadingFile(null);
     }
   };
 
   const handlePdfUpload = async (file: File) => {
     try {
+      setUploadingFile('pdf');
+      console.log('Uploading PDF:', file.name);
       const pdfUrl = await uploadPdf(file, "magazine-pdfs");
       setPdfUrl(pdfUrl);
       toast.success("PDF uploaded successfully");
+      setUploadingFile(null);
     } catch (error) {
+      console.error('Error uploading PDF:', error);
       toast.error("Failed to upload PDF");
+      setUploadingFile(null);
     }
   };
 
@@ -177,7 +211,7 @@ const MagazineManager = () => {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="title" className="text-right">
-                  Title
+                  Title *
                 </Label>
                 <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="col-span-3" />
               </div>
@@ -195,7 +229,7 @@ const MagazineManager = () => {
               </div>
               <div className="grid grid-cols-4 items-start gap-4">
                 <Label htmlFor="description" className="text-right mt-2">
-                  Description
+                  Description *
                 </Label>
                 <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3" />
               </div>
@@ -216,7 +250,7 @@ const MagazineManager = () => {
                     className="hidden" 
                   />
                   <Label htmlFor="coverImage" className="bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md px-3 py-2 text-sm cursor-pointer inline-block">
-                    {uploading ? 'Uploading...' : 'Upload Cover Image'}
+                    {uploadingFile === 'image' ? 'Uploading...' : 'Upload Cover Image'}
                   </Label>
                   {coverImageUrl && (
                     <div className="flex items-center gap-2">
@@ -244,7 +278,7 @@ const MagazineManager = () => {
                     className="hidden" 
                   />
                   <Label htmlFor="pdf" className="bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md px-3 py-2 text-sm cursor-pointer inline-block">
-                    {uploading ? 'Uploading...' : 'Upload PDF'}
+                    {uploadingFile === 'pdf' ? 'Uploading...' : 'Upload PDF'}
                   </Label>
                   {pdfUrl && (
                     <div className="flex items-center gap-2">
@@ -257,7 +291,7 @@ const MagazineManager = () => {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="publishDate" className="text-right">
-                  Publish Date
+                  Publish Date *
                 </Label>
                 <Input type="date" id="publishDate" value={publishDate} onChange={(e) => setPublishDate(e.target.value)} className="col-span-3" />
               </div>
@@ -269,7 +303,10 @@ const MagazineManager = () => {
                   type="number"
                   id="issueNumber"
                   value={issueNumber}
-                  onChange={(e) => setIssueNumber(e.target.value === '' ? '' : Number(e.target.value))}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setIssueNumber(val === '' ? '' : Number(val));
+                  }}
                   className="col-span-3"
                 />
               </div>
@@ -295,45 +332,61 @@ const MagazineManager = () => {
       </div>
       
       <div className="grid gap-6">
-        {magazines?.map((magazine) => (
-          <Card key={magazine.id} className="overflow-hidden">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                {magazine.title}
-                {magazine.featured && <Star className="h-5 w-5 text-yellow-500 fill-current" />}
-              </CardTitle>
-              <CardDescription>{magazine.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Published: {new Date(magazine.publish_date).toLocaleDateString()}</p>
-                {magazine.issue_number && <p className="text-sm text-gray-500">Issue: {magazine.issue_number}</p>}
-                <div className="flex gap-2 mt-2">
-                  {magazine.cover_image_url && (
-                    <a href={magazine.cover_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
-                      <ExternalLink className="w-4 h-4" />
-                      Cover Image
-                    </a>
-                  )}
-                  {magazine.pdf_url && (
-                    <a href={magazine.pdf_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
-                      <FileText className="w-4 h-4" />
-                      PDF
-                    </a>
-                  )}
+        {isLoading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-500 mx-auto mb-4"></div>
+            <p className="text-gray-500">Loading magazines...</p>
+          </div>
+        ) : magazines?.length === 0 ? (
+          <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-200">
+            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+            <h3 className="text-lg font-medium text-gray-900 mb-1">No Magazines Found</h3>
+            <p className="text-gray-500 mb-4">You haven't created any magazines yet.</p>
+            <Button onClick={() => setOpen(true)} variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-1" /> Create Your First Magazine
+            </Button>
+          </div>
+        ) : (
+          magazines?.map((magazine) => (
+            <Card key={magazine.id} className="overflow-hidden">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  {magazine.title}
+                  {magazine.featured && <Star className="h-5 w-5 text-yellow-500 fill-current" />}
+                </CardTitle>
+                <CardDescription>{magazine.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Published: {new Date(magazine.publish_date).toLocaleDateString()}</p>
+                  {magazine.issue_number && <p className="text-sm text-gray-500">Issue: {magazine.issue_number}</p>}
+                  <div className="flex gap-2 mt-2">
+                    {magazine.cover_image_url && (
+                      <a href={magazine.cover_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
+                        <ExternalLink className="w-4 h-4" />
+                        Cover Image
+                      </a>
+                    )}
+                    {magazine.pdf_url && (
+                      <a href={magazine.pdf_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
+                        <FileText className="w-4 h-4" />
+                        PDF
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="secondary" size="icon" onClick={() => setSelectedMagazine(magazine)}>
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-                <Button variant="destructive" size="icon" onClick={() => handleDeleteMagazine(magazine.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <div className="flex gap-2">
+                  <Button variant="secondary" size="icon" onClick={() => setSelectedMagazine(magazine)}>
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                  <Button variant="destructive" size="icon" onClick={() => handleDeleteMagazine(magazine.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );
