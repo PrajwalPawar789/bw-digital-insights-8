@@ -15,6 +15,14 @@ const MagazineDetail = () => {
   const { data: magazineArticles = [], isLoading: articlesLoading } = useMagazineArticles(magazine?.id || '');
   const [fullScreen, setFullScreen] = useState<boolean>(false);
 
+  // Add console logs for debugging
+  useEffect(() => {
+    console.log("Magazine slug:", slug);
+    console.log("Magazine data:", magazine);
+    console.log("Loading state:", isLoading);
+    console.log("Error state:", error);
+  }, [slug, magazine, isLoading, error]);
+
   const downloadPdf = async () => {
     if (!magazine?.pdf_url) {
       toast({
@@ -61,7 +69,7 @@ const MagazineDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="flex items-center space-x-2">
           <Loader2 className="h-8 w-8 animate-spin text-insightRed" />
           <span className="text-lg">Loading magazine...</span>
@@ -71,14 +79,18 @@ const MagazineDetail = () => {
   }
 
   if (error || !magazine) {
+    console.log("Magazine not found, redirecting...");
     return (
-      <div className="min-h-screen py-12">
+      <div className="min-h-screen py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl font-bold text-insightBlack mb-4">Magazine Not Found</h1>
-          <p className="mb-6">The magazine you're looking for doesn't exist.</p>
+          <p className="mb-6 text-gray-600">The magazine you're looking for doesn't exist or the URL is invalid.</p>
+          <div className="mb-6">
+            <p className="text-sm text-gray-500">Requested slug: <code className="bg-gray-100 px-2 py-1 rounded">{slug}</code></p>
+          </div>
           <Link
             to="/magazine"
-            className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md text-sm font-medium transition-colors"
           >
             <ChevronLeft className="mr-2 h-4 w-4" /> Back to Magazines
           </Link>
@@ -89,8 +101,8 @@ const MagazineDetail = () => {
 
   return (
     <div className={cn(
-      "min-h-screen py-12 transition-all duration-300",
-      fullScreen ? "fixed inset-0 z-50 bg-white p-4 overflow-auto" : ""
+      "min-h-screen py-12 transition-all duration-300 bg-white",
+      fullScreen ? "fixed inset-0 z-50 p-4 overflow-auto" : ""
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Magazine Header */}
