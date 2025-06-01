@@ -67,14 +67,6 @@ const Home = () => {
                 <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-insightBlack px-8 py-3">
                   <Link to="/leadership">Meet Our Leaders</Link>
                 </Button>
-                {featuredMagazines.length > 0 && (
-                  <Button variant="outline" size="lg" className="border-insightRed text-insightRed hover:bg-insightRed hover:text-white px-8 py-3">
-                    <Link to={`/magazine/${featuredMagazines[0].slug}`} className="flex items-center">
-                      Latest Issue
-                      <BookOpen className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
-                )}
               </div>
             </div>
             <div className="relative">
@@ -233,49 +225,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Enhanced Client Logos Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4">
-              Trusted by Industry Leaders
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join the world's most innovative companies who rely on our insights to drive growth and transformation.
-            </p>
-          </div>
-          
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white z-10 pointer-events-none"></div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center justify-items-center opacity-60 hover:opacity-80 transition-opacity duration-300">
-              {[
-                { name: "Microsoft", logo: "https://images.unsplash.com/photo-1633409361618-c73427e4e206?w=150&h=75&fit=crop" },
-                { name: "Google", logo: "https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=150&h=75&fit=crop" },
-                { name: "Apple", logo: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=150&h=75&fit=crop" },
-                { name: "Amazon", logo: "https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=150&h=75&fit=crop" },
-                { name: "Tesla", logo: "https://images.unsplash.com/photo-1617788138017-80ad40651399?w=150&h=75&fit=crop" },
-                { name: "Meta", logo: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=150&h=75&fit=crop" }
-              ].map((company, index) => (
-                <div key={index} className="group cursor-pointer">
-                  <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-6 group-hover:scale-105">
-                    <img 
-                      src={company.logo} 
-                      alt={company.name}
-                      className="h-12 w-auto mx-auto filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="text-center mt-12">
-            <p className="text-gray-500 text-sm">
-              And thousands more companies worldwide trust our executive insights
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Client Logos Section */}
+      <ClientLogos />
 
       {/* CTA Section */}
       <section className="py-16 bg-insightBlack text-white">
