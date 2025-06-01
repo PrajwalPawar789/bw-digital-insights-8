@@ -1,13 +1,12 @@
 
 import React from 'react';
-import { MinimalButton, ScrollMode, SpecialZoomLevel, Viewer, ViewMode } from '@react-pdf-viewer/core';
+import { MinimalButton, ScrollMode, SpecialZoomLevel, Viewer, ViewMode, Worker } from '@react-pdf-viewer/core';
 import { NextIcon, pageNavigationPlugin, PreviousIcon } from '@react-pdf-viewer/page-navigation';
 import { ThumbnailDirection, thumbnailPlugin } from '@react-pdf-viewer/thumbnail';
 import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import { toolbarPlugin } from '@react-pdf-viewer/toolbar';
 import { Download, Maximize, RefreshCw, Loader2, FileWarning } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Worker } from '@react-pdf-viewer/core';
 
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
@@ -51,6 +50,12 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
     setPdfError(null);
   };
 
+  const handleDocumentError = (error: any) => {
+    console.error("PDF loading error:", error);
+    setPdfError("Failed to load PDF document");
+    setLoading(false);
+  };
+
   const retryLoad = () => {
     setLoading(true);
     setPdfError(null);
@@ -67,19 +72,6 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
     // Reset states when fileUrl changes
     setLoading(true);
     setPdfError(null);
-
-    // Test if the file exists by making a HEAD request
-    fetch(fileUrl, { method: 'HEAD' })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`File not found: ${response.status}`);
-        }
-      })
-      .catch(error => {
-        console.error("PDF file check failed:", error);
-        setPdfError(`Failed to access PDF file: ${error.message}`);
-        setLoading(false);
-      });
   }, [fileUrl]);
 
   if (!fileUrl || fileUrl.trim() === '') {
@@ -116,7 +108,7 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
         </div>
       </div>
 
-      {/* PDF Viewer with Worker */}
+      {/* PDF Viewer */}
       <div className="relative">
         {loading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-90">
@@ -142,7 +134,7 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
             </div>
           </div>
         ) : (
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.12.0/build/pdf.worker.min.js">
+          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
             <div
               style={{
                 border: '1px solid rgba(0, 0, 0, .1)',
@@ -188,6 +180,7 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
                   viewMode={ViewMode.SinglePage}
                   plugins={[pageNavigationPluginInstance, thumbnailPluginInstance, zoomPluginInstance, toolbarPluginInstance]}
                   onDocumentLoad={handleDocumentLoad}
+                  onLoadError={handleDocumentError}
                   renderLoader={(percentages: number) => (
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center">
