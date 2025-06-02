@@ -7,6 +7,7 @@ interface HomepageSettings {
   latestMagazine: boolean;
   leadershipProfiles: boolean;
   pressReleases: boolean;
+  industryNews: boolean;
 }
 
 interface SiteSettings {
@@ -18,7 +19,7 @@ interface SiteSettings {
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
-  siteTitle: "BW Digital Insights",
+  siteTitle: "Insights Business Magazine",
   siteLogo: null,
   primaryColor: "#0f172a",
   analyticsCode: "",
@@ -27,6 +28,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     latestMagazine: true,
     leadershipProfiles: true,
     pressReleases: true,
+    industryNews: true,
   }
 };
 
