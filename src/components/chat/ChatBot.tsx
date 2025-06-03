@@ -95,7 +95,9 @@ const ChatBot = () => {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[480px] h-[700px] flex flex-col p-0 overflow-hidden rounded-2xl border-2 border-gray-200 shadow-2xl">
           <DialogHeader className="p-8 bg-gradient-to-r from-insightRed via-red-600 to-red-700 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"%3E%3Cpath d=\"M0 0h100v100H0z\" fill=\"none\"/%3E%3Cpath d=\"M0 0l100 100M100 0L0 100\" stroke=\"rgba(255,255,255,0.1)\" stroke-width=\"0.5\"/%3E%3C/svg%3E')] opacity-20"></div>
+            <div className="absolute inset-0 opacity-20">
+              <div className="w-full h-full bg-gradient-to-br from-white/10 to-transparent"></div>
+            </div>
             <DialogTitle className="text-white flex items-center gap-3 relative z-10">
               <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
                 <Bot className="h-6 w-6" />
