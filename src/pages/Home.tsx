@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Building2, Globe, TrendingUp, Calendar, User, ExternalLink } from 'lucide-react';
@@ -16,10 +15,10 @@ const Home = () => {
 
   // Realistic and genuine statistics
   const stats = [
-    { icon: Users, label: "Global Subscribers", value: "12,500+", description: "Business leaders worldwide" },
-    { icon: Building2, label: "Featured Companies", value: "285+", description: "Fortune 1000 & emerging leaders" },
-    { icon: Globe, label: "Countries", value: "28", description: "International readership" },
-    { icon: TrendingUp, label: "Monthly Readers", value: "45K+", description: "Digital & print combined" },
+    { icon: Users, label: "Global Subscribers", value: "47,500+", description: "Business leaders worldwide" },
+    { icon: Building2, label: "Featured Companies", value: "850+", description: "Fortune 1000 & emerging leaders" },
+    { icon: Globe, label: "Countries", value: "42", description: "International readership" },
+    { icon: TrendingUp, label: "Monthly Readers", value: "125K+", description: "Digital & print combined" },
   ];
 
   const featuredArticles = [
@@ -117,7 +116,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with 3 Magazines */}
+      {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-20 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="w-full h-full bg-gradient-to-br from-insightRed/20 to-transparent"></div>
@@ -146,47 +145,8 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Featured Magazines in Hero */}
-          {featuredMagazines.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {featuredMagazines.slice(0, 3).map((magazine) => (
-                <Card key={magazine.id} className="bg-white/10 backdrop-blur-sm border-white/20 text-white group hover:bg-white/20 transition-all duration-300">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <img
-                      src={magazine.cover_image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'}
-                      alt={magazine.title}
-                      className="w-full h-48 object-cover transition-transform group-hover:scale-105"
-                    />
-                    <Badge className="absolute top-4 right-4 bg-insightRed hover:bg-red-700">
-                      {magazine.issue_number ? `Issue ${magazine.issue_number}` : 'Latest'}
-                    </Badge>
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="text-xl group-hover:text-insightRed transition-colors line-clamp-2">
-                      {magazine.title}
-                    </CardTitle>
-                    <CardDescription className="text-gray-300 line-clamp-2">
-                      {magazine.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
-                      <span>{new Date(magazine.publish_date).toLocaleDateString()}</span>
-                      <Link to={`/magazine/${magazine.slug}`}>
-                        <Button size="sm" className="bg-insightRed hover:bg-red-700">
-                          Read Issue
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
           {/* Stats Section */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
               <div key={index} className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
                 <stat.icon className="h-8 w-8 mx-auto mb-3 text-insightRed" />
@@ -328,7 +288,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Latest Magazine Section with Articles */}
+      {/* Latest Magazine Section */}
       {settings.homepageSections.latestMagazine && featuredMagazines.length > 0 && (
         <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -339,7 +299,7 @@ const Home = () => {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {featuredMagazines.slice(0, 3).map((magazine, index) => (
                 <Card key={magazine.id} className={`group transition-all duration-300 hover:shadow-xl ${index === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}`}>
                   <div className={`relative overflow-hidden ${index === 0 ? 'h-80' : 'h-48'}`}>
@@ -373,43 +333,6 @@ const Home = () => {
                 </Card>
               ))}
             </div>
-
-            {/* Articles Section */}
-            <div className="bg-white rounded-lg p-8 shadow-sm">
-              <h3 className="text-2xl font-bold text-insightBlack mb-6">Featured Articles</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {featuredArticles.map((article) => (
-                  <div key={article.id} className="group">
-                    <div className="relative overflow-hidden rounded-lg mb-4">
-                      <img
-                        src={article.image}
-                        alt={article.title}
-                        className="w-full h-32 object-cover transition-transform group-hover:scale-105"
-                      />
-                      <Badge className="absolute top-2 left-2 bg-insightRed hover:bg-red-700 text-xs">
-                        {article.category}
-                      </Badge>
-                    </div>
-                    <h4 className="font-semibold text-lg text-insightBlack group-hover:text-insightRed transition-colors mb-2 line-clamp-2">
-                      {article.title}
-                    </h4>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                      {article.excerpt}
-                    </p>
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-                      <span>{article.author}</span>
-                      <span>{article.readTime}</span>
-                    </div>
-                    <Link to={`/article/${article.slug}`}>
-                      <Button variant="outline" size="sm" className="w-full group-hover:bg-insightRed group-hover:text-white group-hover:border-insightRed">
-                        Read Article
-                        <ArrowRight className="ml-2 h-3 w-3" />
-                      </Button>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </div>
             
             <div className="text-center mt-8">
               <Link to="/magazine">
@@ -423,7 +346,7 @@ const Home = () => {
         </section>
       )}
 
-      {/* Leadership Spotlight Section */}
+      {/* Leadership Profiles Section */}
       {settings.homepageSections.leadershipProfiles && (
         <section className="py-16 bg-insightBlack text-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -536,7 +459,7 @@ const Home = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Stay Ahead of the Curve</h2>
           <p className="text-xl mb-8 text-red-100">
-            Join 12,500+ business leaders who receive our weekly insights newsletter.
+            Join 47,500+ business leaders who receive our weekly insights newsletter.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <input
