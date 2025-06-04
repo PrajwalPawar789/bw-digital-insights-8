@@ -423,6 +423,38 @@ const Home = () => {
                 </Button>
               </Link>
             </div>
+
+            {/* Articles Section */}
+            <div className="mt-16 p-8 bg-white rounded-lg border border-gray-200">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-insightBlack mb-4">Featured Articles</h3>
+                <p className="text-gray-600">
+                  In-depth business analysis and strategic insights from our editorial team.
+                </p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {featuredArticles.slice(0, 3).map((article) => (
+                  <div key={article.id} className="border-b border-gray-200 pb-4 last:border-b-0">
+                    <h4 className="font-semibold text-insightBlack mb-2 line-clamp-2">{article.title}</h4>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{article.excerpt}</p>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>{article.category}</span>
+                      <span>{article.readTime}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="text-center mt-6">
+                <Link to="/articles">
+                  <Button variant="outline" size="sm">
+                    View All Articles
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
       )}
@@ -538,7 +570,7 @@ const Home = () => {
       {/* Enhanced Newsletter Subscription Section */}
       <section className="py-20 bg-gradient-to-r from-insightRed to-red-700 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <div className="w-full h-full bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.1\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+          <div className="w-full h-full bg-pattern"></div>
         </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Join the Business Intelligence Elite</h2>
