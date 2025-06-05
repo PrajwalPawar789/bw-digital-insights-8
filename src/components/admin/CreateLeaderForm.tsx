@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useCreateLeadership } from '@/hooks/useLeadership';
+import { useCreateLeader } from '@/hooks/useLeadership';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ interface CreateLeaderFormProps {
 }
 
 const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
-  const { mutate: createLeader, isPending } = useCreateLeadership();
+  const { mutate: createLeader, isPending } = useCreateLeader();
   const { uploadImage, uploading } = useImageUpload();
   
   const [name, setName] = useState('');
@@ -32,15 +32,25 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
   const [featured, setFeatured] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log('File selected:', file.name, file.type, file.size);
+      handleImageUpload(file);
+    }
+  };
+
   const handleImageUpload = async (file: File) => {
     try {
-      console.log('Starting image upload for leader...', file.name, file.type);
+      console.log('Starting image upload...', file.name, file.type);
       setSelectedFile(file);
       const url = await uploadImage(file, "leadership");
-      console.log('Leader image uploaded successfully:', url);
+      console.log('Image uploaded successfully:', url);
       setImageUrl(url);
+      toast.success('Image uploaded successfully');
     } catch (error) {
-      console.error('Error uploading leader image:', error);
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image');
       setSelectedFile(null);
     }
   };
@@ -73,13 +83,13 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
     console.log('Creating leader with data:', leaderData);
     createLeader(leaderData, {
       onSuccess: () => {
-        toast.success('Leadership profile created successfully');
+        toast.success('Leader profile created successfully');
         onOpenChange(false);
         resetForm();
       },
       onError: (error) => {
-        console.error('Failed to create leadership profile:', error);
-        toast.error('Failed to create leadership profile');
+        console.error('Failed to create leader:', error);
+        toast.error('Failed to create leader profile');
       }
     });
   };
@@ -101,9 +111,9 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Leadership Profile</DialogTitle>
+          <DialogTitle>Create New Leader Profile</DialogTitle>
           <DialogDescription>
-            Add a new leadership profile to your website.
+            Add a new leader profile to your website.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -114,7 +124,7 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Full name"
+                placeholder="Enter leader name"
                 required
               />
             </div>
@@ -136,7 +146,7 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g., CEO, CTO, Founder"
+                placeholder="CEO, Founder, etc."
                 required
               />
             </div>
@@ -152,13 +162,13 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
           </div>
 
           <div>
-            <Label htmlFor="bio">Biography *</Label>
+            <Label htmlFor="bio">Bio *</Label>
             <Textarea
               id="bio"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={6}
-              placeholder="Professional biography and achievements"
+              placeholder="Enter leader biography"
               required
             />
           </div>
@@ -170,21 +180,16 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
                 <div className="flex items-center gap-3">
                   <Input
                     type="file"
-                    id="image"
+                    id="image-upload"
                     accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        console.log('Leader image file selected:', file.name, file.type, file.size);
-                        handleImageUpload(file);
-                      }
-                    }}
+                    onChange={handleFileSelect}
                     className="hidden"
+                    disabled={uploading}
                   />
-                  <Label htmlFor="image" className="cursor-pointer">
+                  <Label htmlFor="image-upload" className="cursor-pointer w-full">
                     <Button type="button" variant="outline" disabled={uploading} className="w-full">
                       <Upload className="h-4 w-4 mr-2" />
-                      {uploading ? 'Uploading...' : 'Upload Profile Image'}
+                      {uploading ? 'Uploading...' : 'Upload Image'}
                     </Button>
                   </Label>
                 </div>
@@ -211,8 +216,8 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
                     </Button>
                   </div>
                   {imageUrl && (
-                    <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                      <img src={imageUrl} alt="Profile preview" className="w-full h-full object-cover" />
+                    <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+                      <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>
@@ -227,7 +232,7 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
                 id="linkedin"
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
-                placeholder="https://linkedin.com/in/username"
+                placeholder="https://linkedin.com/in/..."
               />
             </div>
             <div>
@@ -236,7 +241,7 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
                 id="twitter"
                 value={twitterUrl}
                 onChange={(e) => setTwitterUrl(e.target.value)}
-                placeholder="https://twitter.com/username"
+                placeholder="https://twitter.com/..."
               />
             </div>
           </div>
@@ -256,7 +261,7 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
               className="flex-1" 
               disabled={isPending || uploading}
             >
-              {isPending ? 'Creating...' : 'Create Profile'}
+              {isPending ? 'Creating...' : 'Create Leader'}
             </Button>
             <Button 
               type="button" 

@@ -34,6 +34,14 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
 
   const categories = ['Technology', 'Business', 'Leadership', 'Innovation', 'Strategy', 'Finance', 'Marketing'];
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log('File selected:', file.name, file.type, file.size);
+      handleImageUpload(file);
+    }
+  };
+
   const handleImageUpload = async (file: File) => {
     try {
       console.log('Starting image upload...', file.name, file.type);
@@ -41,8 +49,10 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
       const url = await uploadImage(file, "articles");
       console.log('Image uploaded successfully:', url);
       setImageUrl(url);
+      toast.success('Image uploaded successfully');
     } catch (error) {
       console.error('Error uploading image:', error);
+      toast.error('Failed to upload image');
       setSelectedFile(null);
     }
   };
@@ -187,18 +197,13 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
                 <div className="flex items-center gap-3">
                   <Input
                     type="file"
-                    id="image"
+                    id="image-upload"
                     accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        console.log('File selected:', file.name, file.type, file.size);
-                        handleImageUpload(file);
-                      }
-                    }}
+                    onChange={handleFileSelect}
                     className="hidden"
+                    disabled={uploading}
                   />
-                  <Label htmlFor="image" className="cursor-pointer">
+                  <Label htmlFor="image-upload" className="cursor-pointer w-full">
                     <Button type="button" variant="outline" disabled={uploading} className="w-full">
                       <Upload className="h-4 w-4 mr-2" />
                       {uploading ? 'Uploading...' : 'Upload Image'}
