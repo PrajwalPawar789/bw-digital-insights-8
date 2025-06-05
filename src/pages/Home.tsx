@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Building2, Globe, TrendingUp, Calendar, User, ExternalLink, Star, Award, Target, Zap, FileText } from 'lucide-react';
@@ -207,7 +206,7 @@ const Home = () => {
                         </div>
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1" />
-                          {article.read_time}
+                          5 min read
                         </div>
                       </div>
                       <Link to={`/article/${article.slug}`}>
