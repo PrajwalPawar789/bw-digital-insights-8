@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { useSettings } from '@/hooks/useSettings';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { settings } = useSettings();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -33,7 +35,7 @@ const Navbar = () => {
               </div>
               <div className="ml-4">
                 <span className="text-2xl font-bold text-insightBlack group-hover:text-insightRed transition-colors duration-300">
-                  Insights
+                  {settings.companyName}
                 </span>
                 <div className="text-sm font-semibold text-gray-600 -mt-1">BUSINESS MAGAZINE</div>
               </div>

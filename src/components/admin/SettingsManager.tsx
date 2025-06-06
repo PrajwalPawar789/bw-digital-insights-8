@@ -65,6 +65,10 @@ const SettingsManager = () => {
     saveSettings({ siteTitle: value });
   };
 
+  const handleCompanyNameChange = (value: string) => {
+    saveSettings({ companyName: value });
+  };
+
   const handlePrimaryColorChange = (value: string) => {
     saveSettings({ primaryColor: value });
   };
@@ -91,6 +95,16 @@ const SettingsManager = () => {
               value={settings.siteTitle}
               onChange={(e) => handleSiteTitleChange(e.target.value)}
               placeholder="Enter site title"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="company-name">Company Name</Label>
+            <Input
+              id="company-name"
+              value={settings.companyName}
+              onChange={(e) => handleCompanyNameChange(e.target.value)}
+              placeholder="Enter company name"
             />
           </div>
 

@@ -50,6 +50,21 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
     setSelectedFile(null);
   };
 
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log('Leader image file selected:', file.name, file.type, file.size);
+      handleImageUpload(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    const fileInput = document.getElementById('leader-image-input') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -170,23 +185,21 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
                 <div className="flex items-center gap-3">
                   <Input
                     type="file"
-                    id="image"
+                    id="leader-image-input"
                     accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        console.log('Leader image file selected:', file.name, file.type, file.size);
-                        handleImageUpload(file);
-                      }
-                    }}
+                    onChange={handleFileInputChange}
                     className="hidden"
                   />
-                  <Label htmlFor="image" className="cursor-pointer">
-                    <Button type="button" variant="outline" disabled={uploading} className="w-full">
-                      <Upload className="h-4 w-4 mr-2" />
-                      {uploading ? 'Uploading...' : 'Upload Profile Image'}
-                    </Button>
-                  </Label>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    disabled={uploading} 
+                    className="w-full"
+                    onClick={triggerFileInput}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {uploading ? 'Uploading...' : 'Upload Profile Image'}
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-2">

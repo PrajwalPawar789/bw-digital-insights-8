@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useUpdateArticle } from '@/hooks/useArticles';
+import { useImageUpload } from '@/hooks/useImageUpload';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Upload, X } from 'lucide-react';
 
 interface EditArticleFormProps {
   article: any;
@@ -17,6 +19,8 @@ interface EditArticleFormProps {
 
 const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) => {
   const updateArticle = useUpdateArticle();
+  const { uploadImage, uploading } = useImageUpload();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     title: article?.title || '',
     excerpt: article?.excerpt || '',
@@ -26,6 +30,39 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
     featured: article?.featured || false,
     image_url: article?.image_url || ''
   });
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      console.log('Starting image upload for article edit...', file.name, file.type);
+      setSelectedFile(file);
+      const url = await uploadImage(file, "articles");
+      console.log('Article image uploaded successfully:', url);
+      setFormData(prev => ({ ...prev, image_url: url }));
+    } catch (error) {
+      console.error('Error uploading article image:', error);
+      setSelectedFile(null);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData(prev => ({ ...prev, image_url: '' }));
+    setSelectedFile(null);
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log('Article edit image file selected:', file.name, file.type, file.size);
+      handleImageUpload(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    const fileInput = document.getElementById('edit-article-image-input') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,13 +150,70 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
           </div>
 
           <div>
-            <Label htmlFor="image_url">Image URL</Label>
-            <Input
-              id="image_url"
-              value={formData.image_url}
-              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-              placeholder="https://example.com/image.jpg"
-            />
+            <Label htmlFor="image_url">Image</Label>
+            <div className="space-y-3">
+              {!formData.image_url ? (
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="file"
+                    id="edit-article-image-input"
+                    accept="image/*"
+                    onChange={handleFileInputChange}
+                    className="hidden"
+                  />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    disabled={uploading} 
+                    className="w-full"
+                    onClick={triggerFileInput}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {uploading ? 'Uploading...' : 'Upload New Image'}
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <Upload className="h-6 w-6 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-green-800">
+                          {selectedFile ? 'New image uploaded' : 'Current image'}
+                        </p>
+                        <p className="text-xs text-green-600">{selectedFile?.name || 'Image ready'}</p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={removeImage}
+                      className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {formData.image_url && (
+                    <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+                      <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm"
+                    onClick={triggerFileInput}
+                    disabled={uploading}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {uploading ? 'Uploading...' : 'Change Image'}
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -135,8 +229,8 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={updateArticle.isPending}>
-              {updateArticle.isPending ? 'Updating...' : 'Update Article'}
+            <Button type="submit" disabled={updateArticle.isPending || uploading}>
+              {updateArticle.isPending || uploading ? 'Updating...' : 'Update Article'}
             </Button>
           </div>
         </form>

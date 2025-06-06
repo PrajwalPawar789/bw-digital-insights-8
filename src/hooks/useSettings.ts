@@ -12,6 +12,7 @@ interface HomepageSettings {
 
 interface SiteSettings {
   siteTitle: string;
+  companyName: string;
   siteLogo: string | null;
   primaryColor: string;
   analyticsCode: string;
@@ -20,6 +21,7 @@ interface SiteSettings {
 
 const DEFAULT_SETTINGS: SiteSettings = {
   siteTitle: "Insights Business Magazine",
+  companyName: "Insights Business Magazine",
   siteLogo: null,
   primaryColor: "#0f172a",
   analyticsCode: "",
