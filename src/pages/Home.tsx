@@ -41,20 +41,10 @@ const Home = () => {
   useEffect(() => {
     // Use Supabase data if available, otherwise fallback to static data
     if (articles.length > 0) {
-      // Map Supabase articles to match the expected interface
-      const mappedArticles = articles.map(article => ({
-        ...article,
-        image: article.image_url || article.image || ''
-      }));
-      setFeaturedArticles(mappedArticles.slice(0, 6));
+      setFeaturedArticles(articles.slice(0, 6));
     }
     if (leaders.length > 0) {
-      // Map Supabase leaders to match the expected interface
-      const mappedLeaders = leaders.map(leader => ({
-        ...leader,
-        image: leader.image_url || leader.image || ''
-      }));
-      setFeaturedLeaders(mappedLeaders.slice(0, 3));
+      setFeaturedLeaders(leaders.slice(0, 3));
     }
   }, [articles, leaders]);
 
