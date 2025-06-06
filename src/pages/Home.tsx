@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -22,16 +23,16 @@ import { magazineData } from '../data/magazineData';
 import { leadershipData } from '../data/leadershipData';
 import { pressReleaseData } from '../data/pressReleaseData';
 import { useArticles } from '@/hooks/useArticles';
-import { usePressReleases } from '@/hooks/usePressReleases';
-import { useLeadership } from '@/hooks/useLeadership';
+import { useFeaturedPressReleases } from '@/hooks/usePressReleases';
+import { useFeaturedLeadership } from '@/hooks/useLeadership';
 import { useSettings } from '@/hooks/useSettings';
 import { formatDistanceToNow } from 'date-fns';
 
 const Home = () => {
   const { settings } = useSettings();
   const { data: articles = [] } = useArticles();
-  const { data: pressReleases = [] } = usePressReleases();
-  const { data: leaders = [] } = useLeadership();
+  const { data: pressReleases = [] } = useFeaturedPressReleases();
+  const { data: leaders = [] } = useFeaturedLeadership();
 
   const [featuredArticles, setFeaturedArticles] = useState(newsData.slice(0, 6));
   const [featuredMagazine, setFeaturedMagazine] = useState(magazineData[0]);
@@ -40,10 +41,20 @@ const Home = () => {
   useEffect(() => {
     // Use Supabase data if available, otherwise fallback to static data
     if (articles.length > 0) {
-      setFeaturedArticles(articles.slice(0, 6));
+      // Map Supabase articles to match the expected interface
+      const mappedArticles = articles.map(article => ({
+        ...article,
+        image: article.image_url || article.image || ''
+      }));
+      setFeaturedArticles(mappedArticles.slice(0, 6));
     }
     if (leaders.length > 0) {
-      setFeaturedLeaders(leaders.slice(0, 3));
+      // Map Supabase leaders to match the expected interface
+      const mappedLeaders = leaders.map(leader => ({
+        ...leader,
+        image: leader.image_url || leader.image || ''
+      }));
+      setFeaturedLeaders(mappedLeaders.slice(0, 3));
     }
   }, [articles, leaders]);
 
@@ -265,7 +276,7 @@ const Home = () => {
               <div className="grid md:grid-cols-2 gap-0">
                 <div className="relative h-96 md:h-auto">
                   <img
-                    src={featuredMagazine?.cover_image || featuredMagazine?.coverImage}
+                    src={featuredMagazine?.coverImage}
                     alt={featuredMagazine?.title}
                     className="w-full h-full object-cover"
                   />
@@ -282,7 +293,7 @@ const Home = () => {
                   </p>
                   <div className="flex items-center text-sm text-gray-500 mb-6">
                     <Calendar className="h-4 w-4 mr-2" />
-                    <span>{featuredMagazine?.publish_date || featuredMagazine?.publishDate}</span>
+                    <span>{featuredMagazine?.publishDate}</span>
                   </div>
                   <div className="flex gap-4">
                     <Button className="bg-insightRed hover:bg-red-700 text-white">
