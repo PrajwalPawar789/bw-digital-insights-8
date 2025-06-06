@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -41,10 +40,25 @@ const Home = () => {
   useEffect(() => {
     // Use Supabase data if available, otherwise fallback to static data
     if (articles.length > 0) {
-      setFeaturedArticles(articles.slice(0, 6));
+      // Map Supabase articles to match the expected interface
+      const mappedArticles = articles.map(article => ({
+        ...article,
+        id: parseInt(article.id) || 0, // Convert string ID to number
+        image: article.image_url || '', // Map image_url to image
+        date: article.date || new Date().toISOString().split('T')[0]
+      }));
+      setFeaturedArticles(mappedArticles.slice(0, 6));
     }
     if (leaders.length > 0) {
-      setFeaturedLeaders(leaders.slice(0, 3));
+      // Map Supabase leaders to match the expected interface
+      const mappedLeaders = leaders.map(leader => ({
+        ...leader,
+        id: parseInt(leader.id) || 0, // Convert string ID to number
+        image: leader.image_url || '', // Map image_url to image
+        expertise: leader.title || '', // Use title as expertise fallback
+        position: leader.title || ''
+      }));
+      setFeaturedLeaders(mappedLeaders.slice(0, 3));
     }
   }, [articles, leaders]);
 
@@ -131,7 +145,7 @@ const Home = () => {
                 <Card key={article.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
                   <div className="relative overflow-hidden aspect-video">
                     <img
-                      src={article.image_url || article.image}
+                      src={article.image || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=400&q=80'}
                       alt={article.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
@@ -192,7 +206,7 @@ const Home = () => {
                     <div className="relative">
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
-                          src={leader.image_url || leader.image}
+                          src={leader.image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80'}
                           alt={leader.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         />
