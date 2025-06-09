@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MinimalButton, ScrollMode, SpecialZoomLevel, Viewer, ViewMode, Worker } from '@react-pdf-viewer/core';
 import { NextIcon, pageNavigationPlugin, PreviousIcon } from '@react-pdf-viewer/page-navigation';
@@ -80,6 +81,9 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
           {fullScreen ? 'Reading Mode' : 'Magazine Preview'}
         </h2>
         <div className="flex space-x-2">
+          <Button onClick={onDownload} variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-1" /> Download
+          </Button>
           {onFullScreen && (
             <Button onClick={onFullScreen} variant="outline" size="sm">
               <Maximize className="h-4 w-4" />

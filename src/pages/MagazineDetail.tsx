@@ -1,8 +1,8 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useMagazineBySlug } from '@/hooks/useMagazines';
 import { useMagazineArticles } from '@/hooks/useMagazineArticles';
-import { useArticles } from '@/hooks/useArticles';
 import { ChevronLeft, Download, Loader2, BookOpen, ArrowRight } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,7 @@ const MagazineDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: magazine, isLoading, error } = useMagazineBySlug(slug || '');
   const { data: magazineArticles = [], isLoading: articlesLoading } = useMagazineArticles(magazine?.id || '');
-  const { data: allArticles = [] } = useArticles();
   const [fullScreen, setFullScreen] = useState<boolean>(false);
-  const [featuredArticle, setFeaturedArticle] = useState<any>(null);
-  const [relatedArticles, setRelatedArticles] = useState<any[]>([]);
 
   // Add console logs for debugging
   useEffect(() => {
@@ -25,27 +22,6 @@ const MagazineDetail = () => {
     console.log("Loading state:", isLoading);
     console.log("Error state:", error);
   }, [slug, magazine, isLoading, error]);
-
-  useEffect(() => {
-    if (magazine && allArticles.length > 0) {
-      // Get featured article if exists
-      if (magazine.featured_article_id) {
-        const featured = allArticles.find(article => article.id === magazine.featured_article_id);
-        setFeaturedArticle(featured || null);
-      }
-
-      // Get related articles from the same category as magazine articles
-      const magazineCategories = magazineArticles.map(ma => ma.articles.category);
-      const related = allArticles
-        .filter(article => 
-          !magazineArticles.some(ma => ma.articles.id === article.id) && // Not already in magazine
-          (!magazine.featured_article_id || article.id !== magazine.featured_article_id) && // Not the featured article
-          magazineCategories.includes(article.category) // Same category as magazine articles
-        )
-        .slice(0, 6);
-      setRelatedArticles(related);
-    }
-  }, [magazine, allArticles, magazineArticles]);
 
   const downloadPdf = async () => {
     if (!magazine?.pdf_url) {
@@ -191,44 +167,10 @@ const MagazineDetail = () => {
               </div>
             </div>
 
-            {/* Featured Article Section */}
-            {featuredArticle && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-insightBlack mb-6">Featured Article</h2>
-                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-                  <div className="md:flex">
-                    <div className="md:w-1/3">
-                      <img
-                        src={featuredArticle.image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
-                        alt={featuredArticle.title}
-                        className="w-full h-48 md:h-full object-cover"
-                      />
-                    </div>
-                    <div className="md:w-2/3 p-6">
-                      <span className="inline-block px-3 py-1 text-sm font-semibold bg-insightRed text-white rounded-md mb-3">
-                        Featured
-                      </span>
-                      <h3 className="text-xl font-bold mb-3">{featuredArticle.title}</h3>
-                      <p className="text-gray-600 mb-4">{featuredArticle.excerpt}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">By {featuredArticle.author}</span>
-                        <Link
-                          to={`/article/${featuredArticle.slug}`}
-                          className="text-insightRed hover:text-insightBlack font-medium flex items-center"
-                        >
-                          Read Full Article <ArrowRight className="ml-1 h-4 w-4" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Magazine Articles Section */}
             {!articlesLoading && magazineArticles.length > 0 && (
               <div className="mb-12">
-                <h2 className="text-2xl font-bold text-insightBlack mb-6">Articles in This Issue</h2>
+                <h2 className="text-2xl font-bold text-insightBlack mb-6">Featured Articles in This Issue</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {magazineArticles.map((magazineArticle) => (
                     <div key={magazineArticle.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -256,40 +198,6 @@ const MagazineDetail = () => {
                           <span className="text-xs text-gray-500">By {magazineArticle.articles.author}</span>
                           <Link
                             to={`/article/${magazineArticle.articles.slug}`}
-                            className="text-insightRed hover:text-insightBlack font-medium text-sm flex items-center"
-                          >
-                            Read Article <ArrowRight className="ml-1 h-3 w-3" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Related Articles Section */}
-            {relatedArticles.length > 0 && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-insightBlack mb-6">Related Articles</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedArticles.map((article) => (
-                    <div key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                      <div className="aspect-video bg-gray-200 overflow-hidden">
-                        <img
-                          src={article.image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
-                          alt={article.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <span className="text-xs font-medium text-gray-500 mb-2 block">{article.category}</span>
-                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">{article.title}</h3>
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{article.excerpt}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">By {article.author}</span>
-                          <Link
-                            to={`/article/${article.slug}`}
                             className="text-insightRed hover:text-insightBlack font-medium text-sm flex items-center"
                           >
                             Read Article <ArrowRight className="ml-1 h-3 w-3" />
@@ -336,8 +244,14 @@ const MagazineDetail = () => {
                   </div>
                 </div>
                 <div className="flex flex-col justify-center">
-                  <h3 className="text-lg font-semibold mb-4">Online Reading</h3>
+                  <h3 className="text-lg font-semibold mb-4">Download Options</h3>
                   <div className="space-y-3">
+                    <Button
+                      onClick={downloadPdf}
+                      className="inline-flex items-center justify-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md font-medium transition-colors w-full"
+                    >
+                      <Download className="mr-2 h-5 w-5" /> Download Full PDF
+                    </Button>
                     <Button
                       onClick={() => window.print()}
                       variant="outline"

@@ -180,7 +180,6 @@ export type Database = {
           created_at: string | null
           description: string | null
           featured: boolean | null
-          featured_article_id: string | null
           id: string
           issue_number: number | null
           pdf_url: string | null
@@ -194,7 +193,6 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           featured?: boolean | null
-          featured_article_id?: string | null
           id?: string
           issue_number?: number | null
           pdf_url?: string | null
@@ -208,7 +206,6 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           featured?: boolean | null
-          featured_article_id?: string | null
           id?: string
           issue_number?: number | null
           pdf_url?: string | null
@@ -217,15 +214,7 @@ export type Database = {
           title?: string
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "magazines_featured_article_id_fkey"
-            columns: ["featured_article_id"]
-            isOneToOne: false
-            referencedRelation: "articles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       press_releases: {
         Row: {
@@ -266,33 +255,6 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string | null
-        }
-        Relationships: []
-      }
-      settings: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string
-          key: string
-          updated_at: string | null
-          value: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          key: string
-          updated_at?: string | null
-          value?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          key?: string
-          updated_at?: string | null
-          value?: string | null
         }
         Relationships: []
       }

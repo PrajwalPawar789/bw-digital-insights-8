@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useMagazines, useCreateMagazine, useUpdateMagazine, useDeleteMagazine } from '@/hooks/useMagazines';
 import { useImageUpload } from '@/hooks/useImageUpload';
@@ -12,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { Edit2, Trash2, Plus, Upload, FileText, Calendar, Hash, Star, ExternalLink } from 'lucide-react';
 import { slugify } from '@/lib/slugify';
-import { useArticles } from '@/hooks/useArticles';
 
 interface Magazine {
   id: string;
@@ -24,12 +24,10 @@ interface Magazine {
   publish_date: string;
   issue_number: number;
   featured: boolean;
-  featured_article_id: string | null;
 }
 
 const MagazineManager = () => {
   const { data: magazines, isLoading, refetch } = useMagazines();
-  const { data: articles } = useArticles();
   const { mutate: createMagazine } = useCreateMagazine();
   const { mutate: updateMagazine } = useUpdateMagazine();
   const { mutate: deleteMagazine } = useDeleteMagazine();
@@ -47,7 +45,6 @@ const MagazineManager = () => {
   const [issueNumber, setIssueNumber] = useState<number | ''>('' as number | '');
   const [featured, setFeatured] = useState(false);
   const [uploadingFile, setUploadingFile] = useState<'image' | 'pdf' | null>(null);
-  const [featuredArticleId, setFeaturedArticleId] = useState<string>('');
 
   useEffect(() => {
     if (selectedMagazine) {
@@ -60,7 +57,6 @@ const MagazineManager = () => {
       setPublishDate(selectedMagazine.publish_date);
       setIssueNumber(selectedMagazine.issue_number);
       setFeatured(selectedMagazine.featured);
-      setFeaturedArticleId(selectedMagazine.featured_article_id || '');
       setOpen(true);
     } else {
       setEditMode(false);
@@ -72,7 +68,6 @@ const MagazineManager = () => {
       setPublishDate('');
       setIssueNumber('' as number | '');
       setFeatured(false);
-      setFeaturedArticleId('');
     }
   }, [selectedMagazine]);
 
@@ -87,7 +82,6 @@ const MagazineManager = () => {
     setPublishDate('');
     setIssueNumber('' as number | '');
     setFeatured(false);
-    setFeaturedArticleId('');
     setUploadingFile(null);
   };
 
@@ -107,7 +101,6 @@ const MagazineManager = () => {
         publish_date: publishDate,
         issue_number: issueNumber !== '' ? Number(issueNumber) : null,
         featured,
-        featured_article_id: featuredArticleId || null,
       };
 
       createMagazine(newMagazine);
@@ -139,7 +132,6 @@ const MagazineManager = () => {
         publish_date: publishDate,
         issue_number: issueNumber !== '' ? Number(issueNumber) : null,
         featured,
-        featured_article_id: featuredArticleId || null,
       };
 
       updateMagazine(updatedMagazine);
@@ -325,24 +317,6 @@ const MagazineManager = () => {
                 <div className="col-span-3 flex items-center">
                   <Switch id="featured" checked={featured} onCheckedChange={(checked) => setFeatured(checked)} />
                 </div>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="featuredArticle" className="text-right">
-                  Featured Article
-                </Label>
-                <Select value={featuredArticleId} onValueChange={setFeaturedArticleId}>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select featured article (optional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">No featured article</SelectItem>
-                    {articles?.map((article) => (
-                      <SelectItem key={article.id} value={article.id}>
-                        {article.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             <div className="flex gap-2">
