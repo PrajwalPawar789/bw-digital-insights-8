@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, Building2, Globe, TrendingUp, Calendar, User, ExternalLink, Star, Award, Target, Zap, FileText, Crown, Sparkles, ChevronRight, Play, BookOpen, Trophy } from 'lucide-react';
@@ -131,17 +130,17 @@ const Home = () => {
                 ))}
               </div>
 
-              {/* CTA Buttons */}
+              {/* CTA Buttons - Removed hover effects */}
               <div className="flex flex-col sm:flex-row gap-4 animate-fade-in delay-700">
                 <Link to="/magazine">
-                  <Button size="lg" className="bg-gradient-to-r from-insightRed to-red-600 hover:from-red-600 hover:to-red-700 text-white px-8 py-4 text-lg shadow-2xl transform hover:scale-105 transition-all duration-300">
+                  <Button size="lg" className="bg-gradient-to-r from-insightRed to-red-600 text-white px-8 py-4 text-lg shadow-2xl transition-all duration-300">
                     <Crown className="w-5 h-5 mr-2" />
                     Join Elite Circle - $29/month
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link to="/about">
-                  <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-insightBlack px-8 py-4 text-lg transform hover:scale-105 transition-all duration-300">
+                  <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-insightBlack px-8 py-4 text-lg transition-all duration-300">
                     <Play className="w-5 h-5 mr-2" />
                     Watch Success Stories
                   </Button>
@@ -152,7 +151,7 @@ const Home = () => {
             {/* Hero Featured Content */}
             <div className="lg:col-span-5 space-y-6">
               {!articlesLoading && featuredArticles?.[0] && (
-                <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/15 transition-all duration-500 transform hover:scale-105">
+                <Card className="bg-white/10 backdrop-blur-md border-white/20 text-white transition-all duration-500">
                   <div className="relative">
                     <img 
                       src={featuredArticles[0].image_url || 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600'} 
@@ -183,7 +182,7 @@ const Home = () => {
           {/* Social Proof Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/15 transition-all duration-300 group">
+              <div key={index} className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 transition-all duration-300 group">
                 <stat.icon className="h-8 w-8 mx-auto mb-3 text-insightRed group-hover:scale-110 transition-transform duration-300" />
                 <div className="text-3xl font-bold mb-1">{stat.value}</div>
                 <div className="text-sm font-medium mb-1">{stat.label}</div>
@@ -195,67 +194,69 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Breaking News Section */}
-      <section className="wpo-breacking-news section-padding bg-gradient-to-r from-insightRed to-red-700">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="row">
-            <div className="b-title mb-6">
-              <span className="text-white text-2xl font-bold flex items-center">
-                <Badge className="bg-white text-insightRed mr-4 font-bold px-4 py-2">BREAKING</Badge>
-                Executive Intelligence Updates
-              </span>
-            </div>
-            <div className="wpo-breacking-wrap">
-              <Slider {...breakingNewsSettings}>
-                {!articlesLoading && featuredArticles.slice(0, 6).map((article, index) => (
-                  <div className="wpo-breacking-slide px-2" key={article.id}>
-                    <div className="wpo-breacking-item bg-white/10 backdrop-blur-md rounded-lg overflow-hidden hover:bg-white/20 transition-all duration-300 cursor-pointer group">
-                      <div className="wpo-breacking-img relative h-40 overflow-hidden">
-                        <img 
-                          src={article.image_url || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400'} 
-                          alt={article.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <Badge className="absolute top-2 left-2 bg-yellow-500 text-black text-xs">
-                          {article.category}
-                        </Badge>
-                      </div>
-                      <div className="wpo-breacking-text p-4 text-white">
-                        <span className="text-yellow-300 text-sm font-medium flex items-center mb-2">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          {formatDistanceToNow(new Date(article.date), { addSuffix: true })}
-                        </span>
-                        <h3 className="group-hover:text-yellow-300 transition-colors duration-200 font-semibold line-clamp-2">
-                          <Link 
-                            to={`/article/${article.slug}`}
-                            onClick={() => window.scrollTo(0, 0)}
-                          >
-                            {article.title}
-                          </Link>
-                        </h3>
-                        <p className="text-gray-300 text-sm mt-2 line-clamp-2">{article.excerpt}</p>
-                        <div className="flex items-center justify-between mt-3">
-                          <span className="text-xs text-gray-400 flex items-center">
-                            <User className="w-3 h-3 mr-1" />
-                            {article.author}
+      {/* Breaking News Section - Only show if enabled */}
+      {settings.breakingNewsEnabled && (
+        <section className="wpo-breacking-news section-padding bg-gradient-to-r from-insightRed to-red-700">
+          <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="row">
+              <div className="b-title mb-6">
+                <span className="text-white text-2xl font-bold flex items-center">
+                  <Badge className="bg-white text-insightRed mr-4 font-bold px-4 py-2">BREAKING</Badge>
+                  Executive Intelligence Updates
+                </span>
+              </div>
+              <div className="wpo-breacking-wrap">
+                <Slider {...breakingNewsSettings}>
+                  {!articlesLoading && featuredArticles.slice(0, 6).map((article, index) => (
+                    <div className="wpo-breacking-slide px-2" key={article.id}>
+                      <div className="wpo-breacking-item bg-white/10 backdrop-blur-md rounded-lg overflow-hidden hover:bg-white/20 transition-all duration-300 cursor-pointer group">
+                        <div className="wpo-breacking-img relative h-40 overflow-hidden">
+                          <img 
+                            src={article.image_url || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400'} 
+                            alt={article.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                          <Badge className="absolute top-2 left-2 bg-yellow-500 text-black text-xs">
+                            {article.category}
+                          </Badge>
+                        </div>
+                        <div className="wpo-breacking-text p-4 text-white">
+                          <span className="text-yellow-300 text-sm font-medium flex items-center mb-2">
+                            <Calendar className="w-3 h-3 mr-1" />
+                            {formatDistanceToNow(new Date(article.date), { addSuffix: true })}
                           </span>
-                          <Link 
-                            to={`/article/${article.slug}`}
-                            className="text-yellow-300 text-xs hover:text-white transition-colors flex items-center"
-                          >
-                            Read More <ArrowRight className="w-3 h-3 ml-1" />
-                          </Link>
+                          <h3 className="group-hover:text-yellow-300 transition-colors duration-200 font-semibold line-clamp-2">
+                            <Link 
+                              to={`/article/${article.slug}`}
+                              onClick={() => window.scrollTo(0, 0)}
+                            >
+                              {article.title}
+                            </Link>
+                          </h3>
+                          <p className="text-gray-300 text-sm mt-2 line-clamp-2">{article.excerpt}</p>
+                          <div className="flex items-center justify-between mt-3">
+                            <span className="text-xs text-gray-400 flex items-center">
+                              <User className="w-3 h-3 mr-1" />
+                              {article.author}
+                            </span>
+                            <Link 
+                              to={`/article/${article.slug}`}
+                              className="text-yellow-300 text-xs hover:text-white transition-colors flex items-center"
+                            >
+                              Read More <ArrowRight className="w-3 h-3 ml-1" />
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </Slider>
+                  ))}
+                </Slider>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Today's Top Highlights */}
       {settings.homepageSections?.featuredArticles && (
@@ -305,10 +306,10 @@ const Home = () => {
                       )}
                     </div>
                     <CardHeader>
-                      <CardTitle className="text-xl group-hover:text-insightRed transition-colors line-clamp-2">
+                      <CardTitle className="text-xl group-hover:text-yellow-400 transition-colors line-clamp-2">
                         {article.title}
                       </CardTitle>
-                      <CardDescription className="line-clamp-3">
+                      <CardDescription className="text-gray-300 line-clamp-3">
                         {article.excerpt}
                       </CardDescription>
                     </CardHeader>

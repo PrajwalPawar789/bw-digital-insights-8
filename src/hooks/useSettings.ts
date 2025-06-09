@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { useDatabaseSettings } from './useDatabaseSettings';
 
 interface HomepageSettings {
   featuredArticles: boolean;
@@ -17,6 +18,9 @@ interface SiteSettings {
   primaryColor: string;
   analyticsCode: string;
   homepageSections: HomepageSettings;
+  breakingNewsEnabled: boolean;
+  breakingNewsTitle: string;
+  breakingNewsSubtitle: string;
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -31,16 +35,29 @@ const DEFAULT_SETTINGS: SiteSettings = {
     leadershipProfiles: true,
     pressReleases: true,
     industryNews: true,
-  }
+  },
+  breakingNewsEnabled: true,
+  breakingNewsTitle: "Breaking Business News",
+  breakingNewsSubtitle: "Latest updates from the business world"
 };
 
 export const useSettings = () => {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(false);
+  const { data: dbSettings, isLoading: dbLoading } = useDatabaseSettings();
 
   useEffect(() => {
-    loadSettings();
-  }, []);
+    if (dbSettings) {
+      const updatedSettings = {
+        ...DEFAULT_SETTINGS,
+        companyName: dbSettings.company_name || DEFAULT_SETTINGS.companyName,
+        breakingNewsEnabled: dbSettings.breaking_news_enabled === 'true',
+        breakingNewsTitle: dbSettings.breaking_news_title || DEFAULT_SETTINGS.breakingNewsTitle,
+        breakingNewsSubtitle: dbSettings.breaking_news_subtitle || DEFAULT_SETTINGS.breakingNewsSubtitle,
+      };
+      setSettings(updatedSettings);
+    }
+  }, [dbSettings]);
 
   const loadSettings = () => {
     try {
@@ -88,7 +105,7 @@ export const useSettings = () => {
 
   return {
     settings,
-    loading,
+    loading: loading || dbLoading,
     saveSettings,
     updateHomepageSection,
     resetSettings,
