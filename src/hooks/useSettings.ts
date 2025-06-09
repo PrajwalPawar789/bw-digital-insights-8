@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -15,6 +16,9 @@ interface SiteSettings {
   siteLogo: string | null;
   primaryColor: string;
   analyticsCode: string;
+  breakingNewsEnabled: boolean;
+  breakingNewsTitle: string;
+  breakingNewsSubtitle: string;
   homepageSections: HomepageSettings;
 }
 
@@ -24,6 +28,9 @@ const DEFAULT_SETTINGS: SiteSettings = {
   siteLogo: null,
   primaryColor: "#0f172a",
   analyticsCode: "",
+  breakingNewsEnabled: true,
+  breakingNewsTitle: "Breaking Business News",
+  breakingNewsSubtitle: "Latest updates from the business world",
   homepageSections: {
     featuredArticles: true,
     latestMagazine: true,

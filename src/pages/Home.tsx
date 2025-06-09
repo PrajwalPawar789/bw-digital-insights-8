@@ -1,20 +1,27 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useArticles } from '@/hooks/useArticles';
 import { useFeaturedMagazines } from '@/hooks/useMagazines';
-import { useLeadership } from '@/hooks/useLeadership';
-import { useSettings } from '@/hooks/useSettings';
+import { useFeaturedLeadership } from '@/hooks/useLeadership';
+import { useDatabaseSettings } from '@/hooks/useDatabaseSettings';
 
 const Home = () => {
   const { data: articles, isLoading: articlesLoading } = useArticles();
   const { data: featuredMagazines, isLoading: magazinesLoading } = useFeaturedMagazines();
-  const { data: leadership, isLoading: leadershipLoading } = useLeadership();
-  const { settings } = useSettings();
+  const { data: leadership, isLoading: leadershipLoading } = useFeaturedLeadership();
+  const { data: dbSettings, isLoading: settingsLoading } = useDatabaseSettings();
 
   const featuredArticles = articles?.filter(article => article.featured) || [];
   const breakingNewsArticles = articles?.slice(0, 4) || [];
 
-  if (articlesLoading || magazinesLoading || leadershipLoading) {
+  // Get settings with fallbacks
+  const companyName = dbSettings?.company_name || "Insights Business Magazine";
+  const breakingNewsEnabled = dbSettings?.breaking_news_enabled === 'true';
+  const breakingNewsTitle = dbSettings?.breaking_news_title || "Breaking Business News";
+  const breakingNewsSubtitle = dbSettings?.breaking_news_subtitle || "Latest updates from the business world";
+
+  if (articlesLoading || magazinesLoading || leadershipLoading || settingsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
@@ -29,7 +36,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Welcome to {settings.companyName}
+              Welcome to {companyName}
             </h1>
             <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
               Your premier source for business insights, industry analysis, and leadership perspectives
@@ -37,13 +44,13 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/articles"
-                className="bg-insightRed text-white px-8 py-3 rounded-md text-lg font-medium transition-colors"
+                className="bg-insightRed text-white px-8 py-3 rounded-md text-lg font-medium transition-colors hover:bg-red-700"
               >
                 Read Exclusive Insights
               </Link>
               <Link
                 to="/about"
-                className="border-2 border-white text-white px-8 py-3 rounded-md text-lg font-medium transition-colors"
+                className="border-2 border-white text-white px-8 py-3 rounded-md text-lg font-medium transition-colors hover:bg-white hover:text-insightBlack"
               >
                 Watch Success Stories
               </Link>
@@ -53,12 +60,12 @@ const Home = () => {
       </section>
 
       {/* Breaking News Section */}
-      {settings.breakingNewsEnabled && breakingNewsArticles.length > 0 && (
+      {breakingNewsEnabled && breakingNewsArticles.length > 0 && (
         <section className="py-12 bg-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-insightBlack mb-2">{settings.breakingNewsTitle}</h2>
-              <p className="text-gray-600">{settings.breakingNewsSubtitle}</p>
+              <h2 className="text-2xl font-bold text-insightBlack mb-2">{breakingNewsTitle}</h2>
+              <p className="text-gray-600">{breakingNewsSubtitle}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {breakingNewsArticles.map((article) => (
