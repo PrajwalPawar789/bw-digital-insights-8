@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useMagazineBySlug } from '@/hooks/useMagazines';
 import { useMagazineArticles } from '@/hooks/useMagazineArticles';
-import { useArticles } from '@/hooks/useArticles';
-import { ChevronLeft, Loader2, BookOpen, ArrowRight } from 'lucide-react';
+import { ChevronLeft, Download, Loader2, BookOpen, ArrowRight } from 'lucide-react';
+import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import MagazinePDFViewer from '@/components/MagazinePDFViewer';
@@ -13,29 +13,57 @@ const MagazineDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: magazine, isLoading, error } = useMagazineBySlug(slug || '');
   const { data: magazineArticles = [], isLoading: articlesLoading } = useMagazineArticles(magazine?.id || '');
-  const { data: allArticles = [] } = useArticles();
   const [fullScreen, setFullScreen] = useState<boolean>(false);
-
-  // Get featured article if magazine has one
-  const featuredArticle = magazine?.featured_article_id 
-    ? allArticles.find(article => article.id === magazine.featured_article_id)
-    : null;
-
-  // Get related articles (articles from same category as featured article, excluding featured article)
-  const relatedArticles = featuredArticle 
-    ? allArticles.filter(article => 
-        article.category === featuredArticle.category && 
-        article.id !== featuredArticle.id
-      ).slice(0, 3)
-    : [];
 
   // Add console logs for debugging
   useEffect(() => {
     console.log("Magazine slug:", slug);
     console.log("Magazine data:", magazine);
-    console.log("Featured article:", featuredArticle);
-    console.log("Related articles:", relatedArticles);
-  }, [slug, magazine, featuredArticle, relatedArticles]);
+    console.log("Loading state:", isLoading);
+    console.log("Error state:", error);
+  }, [slug, magazine, isLoading, error]);
+
+  const downloadPdf = async () => {
+    if (!magazine?.pdf_url) {
+      toast({
+        title: "No PDF available",
+        description: "This magazine doesn't have a PDF file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      console.log("Downloading PDF from:", magazine.pdf_url);
+      const response = await fetch(magazine.pdf_url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `${magazine.title}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Download started",
+        description: "The PDF download has begun.",
+      });
+    } catch (error) {
+      console.error("Download error:", error);
+      toast({
+        title: "Download failed",
+        description: "Failed to download the PDF file.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const toggleFullScreen = () => setFullScreen(!fullScreen);
 
@@ -51,11 +79,15 @@ const MagazineDetail = () => {
   }
 
   if (error || !magazine) {
+    console.log("Magazine not found, redirecting...");
     return (
       <div className="min-h-screen py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl font-bold text-insightBlack mb-4">Magazine Not Found</h1>
           <p className="mb-6 text-gray-600">The magazine you're looking for doesn't exist or the URL is invalid.</p>
+          <div className="mb-6">
+            <p className="text-sm text-gray-500">Requested slug: <code className="bg-gray-100 px-2 py-1 rounded">{slug}</code></p>
+          </div>
           <Link
             to="/magazine"
             className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md text-sm font-medium transition-colors"
@@ -116,6 +148,14 @@ const MagazineDetail = () => {
                     })}
                   </span>
                   <div className="flex gap-3">
+                    {magazine.pdf_url && (
+                      <Button
+                        onClick={downloadPdf}
+                        className="inline-flex items-center bg-insightBlack hover:bg-insightRed text-white px-6 py-3 rounded-md text-sm font-medium transition-colors"
+                      >
+                        <Download className="mr-2 h-4 w-4" /> Download PDF
+                      </Button>
+                    )}
                     <Button
                       onClick={() => document.getElementById('pdf-viewer')?.scrollIntoView({ behavior: 'smooth' })}
                       className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md text-sm font-medium transition-colors"
@@ -127,87 +167,10 @@ const MagazineDetail = () => {
               </div>
             </div>
 
-            {/* Featured Article Section */}
-            {featuredArticle && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-insightBlack mb-6">Featured Article</h2>
-                <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <div className="md:flex">
-                    <div className="md:w-1/3">
-                      <img
-                        src={featuredArticle.image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
-                        alt={featuredArticle.title}
-                        className="w-full h-64 md:h-full object-cover"
-                      />
-                    </div>
-                    <div className="md:w-2/3 p-6">
-                      <div className="flex items-center mb-2">
-                        <span className="text-xs font-medium text-insightRed bg-red-50 px-2 py-1 rounded">
-                          {featuredArticle.category}
-                        </span>
-                        <span className="text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded ml-2">
-                          Featured
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-2xl mb-3">{featuredArticle.title}</h3>
-                      <p className="text-gray-600 mb-4">{featuredArticle.excerpt}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-500">By {featuredArticle.author}</span>
-                        <Link
-                          to={`/article/${featuredArticle.slug}`}
-                          className="text-insightRed hover:text-insightBlack font-medium flex items-center"
-                        >
-                          Read Full Article <ArrowRight className="ml-1 h-4 w-4" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Related Articles Section */}
-            {relatedArticles.length > 0 && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-insightBlack mb-6">Related Articles</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {relatedArticles.map((article) => (
-                    <div key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                      <div className="aspect-video bg-gray-200 overflow-hidden">
-                        <img
-                          src={article.image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
-                          alt={article.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <div className="mb-2">
-                          <span className="text-xs font-medium text-insightRed bg-red-50 px-2 py-1 rounded">
-                            {article.category}
-                          </span>
-                        </div>
-                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">{article.title}</h3>
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{article.excerpt}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">By {article.author}</span>
-                          <Link
-                            to={`/article/${article.slug}`}
-                            className="text-insightRed hover:text-insightBlack font-medium text-sm flex items-center"
-                          >
-                            Read Article <ArrowRight className="ml-1 h-3 w-3" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Magazine Articles Section */}
             {!articlesLoading && magazineArticles.length > 0 && (
               <div className="mb-12">
-                <h2 className="text-2xl font-bold text-insightBlack mb-6">All Articles in This Issue</h2>
+                <h2 className="text-2xl font-bold text-insightBlack mb-6">Featured Articles in This Issue</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {magazineArticles.map((magazineArticle) => (
                     <div key={magazineArticle.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
@@ -254,8 +217,9 @@ const MagazineDetail = () => {
           <MagazinePDFViewer
             fileUrl={magazine.pdf_url || "/sample-magazine.pdf"}
             title={magazine.title}
-            fullScreen={fullScreen}
+            onDownload={downloadPdf}
             onFullScreen={toggleFullScreen}
+            fullScreen={fullScreen}
           />
         </div>
 
@@ -280,8 +244,14 @@ const MagazineDetail = () => {
                   </div>
                 </div>
                 <div className="flex flex-col justify-center">
-                  <h3 className="text-lg font-semibold mb-4">Reading Options</h3>
+                  <h3 className="text-lg font-semibold mb-4">Download Options</h3>
                   <div className="space-y-3">
+                    <Button
+                      onClick={downloadPdf}
+                      className="inline-flex items-center justify-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md font-medium transition-colors w-full"
+                    >
+                      <Download className="mr-2 h-5 w-5" /> Download Full PDF
+                    </Button>
                     <Button
                       onClick={() => window.print()}
                       variant="outline"

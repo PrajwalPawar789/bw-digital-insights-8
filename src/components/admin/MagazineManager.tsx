@@ -1,252 +1,393 @@
 
 import React, { useState, useEffect } from 'react';
-import { useCreateMagazine, useUpdateMagazine, useDeleteMagazine, useMagazines } from '@/hooks/useMagazines';
-import { useArticles } from '@/hooks/useArticles';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { DatePicker } from "@/components/ui/date-picker"
-import { format } from 'date-fns';
+import { useMagazines, useCreateMagazine, useUpdateMagazine, useDeleteMagazine } from '@/hooks/useMagazines';
+import { useImageUpload } from '@/hooks/useImageUpload';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
+import { Edit2, Trash2, Plus, Upload, FileText, Calendar, Hash, Star, ExternalLink } from 'lucide-react';
+import { slugify } from '@/lib/slugify';
+
+interface Magazine {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  cover_image_url: string;
+  pdf_url: string;
+  publish_date: string;
+  issue_number: number;
+  featured: boolean;
+}
 
 const MagazineManager = () => {
-  const [isCreating, setIsCreating] = useState(false);
-  const [editingMagazine, setEditingMagazine] = useState<any>(null);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    issue_number: '',
-    publish_date: new Date(),
-    cover_image_url: '',
-    pdf_url: '',
-    featured: false,
-    slug: '',
-    featured_article_id: null,
-  });
+  const { data: magazines, isLoading, refetch } = useMagazines();
+  const { mutate: createMagazine } = useCreateMagazine();
+  const { mutate: updateMagazine } = useUpdateMagazine();
+  const { mutate: deleteMagazine } = useDeleteMagazine();
+  const { uploadImage, uploadPdf, uploading } = useImageUpload();
 
-  const { data: magazines = [], isLoading, error } = useMagazines();
-  const { data: articles = [] } = useArticles();
-  const createMagazine = useCreateMagazine();
-  const updateMagazine = useUpdateMagazine();
-  const deleteMagazine = useDeleteMagazine();
+  const [open, setOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedMagazine, setSelectedMagazine] = useState<Magazine | null>(null);
+  const [title, setTitle] = useState('');
+  const [slug, setSlug] = useState('');
+  const [description, setDescription] = useState('');
+  const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [pdfUrl, setPdfUrl] = useState('');
+  const [publishDate, setPublishDate] = useState('');
+  const [issueNumber, setIssueNumber] = useState<number | ''>('' as number | '');
+  const [featured, setFeatured] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState<'image' | 'pdf' | null>(null);
 
   useEffect(() => {
-    if (editingMagazine) {
-      setFormData({
-        title: editingMagazine.title,
-        description: editingMagazine.description,
-        issue_number: editingMagazine.issue_number,
-        publish_date: new Date(editingMagazine.publish_date),
-        cover_image_url: editingMagazine.cover_image_url,
-        pdf_url: editingMagazine.pdf_url,
-        featured: editingMagazine.featured,
-        slug: editingMagazine.slug,
-        featured_article_id: editingMagazine.featured_article_id || null,
-      });
+    if (selectedMagazine) {
+      setEditMode(true);
+      setTitle(selectedMagazine.title);
+      setSlug(selectedMagazine.slug);
+      setDescription(selectedMagazine.description);
+      setCoverImageUrl(selectedMagazine.cover_image_url);
+      setPdfUrl(selectedMagazine.pdf_url);
+      setPublishDate(selectedMagazine.publish_date);
+      setIssueNumber(selectedMagazine.issue_number);
+      setFeatured(selectedMagazine.featured);
+      setOpen(true);
     } else {
-      setFormData({
-        title: '',
-        description: '',
-        issue_number: '',
-        publish_date: new Date(),
-        cover_image_url: '',
-        pdf_url: '',
-        featured: false,
-        slug: '',
-        featured_article_id: null,
-      });
+      setEditMode(false);
+      setTitle('');
+      setSlug('');
+      setDescription('');
+      setCoverImageUrl('');
+      setPdfUrl('');
+      setPublishDate('');
+      setIssueNumber('' as number | '');
+      setFeatured(false);
     }
-  }, [editingMagazine]);
+  }, [selectedMagazine]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const magazineData = {
-      ...formData,
-      publish_date: formData.publish_date.toISOString(),
-      featured: !!formData.featured,
-    };
-
-    if (isCreating) {
-      await createMagazine.mutateAsync(magazineData);
-    } else if (editingMagazine) {
-      await updateMagazine.mutateAsync({ id: editingMagazine.id, ...magazineData });
-    }
-
-    setIsCreating(false);
-    setEditingMagazine(null);
+  const resetForm = () => {
+    setSelectedMagazine(null);
+    setEditMode(false);
+    setTitle('');
+    setSlug('');
+    setDescription('');
+    setCoverImageUrl('');
+    setPdfUrl('');
+    setPublishDate('');
+    setIssueNumber('' as number | '');
+    setFeatured(false);
+    setUploadingFile(null);
   };
 
-  const handleDelete = async (id: string) => {
-    await deleteMagazine.mutateAsync(id);
+  const handleCreateMagazine = async () => {
+    if (!title || !description || !publishDate) {
+      toast.error('Please fill in all required fields (title, description, publish date).');
+      return;
+    }
+
+    try {
+      const newMagazine = {
+        title,
+        slug: slug || slugify(title),
+        description,
+        cover_image_url: coverImageUrl,
+        pdf_url: pdfUrl,
+        publish_date: publishDate,
+        issue_number: issueNumber !== '' ? Number(issueNumber) : null,
+        featured,
+      };
+
+      createMagazine(newMagazine);
+      setOpen(false);
+      resetForm();
+      refetch();
+    } catch (error) {
+      console.error('Error creating magazine:', error);
+      toast.error('Failed to create magazine');
+    }
+  };
+
+  const handleUpdateMagazine = async () => {
+    if (!selectedMagazine?.id) return;
+
+    if (!title || !description || !publishDate) {
+      toast.error('Please fill in all required fields (title, description, publish date).');
+      return;
+    }
+
+    try {
+      const updatedMagazine = {
+        id: selectedMagazine.id,
+        title,
+        slug: slug || slugify(title),
+        description,
+        cover_image_url: coverImageUrl,
+        pdf_url: pdfUrl,
+        publish_date: publishDate,
+        issue_number: issueNumber !== '' ? Number(issueNumber) : null,
+        featured,
+      };
+
+      updateMagazine(updatedMagazine);
+      setOpen(false);
+      resetForm();
+      refetch();
+    } catch (error) {
+      console.error('Error updating magazine:', error);
+      toast.error('Failed to update magazine');
+    }
+  };
+
+  const handleDeleteMagazine = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this magazine? This action cannot be undone.")) {
+      try {
+        deleteMagazine(id);
+      } catch (error) {
+        console.error('Error deleting magazine:', error);
+        toast.error('Failed to delete magazine');
+      }
+    }
+  };
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      setUploadingFile('image');
+      console.log('Uploading cover image:', file.name);
+      const imageUrl = await uploadImage(file, "magazines");
+      setCoverImageUrl(imageUrl);
+      toast.success("Cover image uploaded successfully");
+      setUploadingFile(null);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error("Failed to upload image");
+      setUploadingFile(null);
+    }
+  };
+
+  const handlePdfUpload = async (file: File) => {
+    try {
+      setUploadingFile('pdf');
+      console.log('Uploading PDF:', file.name);
+      const pdfUrl = await uploadPdf(file, "magazine-pdfs");
+      setPdfUrl(pdfUrl);
+      toast.success("PDF uploaded successfully");
+      setUploadingFile(null);
+    } catch (error) {
+      console.error('Error uploading PDF:', error);
+      toast.error("Failed to upload PDF");
+      setUploadingFile(null);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setOpen(false);
+    resetForm();
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Manage Magazines</h2>
-        <Button onClick={() => setIsCreating(true)}>Create New Magazine</Button>
+        <h2 className="text-2xl font-bold">Magazines</h2>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="flex items-center gap-2" onClick={resetForm}>
+              <Plus className="h-4 w-4" />
+              Create Magazine
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editMode ? 'Edit Magazine' : 'Create New Magazine'}</DialogTitle>
+              <DialogDescription>
+                {editMode ? 'Edit the magazine details.' : 'Add a new magazine to the website.'}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  Title *
+                </Label>
+                <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="slug" className="text-right">
+                  Slug
+                </Label>
+                <Input 
+                  id="slug" 
+                  value={slug} 
+                  onChange={(e) => setSlug(e.target.value)} 
+                  placeholder="Auto-generated from title"
+                  className="col-span-3" 
+                />
+              </div>
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="description" className="text-right mt-2">
+                  Description *
+                </Label>
+                <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="coverImage" className="text-right">
+                  Cover Image
+                </Label>
+                <div className="col-span-3 space-y-2">
+                  <Input 
+                    type="file" 
+                    id="coverImage" 
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleImageUpload(e.target.files[0]);
+                      }
+                    }} 
+                    className="hidden" 
+                  />
+                  <Label htmlFor="coverImage" className="bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md px-3 py-2 text-sm cursor-pointer inline-block">
+                    {uploadingFile === 'image' ? 'Uploading...' : 'Upload Cover Image'}
+                  </Label>
+                  {coverImageUrl && (
+                    <div className="flex items-center gap-2">
+                      <a href={coverImageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline text-sm">
+                        View Current Image
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="pdf" className="text-right">
+                  PDF File
+                </Label>
+                <div className="col-span-3 space-y-2">
+                  <Input 
+                    type="file" 
+                    id="pdf" 
+                    accept=".pdf"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handlePdfUpload(e.target.files[0]);
+                      }
+                    }} 
+                    className="hidden" 
+                  />
+                  <Label htmlFor="pdf" className="bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md px-3 py-2 text-sm cursor-pointer inline-block">
+                    {uploadingFile === 'pdf' ? 'Uploading...' : 'Upload PDF'}
+                  </Label>
+                  {pdfUrl && (
+                    <div className="flex items-center gap-2">
+                      <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline text-sm">
+                        View Current PDF
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="publishDate" className="text-right">
+                  Publish Date *
+                </Label>
+                <Input type="date" id="publishDate" value={publishDate} onChange={(e) => setPublishDate(e.target.value)} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="issueNumber" className="text-right">
+                  Issue Number
+                </Label>
+                <Input
+                  type="number"
+                  id="issueNumber"
+                  value={issueNumber}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setIssueNumber(val === '' ? '' : Number(val));
+                  }}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="featured" className="text-right">
+                  Featured
+                </Label>
+                <div className="col-span-3 flex items-center">
+                  <Switch id="featured" checked={featured} onCheckedChange={(checked) => setFeatured(checked)} />
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={editMode ? handleUpdateMagazine : handleCreateMagazine} className="flex-1">
+                {editMode ? 'Update Magazine' : 'Create Magazine'}
+              </Button>
+              <Button variant="outline" onClick={handleDialogClose}>
+                Cancel
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
-
-      {/* Create/Edit Form */}
-      {(isCreating || editingMagazine) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{isCreating ? 'Create New Magazine' : 'Edit Magazine'}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  type="text"
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Input
-                  type="text"
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="issue_number">Issue Number</Label>
-                <Input
-                  type="text"
-                  id="issue_number"
-                  value={formData.issue_number}
-                  onChange={(e) => setFormData({ ...formData, issue_number: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="publish_date">Publish Date</Label>
-                <DatePicker
-                  id="publish_date"
-                  value={formData.publish_date}
-                  onValueChange={(date) => setFormData({ ...formData, publish_date: date || new Date() })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="cover_image_url">Cover Image URL</Label>
-                <Input
-                  type="text"
-                  id="cover_image_url"
-                  value={formData.cover_image_url}
-                  onChange={(e) => setFormData({ ...formData, cover_image_url: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="pdf_url">PDF URL</Label>
-                <Input
-                  type="text"
-                  id="pdf_url"
-                  value={formData.pdf_url}
-                  onChange={(e) => setFormData({ ...formData, pdf_url: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="slug">Slug</Label>
-                <Input
-                  type="text"
-                  id="slug"
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label htmlFor="featured">Featured</Label>
-                <Input
-                  type="checkbox"
-                  id="featured"
-                  checked={formData.featured}
-                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="featured_article_id">Featured Article (Optional)</Label>
-                <select
-                  id="featured_article_id"
-                  value={formData.featured_article_id || ''}
-                  onChange={(e) => setFormData({ ...formData, featured_article_id: e.target.value || null })}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-insightRed focus:border-insightRed"
-                >
-                  <option value="">Select Featured Article</option>
-                  {articles.map((article) => (
-                    <option key={article.id} value={article.id}>
-                      {article.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                <Button type="button" variant="secondary" onClick={() => { setIsCreating(false); setEditingMagazine(null); }}>
-                  Cancel
-                </Button>
-                <Button type="submit">{isCreating ? 'Create' : 'Update'}</Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Magazines List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Magazines</CardTitle>
-          <CardDescription>A list of all magazines in the system.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Issue</TableHead>
-                  <TableHead>Publish Date</TableHead>
-                  <TableHead>Featured</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {magazines.map((magazine) => (
-                  <TableRow key={magazine.id}>
-                    <TableCell>{magazine.title}</TableCell>
-                    <TableCell>{magazine.issue_number}</TableCell>
-                    <TableCell>{format(new Date(magazine.publish_date), "PPP")}</TableCell>
-                    <TableCell>{magazine.featured ? "Yes" : "No"}</TableCell>
-                    <TableCell>
-                      <div className="space-x-2">
-                        <Button size="sm" onClick={() => setEditingMagazine(magazine)}>
-                          Edit
-                        </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDelete(magazine.id)}>
-                          Delete
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+      
+      <div className="grid gap-6">
+        {isLoading ? (
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-500 mx-auto mb-4"></div>
+            <p className="text-gray-500">Loading magazines...</p>
           </div>
-        </CardContent>
-      </Card>
+        ) : magazines?.length === 0 ? (
+          <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-200">
+            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+            <h3 className="text-lg font-medium text-gray-900 mb-1">No Magazines Found</h3>
+            <p className="text-gray-500 mb-4">You haven't created any magazines yet.</p>
+            <Button onClick={() => setOpen(true)} variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-1" /> Create Your First Magazine
+            </Button>
+          </div>
+        ) : (
+          magazines?.map((magazine) => (
+            <Card key={magazine.id} className="overflow-hidden">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  {magazine.title}
+                  {magazine.featured && <Star className="h-5 w-5 text-yellow-500 fill-current" />}
+                </CardTitle>
+                <CardDescription>{magazine.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Published: {new Date(magazine.publish_date).toLocaleDateString()}</p>
+                  {magazine.issue_number && <p className="text-sm text-gray-500">Issue: {magazine.issue_number}</p>}
+                  <div className="flex gap-2 mt-2">
+                    {magazine.cover_image_url && (
+                      <a href={magazine.cover_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
+                        <ExternalLink className="w-4 h-4" />
+                        Cover Image
+                      </a>
+                    )}
+                    {magazine.pdf_url && (
+                      <a href={magazine.pdf_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
+                        <FileText className="w-4 h-4" />
+                        PDF
+                      </a>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="secondary" size="icon" onClick={() => setSelectedMagazine(magazine)}>
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                  <Button variant="destructive" size="icon" onClick={() => handleDeleteMagazine(magazine.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
     </div>
   );
 };
