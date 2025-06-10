@@ -1,5 +1,5 @@
+
 import React, { useState, useEffect } from 'react';
-import { useTable, usePagination, useSortBy, ColumnDef } from '@tanstack/react-table';
 import { useCreateMagazine, useUpdateMagazine, useDeleteMagazine, useMagazines } from '@/hooks/useMagazines';
 import { useArticles } from '@/hooks/useArticles';
 import { Button } from "@/components/ui/button";
@@ -9,16 +9,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Calendar } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker"
-import { cn } from "@/lib/utils";
 import { format } from 'date-fns';
 
 const MagazineManager = () => {
@@ -92,52 +88,6 @@ const MagazineManager = () => {
   const handleDelete = async (id: string) => {
     await deleteMagazine.mutateAsync(id);
   };
-
-  const columns: ColumnDef<any>[] = [
-    {
-      accessorKey: "title",
-      header: "Title",
-    },
-    {
-      accessorKey: "issue_number",
-      header: "Issue",
-    },
-    {
-      accessorKey: "publish_date",
-      header: "Publish Date",
-      cell: ({ row }) => {
-        const date = new Date(row.getValue("publish_date"))
-        return format(date, "PPP")
-      },
-    },
-    {
-      accessorKey: "featured",
-      header: "Featured",
-      cell: ({ row }) => (row.getValue("featured") ? "Yes" : "No"),
-    },
-    {
-      accessorKey: "actions",
-      header: "Actions",
-      cell: ({ row }) => (
-        <div className="space-x-2">
-          <Button size="sm" onClick={() => setEditingMagazine(row.original)}>
-            Edit
-          </Button>
-          <Button size="sm" variant="destructive" onClick={() => handleDelete(row.original.id)}>
-            Delete
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  const table = useTable({
-    data: magazines,
-    columns,
-    getCoreRowModel: (rowModel) => rowModel.flatRows,
-    usePagination: true,
-    useSortBy: true,
-  })
 
   return (
     <div className="space-y-6">
@@ -265,38 +215,31 @@ const MagazineManager = () => {
           <div className="rounded-md border">
             <Table>
               <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : (
-                              <div
-                                onClick={header.column.getToggleSortingHandler()}
-                              >
-                                {header.column.columnDef.header}
-                                {{
-                                  ascending: " ▲",
-                                  descending: " ▼",
-                                }[header.column.getIsSorted() as string] ?? null}
-                              </div>
-                            )}
-                        </TableHead>
-                      )
-                    })}
-                  </TableRow>
-                ))}
+                <TableRow>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Issue</TableHead>
+                  <TableHead>Publish Date</TableHead>
+                  <TableHead>Featured</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
               </TableHeader>
               <TableBody>
-                {table.getRowModel().map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {cell.renderValue()}
-                      </TableCell>
-                    ))}
+                {magazines.map((magazine) => (
+                  <TableRow key={magazine.id}>
+                    <TableCell>{magazine.title}</TableCell>
+                    <TableCell>{magazine.issue_number}</TableCell>
+                    <TableCell>{format(new Date(magazine.publish_date), "PPP")}</TableCell>
+                    <TableCell>{magazine.featured ? "Yes" : "No"}</TableCell>
+                    <TableCell>
+                      <div className="space-x-2">
+                        <Button size="sm" onClick={() => setEditingMagazine(magazine)}>
+                          Edit
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleDelete(magazine.id)}>
+                          Delete
+                        </Button>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
