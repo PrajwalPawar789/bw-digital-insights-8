@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MinimalButton, ScrollMode, SpecialZoomLevel, Viewer, ViewMode, Worker } from '@react-pdf-viewer/core';
 import { NextIcon, pageNavigationPlugin, PreviousIcon } from '@react-pdf-viewer/page-navigation';
@@ -15,7 +14,7 @@ import '@react-pdf-viewer/zoom/lib/styles/index.css';
 interface MagazinePDFViewerProps {
   fileUrl: string;
   title: string;
-  onDownload: () => void;
+  onDownload?: () => void;
   onFullScreen?: () => void;
   fullScreen?: boolean;
 }
@@ -81,9 +80,11 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
           {fullScreen ? 'Reading Mode' : 'Magazine Preview'}
         </h2>
         <div className="flex space-x-2">
-          <Button onClick={onDownload} variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-1" /> Download
-          </Button>
+          {onDownload && (
+            <Button onClick={onDownload} variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-1" /> Download
+            </Button>
+          )}
           {onFullScreen && (
             <Button onClick={onFullScreen} variant="outline" size="sm">
               <Maximize className="h-4 w-4" />
@@ -114,9 +115,11 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
             <p className="text-red-700 font-medium mb-2 text-lg">Failed to load PDF</p>
             <p className="text-red-600 text-sm mb-4">Error: {pdfError}</p>
             <div className="flex gap-4 justify-center">
-              <Button onClick={onDownload} variant="outline">
-                <Download className="mr-2 h-4 w-4" /> Try Download
-              </Button>
+              {onDownload && (
+                <Button onClick={onDownload} variant="outline">
+                  <Download className="mr-2 h-4 w-4" /> Try Download
+                </Button>
+              )}
               <Button onClick={retryLoad} variant="outline">
                 <RefreshCw className="mr-2 h-4 w-4" /> Retry
               </Button>
