@@ -30,7 +30,7 @@ export const useUpdateDatabaseSettings = () => {
     },
     onError: (error) => {
       toast.error("Failed to update settings");
-      console.error(error);
+      console.error('Update settings error:', error);
     },
   });
 };

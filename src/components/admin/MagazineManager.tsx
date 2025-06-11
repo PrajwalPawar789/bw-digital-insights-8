@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useMagazines, useCreateMagazine, useUpdateMagazine, useDeleteMagazine } from '@/hooks/useMagazines';
 import { useArticles } from '@/hooks/useArticles';
@@ -325,14 +324,14 @@ const MagazineManager = () => {
                   Featured Article
                 </Label>
                 <Select 
-                  value={featuredArticleId || ""} 
-                  onValueChange={(value) => setFeaturedArticleId(value || null)}
+                  value={featuredArticleId || "none"} 
+                  onValueChange={(value) => setFeaturedArticleId(value === "none" ? null : value)}
                 >
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select featured article (optional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">No featured article</SelectItem>
+                    <SelectItem value="none">No featured article</SelectItem>
                     {articles?.map((article) => (
                       <SelectItem key={article.id} value={article.id}>
                         {article.title}
