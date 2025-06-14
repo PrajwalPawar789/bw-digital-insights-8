@@ -1,160 +1,155 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, Calendar, ArrowRight, Megaphone } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-
-// Mock data - replace with actual data fetching
-const pressReleases = [
-  {
-    id: "1",
-    title: "Company Announces Strategic Partnership with Global Tech Leader",
-    excerpt: "This partnership will accelerate our digital transformation initiatives and expand our market reach across new territories.",
-    date: "2024-01-15",
-    category: "Partnership",
-    slug: "strategic-partnership-announcement",
-    urgent: true
-  },
-  {
-    id: "2", 
-    title: "Q4 Financial Results Exceed Expectations",
-    excerpt: "Record-breaking quarter demonstrates the strength of our strategic initiatives and market positioning.",
-    date: "2024-01-10",
-    category: "Financial",
-    slug: "q4-financial-results",
-    urgent: false
-  },
-  {
-    id: "3",
-    title: "New Sustainability Initiative Launched",
-    excerpt: "Comprehensive program aims to achieve carbon neutrality by 2030 through innovative technology solutions.",
-    date: "2024-01-05",
-    category: "Sustainability",
-    slug: "sustainability-initiative-launch",
-    urgent: false
-  }
-];
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { pressReleaseData } from '../data/pressReleaseData';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Calendar, FileText, ChevronRight } from 'lucide-react';
 
 const PressReleases = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
-  const categories = ["All", "Partnership", "Financial", "Sustainability", "Product", "Leadership"];
+  const categories = ['all', ...Array.from(new Set(pressReleaseData.map(pr => pr.category)))];
+  
+  const filteredReleases = selectedCategory === 'all'
+    ? pressReleaseData
+    : pressReleaseData.filter(pr => pr.category === selectedCategory);
 
-  const filteredReleases = pressReleases.filter(release => {
-    const matchesSearch = release.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         release.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || release.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentReleases = filteredReleases.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredReleases.length / itemsPerPage);
+  
+  useEffect(() => {
+    // Reset to page 1 when category changes
+    setCurrentPage(1);
+  }, [selectedCategory]);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section with Background */}
-      <section className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1504711434969-e33886168f5c?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center opacity-10"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-6">
-              <Megaphone className="h-12 w-12 text-insightRed mr-4" />
-              <h1 className="text-4xl md:text-6xl font-bold">
-                Press <span className="text-insightRed">Releases</span>
-              </h1>
-            </div>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Stay informed with the latest company announcements, partnerships, and strategic initiatives from our leadership team.
-            </p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-insightBlack mb-4">InsightsBW Press Releases</h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Stay informed about our latest company announcements, partnerships, research publications, and leadership updates.
+          </p>
         </div>
-      </section>
 
-      {/* Main Content */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          {/* Search and Filter */}
-          <div className="mb-12">
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search press releases..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                    className={selectedCategory === category ? "bg-insightRed hover:bg-red-700" : ""}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Press Releases Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredReleases.map((release) => (
-              <Card key={release.id} className="overflow-hidden hover:shadow-xl transition-shadow group border-0 shadow-lg">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge variant={release.urgent ? "destructive" : "secondary"} className={release.urgent ? "bg-insightRed" : ""}>
-                      {release.category}
-                    </Badge>
-                    {release.urgent && (
-                      <Badge variant="outline" className="border-red-500 text-red-500">
-                        Urgent
-                      </Badge>
-                    )}
-                  </div>
-                  <CardTitle className="text-xl group-hover:text-insightRed transition-colors line-clamp-2">
-                    <Link to={`/press-releases/${release.slug}`}>
-                      {release.title}
-                    </Link>
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 line-clamp-3">
-                    {release.excerpt}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      <span>{formatDistanceToNow(new Date(release.date), { addSuffix: true })}</span>
-                    </div>
-                  </div>
-                  <Link
-                    to={`/press-releases/${release.slug}`}
-                    className="text-insightRed hover:text-insightBlack font-semibold text-sm flex items-center"
-                  >
-                    Read Full Release
-                    <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </CardContent>
-              </Card>
+        <div className="bg-white p-5 rounded-lg shadow-sm mb-8">
+          <h2 className="text-lg font-semibold mb-4 text-insightBlack">Filter by Category</h2>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                  selectedCategory === category
+                    ? 'bg-insightRed text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {category === 'all' ? 'All Categories' : category}
+              </button>
             ))}
           </div>
+        </div>
 
-          {filteredReleases.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No press releases found matching your criteria.</p>
+        <div className="space-y-6 mb-10">
+          {currentReleases.length > 0 ? (
+            currentReleases.map((pressRelease) => (
+              <Link
+                key={pressRelease.id}
+                to={`/press-releases/${pressRelease.slug}`}
+                className="block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group"
+              >
+                <div className="md:flex">
+                  <div className="md:w-1/3">
+                    <div className="h-48 md:h-full overflow-hidden">
+                      <img
+                        src={pressRelease.image}
+                        alt={pressRelease.title}
+                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="p-6 md:w-2/3">
+                    <div className="flex flex-wrap gap-3 mb-3">
+                      <span className="inline-block px-3 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-full">
+                        {pressRelease.category}
+                      </span>
+                      <div className="flex items-center text-gray-500 text-xs">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        {new Date(pressRelease.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-bold text-insightBlack group-hover:text-insightRed transition-colors mb-2">
+                      {pressRelease.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 line-clamp-2">{pressRelease.excerpt}</p>
+                    <div className="flex items-center text-insightRed font-medium">
+                      <FileText className="h-4 w-4 mr-1" />
+                      Read Press Release
+                      <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="text-center py-10 bg-white rounded-lg shadow-sm">
+              <p className="text-gray-600">No press releases found in this category.</p>
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className="mt-4 text-insightRed hover:text-insightBlack transition-colors font-medium"
+              >
+                View all press releases
+              </button>
             </div>
           )}
         </div>
-      </section>
+
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-10">
+            <Pagination>
+              <PaginationContent>
+                {currentPage > 1 && (
+                  <PaginationItem>
+                    <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} className="cursor-pointer" />
+                  </PaginationItem>
+                )}
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink 
+                      isActive={currentPage === page}
+                      onClick={() => handlePageChange(page)}
+                      className="cursor-pointer"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                {currentPage < totalPages && (
+                  <PaginationItem>
+                    <PaginationNext onClick={() => handlePageChange(currentPage + 1)} className="cursor-pointer" />
+                  </PaginationItem>
+                )}
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

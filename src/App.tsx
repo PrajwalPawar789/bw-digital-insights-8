@@ -8,7 +8,6 @@ import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import Magazine from "./pages/Magazine";
 import MagazineDetail from "./pages/MagazineDetail";
-import Articles from "./pages/Articles";
 import Leadership from "./pages/Leadership";
 import LeadershipProfile from "./pages/LeadershipProfile";
 import PressReleases from "./pages/PressReleases";
@@ -19,7 +18,6 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Documentation from "./pages/Documentation";
-import IndustryNews from "./pages/IndustryNews";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const queryClient = new QueryClient();
@@ -38,8 +36,6 @@ const App = () => (
                 <Route path="/" element={<Home />} />
                 <Route path="/magazine" element={<Magazine />} />
                 <Route path="/magazine/:slug" element={<MagazineDetail />} />
-                <Route path="/articles" element={<Articles />} />
-                <Route path="/industry-news" element={<IndustryNews />} />
                 <Route path="/leadership" element={<Leadership />} />
                 <Route path="/leadership/:slug" element={<LeadershipProfile />} />
                 <Route path="/press-releases" element={<PressReleases />} />

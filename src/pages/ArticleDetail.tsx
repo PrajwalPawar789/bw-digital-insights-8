@@ -1,29 +1,49 @@
 
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useArticleBySlug, useArticles } from '@/hooks/useArticles';
+import { newsData } from '../data/newsData';
 import { ChevronLeft, Calendar, User, Clock, Share2, Bookmark, MessageSquare, Tag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import { formatDistanceToNow } from 'date-fns';
 
 const ArticleDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { data: article, isLoading, error } = useArticleBySlug(slug || '');
-  const { data: allArticles = [] } = useArticles();
-  const [relatedArticles, setRelatedArticles] = useState<any[]>([]);
+  const [article, setArticle] = useState(newsData.find(article => article.slug === slug));
+  const [loading, setLoading] = useState(true);
+  const [relatedArticles, setRelatedArticles] = useState<typeof newsData>([]);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
     
-    if (article && allArticles.length > 0) {
-      const related = allArticles
-        .filter(a => a.slug !== slug && a.category === article.category)
+    if (article) {
+      const related = newsData
+        .filter(a => a.id !== article.id && a.category === article.category)
         .slice(0, 3);
       setRelatedArticles(related);
     }
-  }, [article, allArticles, slug]);
+    
+    return () => clearTimeout(timer);
+  }, [article]);
+
+  // Reset scroll position when navigating to a new article
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    
+    // Find article based on slug
+    const currentArticle = newsData.find(a => a.slug === slug);
+    setArticle(currentArticle);
+    
+    if (currentArticle) {
+      // Update related articles when article changes
+      const related = newsData
+        .filter(a => a.slug !== slug && a.category === currentArticle.category)
+        .slice(0, 3);
+      setRelatedArticles(related);
+    }
+  }, [slug]);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -52,10 +72,11 @@ const ArticleDetail = () => {
   };
 
   const handleRelatedArticleClick = (articleSlug: string) => {
+    // Navigate to the selected article
     navigate(`/article/${articleSlug}`);
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
@@ -63,7 +84,7 @@ const ArticleDetail = () => {
     );
   }
 
-  if (error || !article) {
+  if (!article) {
     return (
       <div className="min-h-screen py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -106,7 +127,7 @@ const ArticleDetail = () => {
               <User className="h-4 w-4 mr-1" /> {article.author}
             </div>
             <div className="flex items-center">
-              <Calendar className="h-4 w-4 mr-1" /> {formatDistanceToNow(new Date(article.date), { addSuffix: true })}
+              <Calendar className="h-4 w-4 mr-1" /> {article.date}
             </div>
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-1" /> 5 min read
@@ -127,7 +148,7 @@ const ArticleDetail = () => {
         
         <div className="rounded-lg overflow-hidden mb-8 shadow-md transform hover:scale-[1.02] transition-transform duration-500">
           <img
-            src={article.image_url || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800'}
+            src={article.image}
             alt={article.title}
             className="w-full h-auto object-cover"
           />
@@ -135,9 +156,21 @@ const ArticleDetail = () => {
         
         <div className="prose max-w-none text-gray-700 mb-12">
           <div className="space-y-6">
-            <div className="text-gray-700 leading-relaxed animate-fade-in whitespace-pre-line">
-              {article.content}
-            </div>
+            <p className="text-gray-700 leading-relaxed animate-fade-in">{article.content}</p>
+            
+            <p className="text-gray-700 leading-relaxed animate-fade-in">
+              Industry experts have been closely monitoring these developments, with many pointing to significant 
+              implications for market dynamics in the coming quarters. "This represents a pivotal shift in how 
+              businesses approach their strategic planning," notes financial analyst Sarah Chen.
+            </p>
+            
+            <h2 className="text-2xl font-bold text-insightBlack mt-8 mb-4">Market Impact Analysis</h2>
+            
+            <p className="text-gray-700 leading-relaxed animate-fade-in">
+              The immediate market response has been cautiously optimistic, with key indicators suggesting a 
+              measured approach from investors. Long-term projections, however, point to substantial growth 
+              potential particularly in emerging market segments.
+            </p>
           </div>
           
           <div className="flex items-center mt-8 mb-4 animate-fade-in">
@@ -179,7 +212,7 @@ const ArticleDetail = () => {
                   <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
                     <div className="h-40 overflow-hidden">
                       <img
-                        src={relatedArticle.image_url || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400'}
+                        src={relatedArticle.image}
                         alt={relatedArticle.title}
                         className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                       />

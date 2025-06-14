@@ -1,428 +1,592 @@
-import React, { useState, useEffect } from 'react';
-import { useMagazines, useCreateMagazine, useUpdateMagazine, useDeleteMagazine } from '@/hooks/useMagazines';
-import { useArticles } from '@/hooks/useArticles';
-import { useMagazineArticles } from '@/hooks/useMagazineArticles';
-import { useImageUpload } from '@/hooks/useImageUpload';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
-import { Edit2, Trash2, Plus, Upload, FileText, Calendar, Hash, Star, ExternalLink } from 'lucide-react';
-import { slugify } from '@/lib/slugify';
 
-interface Magazine {
-  id: string;
-  title: string;
-  slug: string;
-  description: string;
-  cover_image_url: string;
-  pdf_url: string;
-  publish_date: string;
-  issue_number: number;
-  featured: boolean;
-  featured_article_id: string | null;
-}
+import { useState } from "react";
+import { Route, Routes, Link, useNavigate } from "react-router-dom";
+import { 
+  ChevronLeft, 
+  Plus, 
+  Search, 
+  Edit, 
+  Trash, 
+  Calendar,
+  ArrowUp,
+  ArrowDown,
+  Upload,
+  FileText,
+  Image as ImageIcon
+} from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format } from "date-fns";
+import { toast } from "sonner";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+
+// Mock data for demo purposes
+const mockMagazines = [
+  {
+    id: 1,
+    title: "Business Transformation Leaders",
+    publicationDate: "2025-04-01",
+    coverImage: "https://example.com/cover1.jpg",
+    description: "Featuring executives driving digital innovation",
+    status: "published",
+    pageCount: 42,
+    slug: "business-transformation-leaders"
+  },
+  {
+    id: 2,
+    title: "Finance Innovation Quarterly",
+    publicationDate: "2025-03-01",
+    coverImage: "https://example.com/cover2.jpg",
+    description: "The latest trends in financial technology",
+    status: "published",
+    pageCount: 38,
+    slug: "finance-innovation-quarterly"
+  },
+  {
+    id: 3,
+    title: "AI Implementation Guide",
+    publicationDate: "2025-05-01",
+    coverImage: "https://example.com/cover3.jpg",
+    description: "Practical strategies for AI adoption",
+    status: "draft",
+    pageCount: 56,
+    slug: "ai-implementation-guide"
+  }
+];
+
+const formSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters"),
+  publicationDate: z.date({
+    required_error: "Publication date is required",
+  }),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  status: z.enum(["draft", "published", "archived"]).default("draft"),
+  pageCount: z.coerce.number().min(1, "Page count must be at least 1"),
+});
 
 const MagazineManager = () => {
-  const { data: magazines, isLoading, refetch } = useMagazines();
-  const { data: articles } = useArticles();
-  const { mutate: createMagazine } = useCreateMagazine();
-  const { mutate: updateMagazine } = useUpdateMagazine();
-  const { mutate: deleteMagazine } = useDeleteMagazine();
-  const { uploadImage, uploadPdf, uploading } = useImageUpload();
+  return (
+    <Routes>
+      <Route path="/" element={<MagazineList />} />
+      <Route path="/create" element={<MagazineForm />} />
+      <Route path="/edit/:id" element={<MagazineForm />} />
+    </Routes>
+  );
+};
 
-  const [open, setOpen] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [selectedMagazine, setSelectedMagazine] = useState<Magazine | null>(null);
-  const [title, setTitle] = useState('');
-  const [slug, setSlug] = useState('');
-  const [description, setDescription] = useState('');
-  const [coverImageUrl, setCoverImageUrl] = useState('');
-  const [pdfUrl, setPdfUrl] = useState('');
-  const [publishDate, setPublishDate] = useState('');
-  const [issueNumber, setIssueNumber] = useState<number | ''>('' as number | '');
-  const [featured, setFeatured] = useState(false);
-  const [featuredArticleId, setFeaturedArticleId] = useState<string | null>(null);
-  const [uploadingFile, setUploadingFile] = useState<'image' | 'pdf' | null>(null);
-
-  useEffect(() => {
-    if (selectedMagazine) {
-      setEditMode(true);
-      setTitle(selectedMagazine.title);
-      setSlug(selectedMagazine.slug);
-      setDescription(selectedMagazine.description);
-      setCoverImageUrl(selectedMagazine.cover_image_url);
-      setPdfUrl(selectedMagazine.pdf_url);
-      setPublishDate(selectedMagazine.publish_date);
-      setIssueNumber(selectedMagazine.issue_number);
-      setFeatured(selectedMagazine.featured);
-      setFeaturedArticleId(selectedMagazine.featured_article_id);
-      setOpen(true);
-    } else {
-      setEditMode(false);
-      setTitle('');
-      setSlug('');
-      setDescription('');
-      setCoverImageUrl('');
-      setPdfUrl('');
-      setPublishDate('');
-      setIssueNumber('' as number | '');
-      setFeatured(false);
-      setFeaturedArticleId(null);
-    }
-  }, [selectedMagazine]);
-
-  const resetForm = () => {
-    setSelectedMagazine(null);
-    setEditMode(false);
-    setTitle('');
-    setSlug('');
-    setDescription('');
-    setCoverImageUrl('');
-    setPdfUrl('');
-    setPublishDate('');
-    setIssueNumber('' as number | '');
-    setFeatured(false);
-    setFeaturedArticleId(null);
-    setUploadingFile(null);
-  };
-
-  const handleCreateMagazine = async () => {
-    if (!title || !description || !publishDate) {
-      toast.error('Please fill in all required fields (title, description, publish date).');
-      return;
-    }
-
-    try {
-      const newMagazine = {
-        title,
-        slug: slug || slugify(title),
-        description,
-        cover_image_url: coverImageUrl,
-        pdf_url: pdfUrl,
-        publish_date: publishDate,
-        issue_number: issueNumber !== '' ? Number(issueNumber) : null,
-        featured,
-        featured_article_id: featuredArticleId,
-      };
-
-      createMagazine(newMagazine);
-      setOpen(false);
-      resetForm();
-      refetch();
-    } catch (error) {
-      console.error('Error creating magazine:', error);
-      toast.error('Failed to create magazine');
-    }
-  };
-
-  const handleUpdateMagazine = async () => {
-    if (!selectedMagazine?.id) return;
-
-    if (!title || !description || !publishDate) {
-      toast.error('Please fill in all required fields (title, description, publish date).');
-      return;
-    }
-
-    try {
-      const updatedMagazine = {
-        id: selectedMagazine.id,
-        title,
-        slug: slug || slugify(title),
-        description,
-        cover_image_url: coverImageUrl,
-        pdf_url: pdfUrl,
-        publish_date: publishDate,
-        issue_number: issueNumber !== '' ? Number(issueNumber) : null,
-        featured,
-        featured_article_id: featuredArticleId,
-      };
-
-      updateMagazine(updatedMagazine);
-      setOpen(false);
-      resetForm();
-      refetch();
-    } catch (error) {
-      console.error('Error updating magazine:', error);
-      toast.error('Failed to update magazine');
-    }
-  };
-
-  const handleDeleteMagazine = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this magazine? This action cannot be undone.")) {
-      try {
-        deleteMagazine(id);
-      } catch (error) {
-        console.error('Error deleting magazine:', error);
-        toast.error('Failed to delete magazine');
+const MagazineList = () => {
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<string>("publicationDate");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  
+  const filteredMagazines = mockMagazines
+    .filter(magazine => 
+      magazine.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      magazine.description.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      const fieldA = a[sortField as keyof typeof a];
+      const fieldB = b[sortField as keyof typeof b];
+      
+      if (typeof fieldA === 'string' && typeof fieldB === 'string') {
+        return sortDirection === 'asc' 
+          ? fieldA.localeCompare(fieldB)
+          : fieldB.localeCompare(fieldA);
       }
+      
+      return sortDirection === 'asc' 
+        ? (fieldA > fieldB ? 1 : -1)
+        : (fieldA < fieldB ? 1 : -1);
+    });
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
     }
   };
 
-  const handleImageUpload = async (file: File) => {
-    try {
-      setUploadingFile('image');
-      console.log('Uploading cover image:', file.name);
-      const imageUrl = await uploadImage(file, "magazines");
-      setCoverImageUrl(imageUrl);
-      toast.success("Cover image uploaded successfully");
-      setUploadingFile(null);
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast.error("Failed to upload image");
-      setUploadingFile(null);
-    }
-  };
-
-  const handlePdfUpload = async (file: File) => {
-    try {
-      setUploadingFile('pdf');
-      console.log('Uploading PDF:', file.name);
-      const pdfUrl = await uploadPdf(file, "magazine-pdfs");
-      setPdfUrl(pdfUrl);
-      toast.success("PDF uploaded successfully");
-      setUploadingFile(null);
-    } catch (error) {
-      console.error('Error uploading PDF:', error);
-      toast.error("Failed to upload PDF");
-      setUploadingFile(null);
-    }
-  };
-
-  const handleDialogClose = () => {
-    setOpen(false);
-    resetForm();
+  const handleDelete = (id: number) => {
+    // In a real app, this would call an API to delete the magazine
+    toast.success("Magazine deleted successfully");
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Magazines</h2>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="flex items-center gap-2" onClick={resetForm}>
-              <Plus className="h-4 w-4" />
-              Create Magazine
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editMode ? 'Edit Magazine' : 'Create New Magazine'}</DialogTitle>
-              <DialogDescription>
-                {editMode ? 'Edit the magazine details.' : 'Add a new magazine to the website.'}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title" className="text-right">
-                  Title *
-                </Label>
-                <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="slug" className="text-right">
-                  Slug
-                </Label>
-                <Input 
-                  id="slug" 
-                  value={slug} 
-                  onChange={(e) => setSlug(e.target.value)} 
-                  placeholder="Auto-generated from title"
-                  className="col-span-3" 
-                />
-              </div>
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="description" className="text-right mt-2">
-                  Description *
-                </Label>
-                <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="coverImage" className="text-right">
-                  Cover Image
-                </Label>
-                <div className="col-span-3 space-y-2">
-                  <Input 
-                    type="file" 
-                    id="coverImage" 
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files.length > 0) {
-                        handleImageUpload(e.target.files[0]);
-                      }
-                    }} 
-                    className="hidden" 
-                  />
-                  <Label htmlFor="coverImage" className="bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md px-3 py-2 text-sm cursor-pointer inline-block">
-                    {uploadingFile === 'image' ? 'Uploading...' : 'Upload Cover Image'}
-                  </Label>
-                  {coverImageUrl && (
-                    <div className="flex items-center gap-2">
-                      <a href={coverImageUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline text-sm">
-                        View Current Image
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="pdf" className="text-right">
-                  PDF File
-                </Label>
-                <div className="col-span-3 space-y-2">
-                  <Input 
-                    type="file" 
-                    id="pdf" 
-                    accept=".pdf"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files.length > 0) {
-                        handlePdfUpload(e.target.files[0]);
-                      }
-                    }} 
-                    className="hidden" 
-                  />
-                  <Label htmlFor="pdf" className="bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md px-3 py-2 text-sm cursor-pointer inline-block">
-                    {uploadingFile === 'pdf' ? 'Uploading...' : 'Upload PDF'}
-                  </Label>
-                  {pdfUrl && (
-                    <div className="flex items-center gap-2">
-                      <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline text-sm">
-                        View Current PDF
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="publishDate" className="text-right">
-                  Publish Date *
-                </Label>
-                <Input type="date" id="publishDate" value={publishDate} onChange={(e) => setPublishDate(e.target.value)} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="issueNumber" className="text-right">
-                  Issue Number
-                </Label>
-                <Input
-                  type="number"
-                  id="issueNumber"
-                  value={issueNumber}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setIssueNumber(val === '' ? '' : Number(val));
-                  }}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="featuredArticle" className="text-right">
-                  Featured Article
-                </Label>
-                <Select 
-                  value={featuredArticleId || "none"} 
-                  onValueChange={(value) => setFeaturedArticleId(value === "none" ? null : value)}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select featured article (optional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No featured article</SelectItem>
-                    {articles?.map((article) => (
-                      <SelectItem key={article.id} value={article.id}>
-                        {article.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="featured" className="text-right">
-                  Featured
-                </Label>
-                <div className="col-span-3 flex items-center">
-                  <Switch id="featured" checked={featured} onCheckedChange={(checked) => setFeatured(checked)} />
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={editMode ? handleUpdateMagazine : handleCreateMagazine} className="flex-1">
-                {editMode ? 'Update Magazine' : 'Create Magazine'}
-              </Button>
-              <Button variant="outline" onClick={handleDialogClose}>
-                Cancel
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Magazines</h1>
+        <Button onClick={() => navigate("/admin/magazines/create")}>
+          <Plus className="mr-2 h-4 w-4" /> Create Magazine
+        </Button>
       </div>
       
-      <div className="grid gap-6">
-        {isLoading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-500 mx-auto mb-4"></div>
-            <p className="text-gray-500">Loading magazines...</p>
+      <div className="flex items-center space-x-2">
+        <Search className="h-5 w-5 text-muted-foreground" />
+        <Input
+          placeholder="Search magazines..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
+      
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredMagazines.map(magazine => (
+          <div 
+            key={magazine.id} 
+            className="flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm"
+          >
+            <div className="relative aspect-[4/5] bg-muted">
+              <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
+                <ImageIcon className="h-10 w-10" />
+              </div>
+              {magazine.coverImage && (
+                <img
+                  src={magazine.coverImage}
+                  alt={magazine.title}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              )}
+              <div className="absolute right-2 top-2">
+                <div className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                  magazine.status === 'published' ? 'bg-green-100 text-green-800' :
+                  magazine.status === 'draft' ? 'bg-amber-100 text-amber-800' :
+                  'bg-red-100 text-red-800'
+                }`}>
+                  {magazine.status}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-1 flex-col p-4">
+              <h3 className="text-lg font-semibold">{magazine.title}</h3>
+              <p className="mb-2 text-sm text-muted-foreground">
+                {format(new Date(magazine.publicationDate), "MMMM yyyy")} • {magazine.pageCount} pages
+              </p>
+              <p className="text-sm text-muted-foreground">{magazine.description}</p>
+              <div className="mt-4 flex justify-end space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate(`/admin/magazines/edit/${magazine.id}`)}
+                >
+                  <Edit className="mr-1 h-4 w-4" /> Edit
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-red-500" 
+                  onClick={() => handleDelete(magazine.id)}
+                >
+                  <Trash className="mr-1 h-4 w-4" /> Delete
+                </Button>
+              </div>
+            </div>
           </div>
-        ) : magazines?.length === 0 ? (
-          <div className="text-center py-10 bg-gray-50 rounded-lg border border-gray-200">
-            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No Magazines Found</h3>
-            <p className="text-gray-500 mb-4">You haven't created any magazines yet.</p>
-            <Button onClick={() => setOpen(true)} variant="outline" size="sm">
-              <Plus className="h-4 w-4 mr-1" /> Create Your First Magazine
+        ))}
+      </div>
+      
+      {filteredMagazines.length === 0 && (
+        <div className="flex h-40 items-center justify-center rounded-lg border border-dashed">
+          <div className="text-center">
+            <p className="text-muted-foreground">No magazines found.</p>
+            <Button 
+              variant="outline" 
+              className="mt-2"
+              onClick={() => navigate("/admin/magazines/create")}
+            >
+              Create your first magazine
             </Button>
           </div>
-        ) : (
-          magazines?.map((magazine) => {
-            const featuredArticle = articles?.find(article => article.id === magazine.featured_article_id);
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MagazineForm = () => {
+  const navigate = useNavigate();
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [uploadedPdf, setUploadedPdf] = useState<string | null>(null);
+  const [articles, setArticles] = useState<number[]>([]);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      status: "draft",
+      pageCount: 1,
+      publicationDate: new Date(),
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // In a real app, this would call an API to save the magazine
+    console.log(values);
+    toast.success("Magazine saved successfully");
+    navigate("/admin/magazines");
+  }
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // In a real app, this would upload the image to a server
+    // Here we just simulate setting the image URL
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          setCoverImage(e.target.result.toString());
+          toast.success("Cover image uploaded");
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // In a real app, this would upload the PDF to a server
+    if (e.target.files && e.target.files[0]) {
+      setUploadedPdf(e.target.files[0].name);
+      toast.success("PDF uploaded successfully");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center space-x-2">
+        <Button variant="ghost" onClick={() => navigate("/admin/magazines")}>
+          <ChevronLeft className="h-4 w-4" />
+          <span>Back</span>
+        </Button>
+        <h1 className="text-3xl font-bold">New Magazine</h1>
+      </div>
+
+      <Tabs defaultValue="content" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsTrigger value="content">Content</TabsTrigger>
+          <TabsTrigger value="design">Design</TabsTrigger>
+          <TabsTrigger value="articles">Articles</TabsTrigger>
+        </TabsList>
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <TabsContent value="content" className="space-y-4">
+              <div className="grid gap-6 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Magazine title" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="publicationDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Publication Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "MMMM yyyy")
+                              ) : (
+                                <span>Pick a month</span>
+                              )}
+                              <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <CalendarComponent
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                            className={cn("p-3 pointer-events-auto")}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Magazine description" 
+                        className="h-20"
+                        {...field} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="pageCount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Page Count</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        placeholder="Number of pages"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      {...field}
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="published">Published</option>
+                      <option value="archived">Archived</option>
+                    </select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div>
+                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  PDF Upload
+                </label>
+                <div className="mt-2 flex items-center space-x-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => document.getElementById('pdf-upload')?.click()}
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Choose PDF
+                  </Button>
+                  <input
+                    id="pdf-upload"
+                    type="file"
+                    accept=".pdf"
+                    className="hidden"
+                    onChange={handlePdfUpload}
+                  />
+                  {uploadedPdf && (
+                    <span className="text-sm text-muted-foreground">
+                      <FileText className="mr-1 inline h-4 w-4" />
+                      {uploadedPdf}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </TabsContent>
             
-            return (
-              <Card key={magazine.id} className="overflow-hidden">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    {magazine.title}
-                    {magazine.featured && <Star className="h-5 w-5 text-yellow-500 fill-current" />}
-                  </CardTitle>
-                  <CardDescription>{magazine.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500">Published: {new Date(magazine.publish_date).toLocaleDateString()}</p>
-                    {magazine.issue_number && <p className="text-sm text-gray-500">Issue: {magazine.issue_number}</p>}
-                    {featuredArticle && <p className="text-sm text-gray-500">Featured Article: {featuredArticle.title}</p>}
-                    <div className="flex gap-2 mt-2">
-                      {magazine.cover_image_url && (
-                        <a href={magazine.cover_image_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
-                          <ExternalLink className="w-4 h-4" />
-                          Cover Image
-                        </a>
-                      )}
-                      {magazine.pdf_url && (
-                        <a href={magazine.pdf_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center gap-1">
-                          <FileText className="w-4 h-4" />
-                          PDF
-                        </a>
+            <TabsContent value="design" className="space-y-4">
+              <div>
+                <h2 className="text-lg font-medium">Cover Design</h2>
+                <p className="text-sm text-muted-foreground">
+                  Upload and customize your magazine cover.
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Cover Image
+                  </label>
+                  <div className="mt-2">
+                    <div className="flex items-center justify-center border-2 border-dashed border-gray-300 px-6 py-6 rounded-md">
+                      {coverImage ? (
+                        <div className="relative">
+                          <img 
+                            src={coverImage}
+                            alt="Cover preview" 
+                            className="h-40 object-contain"
+                          />
+                          <Button 
+                            type="button"
+                            variant="destructive" 
+                            size="icon"
+                            className="absolute right-0 top-0"
+                            onClick={() => setCoverImage(null)}
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                          <div className="mt-2 flex justify-center text-sm text-gray-600">
+                            <Button 
+                              type="button"
+                              variant="outline" 
+                              onClick={() => document.getElementById('cover-upload')?.click()}
+                            >
+                              <Upload className="mr-2 h-4 w-4" />
+                              Upload Cover
+                            </Button>
+                            <input
+                              id="cover-upload"
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleImageUpload}
+                            />
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button variant="secondary" size="icon" onClick={() => setSelectedMagazine(magazine)}>
-                      <Edit2 className="h-4 w-4" />
-                    </Button>
-                    <Button variant="destructive" size="icon" onClick={() => handleDeleteMagazine(magazine.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Cover Design Options
+                  </label>
+                  <div className="mt-2 grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-muted-foreground">Title Position</label>
+                      <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                        <option>Top</option>
+                        <option>Middle</option>
+                        <option>Bottom</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-muted-foreground">Text Color</label>
+                      <div className="flex space-x-2">
+                        <button type="button" className="h-8 w-8 rounded-full bg-white border"></button>
+                        <button type="button" className="h-8 w-8 rounded-full bg-black"></button>
+                        <button type="button" className="h-8 w-8 rounded-full bg-red-500"></button>
+                        <button type="button" className="h-8 w-8 rounded-full bg-blue-500"></button>
+                      </div>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })
-        )}
-      </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="articles" className="space-y-4">
+              <div>
+                <h2 className="text-lg font-medium">Magazine Articles</h2>
+                <p className="text-sm text-muted-foreground">
+                  Select articles to include in this magazine issue.
+                </p>
+              </div>
+              
+              <div className="space-y-4 border rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-md font-medium">Selected Articles</h3>
+                  <Button type="button" variant="outline" size="sm">
+                    <Plus className="mr-1 h-4 w-4" />
+                    Add Article
+                  </Button>
+                </div>
+                
+                <div className="space-y-2">
+                  {mockMagazines[0].id && (
+                    <div className="flex items-center justify-between rounded-md border bg-muted/50 px-4 py-2">
+                      <span className="font-medium">AI and Machine Learning Transforming Business Operations</span>
+                      <Button type="button" variant="ghost" size="sm">
+                        <Trash className="h-4 w-4" />
+                        <span className="sr-only">Remove</span>
+                      </Button>
+                    </div>
+                  )}
+                  {mockMagazines[1].id && (
+                    <div className="flex items-center justify-between rounded-md border bg-muted/50 px-4 py-2">
+                      <span className="font-medium">The Future of Remote Work in Global Companies</span>
+                      <Button type="button" variant="ghost" size="sm">
+                        <Trash className="h-4 w-4" />
+                        <span className="sr-only">Remove</span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Table of Contents Order
+                  </label>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Drag and drop to reorder articles in the table of contents.
+                  </p>
+                  <div className="mt-2 space-y-2">
+                    <div className="flex items-center rounded-md border px-3 py-2 cursor-move">
+                      <span>1.</span>
+                      <span className="ml-2">AI and Machine Learning Transforming Business Operations</span>
+                    </div>
+                    <div className="flex items-center rounded-md border px-3 py-2 cursor-move">
+                      <span>2.</span>
+                      <span className="ml-2">The Future of Remote Work in Global Companies</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            
+            <div className="flex items-center justify-end space-x-2">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate("/admin/magazines")}
+                type="button"
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Save Magazine</Button>
+            </div>
+          </form>
+        </Form>
+      </Tabs>
     </div>
   );
 };
