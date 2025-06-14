@@ -1,264 +1,184 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, Users, FileText, BookOpen, Briefcase, Phone, User } from 'lucide-react';
-import { Button } from '../ui/button';
-import { useCompanyName } from '@/hooks/useDatabaseSettings';
+
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Menu, X, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { useSettings } from '@/hooks/useSettings';
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLeadershipOpen, setIsLeadershipOpen] = useState(false);
-  const [isResourcesOpen, setIsResourcesOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const location = useLocation();
-  const companyName = useCompanyName();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { settings } = useSettings();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu = () => setIsOpen(false);
-
-  const handleLeadershipToggle = () => {
-    setIsLeadershipOpen(!isLeadershipOpen);
-    setIsResourcesOpen(false);
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
-
-  const handleResourcesToggle = () => {
-    setIsResourcesOpen(!isResourcesOpen);
-    setIsLeadershipOpen(false);
-  };
-
-  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100' : 'bg-white/90 backdrop-blur-sm'
-    }`}>
+    <nav className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between h-20">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center" onClick={closeMenu}>
-              <span className="text-2xl font-bold text-insightBlack hover:text-insightRed transition-colors">
-                {companyName}
-              </span>
+          <div className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex items-center group">
+              {/* Professional Magazine Logo */}
+              <div className="relative">
+                {settings.siteLogo ? (
+                  <img 
+                    src={settings.siteLogo} 
+                    alt={settings.companyName}
+                    className="w-12 h-12 rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gradient-to-br from-insightRed to-red-700 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                    <div className="w-8 h-8 relative">
+                      {/* Magazine Icon */}
+                      <div className="absolute inset-0 bg-white rounded-sm opacity-90"></div>
+                      <div className="absolute top-1 left-1 right-1 h-1 bg-insightRed rounded-full"></div>
+                      <div className="absolute top-3 left-1 right-2 h-0.5 bg-gray-400 rounded-full"></div>
+                      <div className="absolute top-4.5 left-1 right-3 h-0.5 bg-gray-400 rounded-full"></div>
+                      <div className="absolute top-6 left-1 right-1.5 h-0.5 bg-gray-400 rounded-full"></div>
+                    </div>
+                  </div>
+                )}
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"></div>
+              </div>
+              <div className="ml-4">
+                <span className="text-2xl font-bold text-insightBlack group-hover:text-insightRed transition-colors duration-300">
+                  {settings.companyName}
+                </span>
+                <div className="text-sm font-semibold text-gray-600 -mt-1">BUSINESS MAGAZINE</div>
+              </div>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/"
-              className={`text-sm font-medium transition-colors hover:text-insightRed ${
-                isActive('/') ? 'text-insightRed border-b-2 border-insightRed pb-1' : 'text-gray-700'
-              }`}
-            >
-              Home
-            </Link>
-
-            <Link
-              to="/about"
-              className={`text-sm font-medium transition-colors hover:text-insightRed ${
-                isActive('/about') ? 'text-insightRed border-b-2 border-insightRed pb-1' : 'text-gray-700'
-              }`}
-            >
-              About
-            </Link>
-
-            {/* Leadership Dropdown */}
-            <div className="relative">
-              <button
-                onClick={handleLeadershipToggle}
-                className={`flex items-center text-sm font-medium transition-colors hover:text-insightRed group ${
-                  isActive('/leadership') ? 'text-insightRed' : 'text-gray-700'
-                }`}
-              >
+          <div className="hidden lg:flex items-center">
+            <div className="ml-10 flex items-baseline space-x-6">
+              <Link to="/" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
+                Home
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link to="/magazine" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
+                Magazine
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link to="/leadership" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
                 Leadership
-                <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isLeadershipOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {isLeadershipOpen && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50">
-                  <Link
-                    to="/leadership"
-                    onClick={() => setIsLeadershipOpen(false)}
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-insightRed transition-colors"
-                  >
-                    <Users className="mr-3 h-4 w-4" />
-                    Leadership Profiles
-                  </Link>
-                </div>
-              )}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link to="/press-releases" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
+                Press&nbsp;Releases
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link to="/about" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
+                About&nbsp;Us
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link to="/contact" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
+                Contact&nbsp;Us
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
+              </Link>
             </div>
-
-            {/* Resources Dropdown */}
-            <div className="relative">
-              <button
-                onClick={handleResourcesToggle}
-                className="flex items-center text-sm font-medium text-gray-700 transition-colors hover:text-insightRed group"
-              >
-                Resources
-                <ChevronDown className={`ml-1 h-4 w-4 transition-transform ${isResourcesOpen ? 'rotate-180' : ''}`} />
-              </button>
-              
-              {isResourcesOpen && (
-                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50">
-                  <Link
-                    to="/articles"
-                    onClick={() => setIsResourcesOpen(false)}
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-insightRed transition-colors"
-                  >
-                    <FileText className="mr-3 h-4 w-4" />
-                    Articles & Insights
-                  </Link>
-                  <Link
-                    to="/magazine"
-                    onClick={() => setIsResourcesOpen(false)}
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-insightRed transition-colors"
-                  >
-                    <BookOpen className="mr-3 h-4 w-4" />
-                    Digital Magazine
-                  </Link>
-                  <Link
-                    to="/press-releases"
-                    onClick={() => setIsResourcesOpen(false)}
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-insightRed transition-colors"
-                  >
-                    <Briefcase className="mr-3 h-4 w-4" />
-                    Press Releases
-                  </Link>
-                  <Link
-                    to="/documentation"
-                    onClick={() => setIsResourcesOpen(false)}
-                    className="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-insightRed transition-colors"
-                  >
-                    <FileText className="mr-3 h-4 w-4" />
-                    Documentation
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            <Link
-              to="/contact"
-              className={`text-sm font-medium transition-colors hover:text-insightRed ${
-                isActive('/contact') ? 'text-insightRed border-b-2 border-insightRed pb-1' : 'text-gray-700'
-              }`}
-            >
-              Contact
-            </Link>
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link to="/contact">
-              <Button className="bg-insightRed hover:bg-red-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors">
-                Subscribe
-              </Button>
-            </Link>
+          {/* Social Media Icons - Desktop */}
+          <div className="hidden lg:flex items-center">
+            <div className="ml-6 flex items-center space-x-4">
+              <a href="#" className="text-gray-400 hover:text-insightRed transition-colors duration-200 p-2 rounded-full hover:bg-gray-100">
+                <Facebook size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-insightRed transition-colors duration-200 p-2 rounded-full hover:bg-gray-100">
+                <Twitter size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-insightRed transition-colors duration-200 p-2 rounded-full hover:bg-gray-100">
+                <Instagram size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-insightRed transition-colors duration-200 p-2 rounded-full hover:bg-gray-100">
+                <Linkedin size={20} />
+              </a>
+            </div>
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="lg:hidden flex items-center">
             <button
+              type="button"
+              className="inline-flex items-center justify-center p-3 rounded-md text-insightBlack hover:text-insightRed hover:bg-gray-100 focus:outline-none transition-colors duration-200"
               onClick={toggleMenu}
-              className="text-gray-700 hover:text-insightRed transition-colors"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              <span className="sr-only">Open main menu</span>
+              {isMenuOpen ? <X className="block h-6 w-6" /> : <Menu className="block h-6 w-6" />}
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden bg-white border-t border-gray-100">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link
-                to="/"
-                onClick={closeMenu}
-                className={`block px-3 py-3 text-base font-medium transition-colors hover:text-insightRed hover:bg-gray-50 rounded-md ${
-                  isActive('/') ? 'text-insightRed bg-red-50' : 'text-gray-700'
-                }`}
-              >
-                Home
-              </Link>
-
-              <Link
-                to="/about"
-                onClick={closeMenu}
-                className={`block px-3 py-3 text-base font-medium transition-colors hover:text-insightRed hover:bg-gray-50 rounded-md ${
-                  isActive('/about') ? 'text-insightRed bg-red-50' : 'text-gray-700'
-                }`}
-              >
-                About
-              </Link>
-
-              <Link
-                to="/leadership"
-                onClick={closeMenu}
-                className={`flex items-center px-3 py-3 text-base font-medium transition-colors hover:text-insightRed hover:bg-gray-50 rounded-md ${
-                  isActive('/leadership') ? 'text-insightRed bg-red-50' : 'text-gray-700'
-                }`}
-              >
-                <Users className="mr-3 h-5 w-5" />
-                Leadership
-              </Link>
-
-              <Link
-                to="/articles"
-                onClick={closeMenu}
-                className="flex items-center px-3 py-3 text-base font-medium text-gray-700 transition-colors hover:text-insightRed hover:bg-gray-50 rounded-md"
-              >
-                <FileText className="mr-3 h-5 w-5" />
-                Articles
-              </Link>
-
-              <Link
-                to="/magazine"
-                onClick={closeMenu}
-                className="flex items-center px-3 py-3 text-base font-medium text-gray-700 transition-colors hover:text-insightRed hover:bg-gray-50 rounded-md"
-              >
-                <BookOpen className="mr-3 h-5 w-5" />
-                Magazine
-              </Link>
-
-              <Link
-                to="/press-releases"
-                onClick={closeMenu}
-                className="flex items-center px-3 py-3 text-base font-medium text-gray-700 transition-colors hover:text-insightRed hover:bg-gray-50 rounded-md"
-              >
-                <Briefcase className="mr-3 h-5 w-5" />
-                Press Releases
-              </Link>
-
-              <Link
-                to="/contact"
-                onClick={closeMenu}
-                className={`flex items-center px-3 py-3 text-base font-medium transition-colors hover:text-insightRed hover:bg-gray-50 rounded-md ${
-                  isActive('/contact') ? 'text-insightRed bg-red-50' : 'text-gray-700'
-                }`}
-              >
-                <Phone className="mr-3 h-5 w-5" />
-                Contact
-              </Link>
-
-              <div className="pt-4 pb-2">
-                <Link to="/contact" onClick={closeMenu}>
-                  <Button className="w-full bg-insightRed hover:bg-red-700 text-white px-6 py-3 rounded-md text-sm font-medium transition-colors">
-                    Subscribe
-                  </Button>
-                </Link>
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg">
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            <Link
+              to="/"
+              className="block px-4 py-3 text-base font-medium text-insightBlack hover:text-insightRed hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              onClick={toggleMenu}
+            >
+              Home
+            </Link>
+            <Link
+              to="/magazine"
+              className="block px-4 py-3 text-base font-medium text-insightBlack hover:text-insightRed hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              onClick={toggleMenu}
+            >
+              Magazine
+            </Link>
+            <Link
+              to="/leadership"
+              className="block px-4 py-3 text-base font-medium text-insightBlack hover:text-insightRed hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              onClick={toggleMenu}
+            >
+              Leadership
+            </Link>
+            <Link
+              to="/press-releases"
+              className="block px-4 py-3 text-base font-medium text-insightBlack hover:text-insightRed hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              onClick={toggleMenu}
+            >
+              Press Releases
+            </Link>
+            <Link
+              to="/about"
+              className="block px-4 py-3 text-base font-medium text-insightBlack hover:text-insightRed hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              onClick={toggleMenu}
+            >
+              About Us
+            </Link>
+            <Link
+              to="/contact"
+              className="block px-4 py-3 text-base font-medium text-insightBlack hover:text-insightRed hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              onClick={toggleMenu}
+            >
+              Contact Us
+            </Link>
+          </div>
+          <div className="pt-4 pb-3 border-t border-gray-200">
+            <div className="flex items-center justify-center px-5">
+              <div className="flex space-x-6">
+                <a href="#" className="text-gray-400 hover:text-insightRed transition-colors duration-200">
+                  <Facebook size={20} />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-insightRed transition-colors duration-200">
+                  <Twitter size={20} />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-insightRed transition-colors duration-200">
+                  <Instagram size={20} />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-insightRed transition-colors duration-200">
+                  <Linkedin size={20} />
+                </a>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </nav>
   );
 };

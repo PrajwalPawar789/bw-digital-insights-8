@@ -118,17 +118,17 @@ const MagazineDetail = () => {
               </div>
             </div>
 
-            {/* Magazine Articles Section - Show even if there are no articles */}
-            <div className="mb-12">
-              <h2 className="text-2xl font-bold text-insightBlack mb-6">Featured Articles in This Issue</h2>
-              {!articlesLoading && magazineArticles.length > 0 ? (
+            {/* Magazine Articles Section */}
+            {!articlesLoading && magazineArticles.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold text-insightBlack mb-6">Featured Articles in This Issue</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {magazineArticles.map((magazineArticle) => (
                     <div key={magazineArticle.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                       <div className="aspect-video bg-gray-200 overflow-hidden">
                         <img
-                          src={magazineArticle.articles?.image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
-                          alt={magazineArticle.articles?.title || 'Article'}
+                          src={magazineArticle.articles.image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
+                          alt={magazineArticle.articles.title}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                         />
                       </div>
@@ -143,12 +143,12 @@ const MagazineDetail = () => {
                             </span>
                           )}
                         </div>
-                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">{magazineArticle.articles?.title}</h3>
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{magazineArticle.articles?.excerpt}</p>
+                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">{magazineArticle.articles.title}</h3>
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{magazineArticle.articles.excerpt}</p>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">By {magazineArticle.articles?.author}</span>
+                          <span className="text-xs text-gray-500">By {magazineArticle.articles.author}</span>
                           <Link
-                            to={`/article/${magazineArticle.articles?.slug}`}
+                            to={`/article/${magazineArticle.articles.slug}`}
                             className="text-insightRed hover:text-insightBlack font-medium text-sm flex items-center"
                           >
                             Read Article <ArrowRight className="ml-1 h-3 w-3" />
@@ -158,18 +158,12 @@ const MagazineDetail = () => {
                     </div>
                   ))}
                 </div>
-              ) : (
-                <div className="text-center py-8 bg-gray-50 rounded-lg">
-                  <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No articles available for this magazine issue yet.</p>
-                  <p className="text-sm text-gray-400 mt-2">Articles will be added soon.</p>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </>
         )}
 
-        {/* PDF Viewer - Hide download button */}
+        {/* PDF Viewer */}
         <div id="pdf-viewer" className="mb-12">
           <MagazinePDFViewer
             fileUrl={magazine.pdf_url || "/sample-magazine.pdf"}
