@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { useMagazines, useCreateMagazine, useUpdateMagazine, useDeleteMagazine } from '@/hooks/useMagazines';
 import { useArticles } from '@/hooks/useArticles';
 import { useMagazineArticles } from '@/hooks/useMagazineArticles';
 import { useImageUpload } from '@/hooks/useImageUpload';
-import { useCreateMagazineArticle } from '@/hooks/useMagazineArticles'; // import the insert hook for magazine_articles
+import { useCreateMagazineArticle } from '@/hooks/useMagazineArticles';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
+import { useToast } from '@/components/ui/use-toast';
 import { Edit2, Trash2, Plus, Upload, FileText, Calendar, Hash, Star, ExternalLink } from 'lucide-react';
 import { slugify } from '@/lib/slugify';
 
@@ -37,6 +38,7 @@ const MagazineManager = () => {
   const { mutate: deleteMagazine } = useDeleteMagazine();
   const { uploadImage, uploadPdf, uploading } = useImageUpload();
   const { mutate: createMagazineArticle } = useCreateMagazineArticle();
+  const { toast } = useToast();
 
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -96,7 +98,11 @@ const MagazineManager = () => {
 
   const handleCreateMagazine = async () => {
     if (!title || !description || !publishDate) {
-      toast.error('Please fill in all required fields (title, description, publish date).');
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields (title, description, publish date).",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -113,26 +119,47 @@ const MagazineManager = () => {
         featured_article_id: featuredArticleId,
       };
 
-      // 1. Create the magazine
+      console.log('Creating magazine:', newMagazine);
+
       createMagazine(newMagazine, {
         onSuccess: (createdMagazine) => {
-          // 2. Optionally link featured_article_id via magazine_articles, if one is selected
+          console.log('Magazine created successfully:', createdMagazine);
+          
           if (featuredArticleId && createdMagazine?.id) {
+            console.log('Adding featured article to magazine');
             createMagazineArticle({
               magazine_id: createdMagazine.id,
               article_id: featuredArticleId,
               featured: true,
-              page_number: 1, // or let the user choose/add in UI later
+              page_number: 1,
             });
           }
+          
           setOpen(false);
           resetForm();
           refetch();
+          
+          toast({
+            title: "Success",
+            description: "Magazine created successfully"
+          });
+        },
+        onError: (error) => {
+          console.error('Error creating magazine:', error);
+          toast({
+            title: "Error",
+            description: "Failed to create magazine",
+            variant: "destructive"
+          });
         }
       });
     } catch (error) {
-      toast.error('Failed to create magazine');
-      console.error('Error creating magazine:', error);
+      console.error('Error in handleCreateMagazine:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create magazine",
+        variant: "destructive"
+      });
     }
   };
 
@@ -140,7 +167,11 @@ const MagazineManager = () => {
     if (!selectedMagazine?.id) return;
 
     if (!title || !description || !publishDate) {
-      toast.error('Please fill in all required fields (title, description, publish date).');
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields (title, description, publish date).",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -158,36 +189,76 @@ const MagazineManager = () => {
         featured_article_id: featuredArticleId,
       };
 
-      // 1. Update the magazine
+      console.log('Updating magazine:', updatedMagazine);
+
       updateMagazine(updatedMagazine, {
         onSuccess: (magazine) => {
-          // 2. Optionally link featured_article_id via magazine_articles, if one is selected
+          console.log('Magazine updated successfully:', magazine);
+          
           if (featuredArticleId && magazine?.id) {
+            console.log('Adding featured article to magazine');
             createMagazineArticle({
               magazine_id: magazine.id,
               article_id: featuredArticleId,
               featured: true,
-              page_number: 1, // or customize
+              page_number: 1,
             });
           }
+          
           setOpen(false);
           resetForm();
           refetch();
+          
+          toast({
+            title: "Success",
+            description: "Magazine updated successfully"
+          });
+        },
+        onError: (error) => {
+          console.error('Error updating magazine:', error);
+          toast({
+            title: "Error",
+            description: "Failed to update magazine",
+            variant: "destructive"
+          });
         }
       });
     } catch (error) {
-      toast.error('Failed to update magazine');
-      console.error('Error updating magazine:', error);
+      console.error('Error in handleUpdateMagazine:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update magazine",
+        variant: "destructive"
+      });
     }
   };
 
   const handleDeleteMagazine = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this magazine? This action cannot be undone.")) {
       try {
-        deleteMagazine(id);
+        deleteMagazine(id, {
+          onSuccess: () => {
+            toast({
+              title: "Success",
+              description: "Magazine deleted successfully"
+            });
+          },
+          onError: (error) => {
+            console.error('Error deleting magazine:', error);
+            toast({
+              title: "Error",
+              description: "Failed to delete magazine",
+              variant: "destructive"
+            });
+          }
+        });
       } catch (error) {
-        console.error('Error deleting magazine:', error);
-        toast.error('Failed to delete magazine');
+        console.error('Error in handleDeleteMagazine:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete magazine",
+          variant: "destructive"
+        });
       }
     }
   };
@@ -198,11 +269,18 @@ const MagazineManager = () => {
       console.log('Uploading cover image:', file.name);
       const imageUrl = await uploadImage(file, "magazines");
       setCoverImageUrl(imageUrl);
-      toast.success("Cover image uploaded successfully");
+      toast({
+        title: "Success",
+        description: "Cover image uploaded successfully"
+      });
       setUploadingFile(null);
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.error("Failed to upload image");
+      toast({
+        title: "Error",
+        description: "Failed to upload image",
+        variant: "destructive"
+      });
       setUploadingFile(null);
     }
   };
@@ -213,11 +291,18 @@ const MagazineManager = () => {
       console.log('Uploading PDF:', file.name);
       const pdfUrl = await uploadPdf(file, "magazine-pdfs");
       setPdfUrl(pdfUrl);
-      toast.success("PDF uploaded successfully");
+      toast({
+        title: "Success",
+        description: "PDF uploaded successfully"
+      });
       setUploadingFile(null);
     } catch (error) {
       console.error('Error uploading PDF:', error);
-      toast.error("Failed to upload PDF");
+      toast({
+        title: "Error",
+        description: "Failed to upload PDF",
+        variant: "destructive"
+      });
       setUploadingFile(null);
     }
   };
