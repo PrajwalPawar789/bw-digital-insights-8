@@ -13,5 +13,6 @@ export const useClientLogos = () => {
       if (error) throw error;
       return data || [];
     },
+    initialData: [],
   });
 };

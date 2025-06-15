@@ -13,5 +13,7 @@ export const useTestimonials = () => {
       if (error) throw error;
       return data || [];
     },
+    // Defensive: never undefined
+    initialData: [],
   });
 };

@@ -13,5 +13,6 @@ export const useUpcomingEditions = () => {
       if (error) throw error;
       return data || [];
     },
+    initialData: [],
   });
 };

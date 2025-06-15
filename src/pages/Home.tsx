@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -32,6 +31,23 @@ function getMagDate(magObj: any) {
 }
 function getMagId(magObj: any) {
   return magObj?.slug || magObj?.id;
+}
+
+// Defensive: fallback images and text for magazines
+function safeGetMagCover(magObj: any) {
+  return magObj?.cover_image_url || magObj?.coverImage || magObj?.image_url || "/placeholder.svg";
+}
+function safeGetMagTitle(magObj: any) {
+  return magObj?.title || magObj?.name || "Untitled";
+}
+function safeGetMagDesc(magObj: any) {
+  return magObj?.description || "";
+}
+function safeGetMagDate(magObj: any) {
+  return magObj?.publish_date || magObj?.publicationDate || "";
+}
+function safeGetMagId(magObj: any) {
+  return magObj?.slug || magObj?.id || "";
 }
 
 const Home = () => {
@@ -113,14 +129,14 @@ const Home = () => {
             <div className="hidden lg:flex justify-end">
               <div className="relative">
                 <img
-                  src={getMagCover(latestMagazine)}
-                  alt="Latest Magazine Cover"
+                  src={safeGetMagCover(magazineData[0])}
+                  alt={safeGetMagTitle(magazineData[0])}
                   className="rounded-lg shadow-2xl w-80 h-auto transform rotate-6 z-10"
                 />
                 {magazineData[1] && (
                   <img
-                    src={getMagCover(magazineData[1])}
-                    alt="Previous Magazine Cover"
+                    src={safeGetMagCover(magazineData[1])}
+                    alt={safeGetMagTitle(magazineData[1])}
                     className="absolute -left-10 -bottom-5 rounded-lg shadow-xl w-72 h-auto transform -rotate-6"
                   />
                 )}
@@ -134,7 +150,7 @@ const Home = () => {
       </section>
 
       {/* Cover Story */}
-      {featuredNews[0] && (
+      {newsData && newsData.filter((n: any) => n.featured)[0] && (
         <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
@@ -143,7 +159,7 @@ const Home = () => {
                 <p className="text-gray-600">Our most impactful feature of the month</p>
               </div>
               <Link
-                to={`/article/${featuredNews[0].slug}`}
+                to={`/article/${newsData.filter((n: any) => n.featured)[0].slug}`}
                 className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium transition-colors"
               >
                 Read Full Story <ChevronRight className="ml-1 h-4 w-4" />
@@ -151,14 +167,14 @@ const Home = () => {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
               <div className="lg:col-span-3 relative h-[400px] rounded-xl overflow-hidden">
-                <img src={featuredNews[0].image_url} alt={featuredNews[0].title} className="w-full h-full object-cover" />
+                <img src={newsData.filter((n: any) => n.featured)[0].image_url} alt={newsData.filter((n: any) => n.featured)[0].title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-6 text-white">
                   <div className="flex items-center mb-4">
                     <span className="bg-insightRed text-white px-3 py-1 text-sm font-bold rounded-md">Cover Story</span>
                   </div>
-                  <h3 className="text-3xl font-bold mb-2 max-w-xl">{featuredNews[0].title}</h3>
-                  <p className="text-gray-200 mb-4 max-w-xl">{featuredNews[0].excerpt}</p>
+                  <h3 className="text-3xl font-bold mb-2 max-w-xl">{newsData.filter((n: any) => n.featured)[0].title}</h3>
+                  <p className="text-gray-200 mb-4 max-w-xl">{newsData.filter((n: any) => n.featured)[0].excerpt}</p>
                 </div>
               </div>
               {/* ... Highlights -- skip for now */}
@@ -197,7 +213,7 @@ const Home = () => {
       )}
 
       {/* Editor's Picks Carousel */}
-      {featuredNews.length > 0 && (
+      {newsData && newsData.filter((n: any) => n.featured).length > 0 && (
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
@@ -208,7 +224,7 @@ const Home = () => {
             </div>
             <div className="relative overflow-hidden rounded-lg shadow-lg">
               <div className="relative h-[400px] md:h-[500px]">
-                {featuredNews.map((news: any, index: number) => (
+                {newsData.filter((n: any) => n.featured).map((news: any, index: number) => (
                   <div
                     key={news.id}
                     className={`absolute inset-0 transition-opacity duration-500 ${
@@ -251,7 +267,7 @@ const Home = () => {
                 <ChevronRight className="h-6 w-6" />
               </button>
               <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                {featuredNews.map((_: any, index: number) => (
+                {newsData.filter((n: any) => n.featured).map((_: any, index: number) => (
                   <button
                     key={index}
                     onClick={() => setActiveSlide(index)}
@@ -287,23 +303,23 @@ const Home = () => {
           </div>
           <Carousel opts={{ align: "center", loop: true, dragFree: true }} className="w-full">
             <CarouselContent className="-ml-4">
-              {magazineData.map((magazine: any) => (
-                <CarouselItem key={getMagId(magazine)} className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110">
-                  <Link to={`/magazine/${getMagId(magazine)}`} className="block group perspective-1000">
+              {(magazineData || []).map((magazine: any) => (
+                <CarouselItem key={safeGetMagId(magazine)} className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110">
+                  <Link to={`/magazine/${safeGetMagId(magazine)}`} className="block group perspective-1000">
                     <div className="relative transform transition-all duration-500 group-hover:rotate-y-6 preserve-3d">
                       <div className="overflow-hidden rounded-xl shadow-2xl bg-white">
                         <div className="relative aspect-[3/4]">
-                          <img src={getMagCover(magazine)} alt={getMagTitle(magazine)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                          <img src={safeGetMagCover(magazine)} alt={safeGetMagTitle(magazine)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                           <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-white/20 to-transparent transform scale-y-[-1] opacity-0 group-hover:opacity-40 transition-opacity duration-500 blur-sm"></div>
                           <div className="absolute top-0 right-0 m-4">
                             <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-insightBlack text-sm font-semibold rounded-full">
-                              {getMagDate(magazine)}
+                              {safeGetMagDate(magazine)}
                             </span>
                           </div>
                           <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                            <h3 className="text-xl font-bold mb-2">{getMagTitle(magazine)}</h3>
-                            <p className="text-sm text-gray-200 line-clamp-2 mb-4">{getMagDesc(magazine)}</p>
+                            <h3 className="text-xl font-bold mb-2">{safeGetMagTitle(magazine)}</h3>
+                            <p className="text-sm text-gray-200 line-clamp-2 mb-4">{safeGetMagDesc(magazine)}</p>
                             <span className="inline-flex items-center text-sm font-medium text-white">
                               Read Issue <ChevronRight className="ml-1 h-4 w-4" />
                             </span>
@@ -336,36 +352,36 @@ const Home = () => {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {upcomingEditions.map((edition: any, index: number) => (
+            {(upcomingEditions || []).map((edition: any, index: number) => (
               <div
-                key={edition.id}
+                key={edition.id || index}
                 className="group relative overflow-hidden rounded-xl shadow-lg transform transition-all duration-500 hover:-translate-y-2"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 z-10 group-hover:from-black/80"></div>
                 <img
-                  src={edition.image_url}
-                  alt={edition.title}
+                  src={edition.image_url || "/placeholder.svg"}
+                  alt={edition.title || "Upcoming Edition"}
                   className="w-full h-80 object-cover filter blur-[8px] scale-110 group-hover:scale-125 group-hover:blur-[12px] transition-all duration-1000"
                 />
                 <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 text-white">
                   <div className="inline-flex items-center px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-3 w-fit">
                     <span className="animate-pulse mr-2 h-2 w-2 bg-insightRed rounded-full"></span>
-                    {edition.release_date}
+                    {edition.release_date || "Coming Soon"}
                   </div>
                   <h3 className="text-2xl font-bold mb-3 tracking-tight group-hover:text-insightRed transition-colors">
-                    {edition.title}
+                    {edition.title || "Upcoming Edition"}
                   </h3>
                   <p className="text-gray-200 mb-5 line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
-                    {edition.description}
+                    {edition.description || ""}
                   </p>
                   <div className="flex items-center text-sm font-medium border-t border-white/20 pt-3">
-                    <span className="pb-0.5">{edition.status}</span>
+                    <span className="pb-0.5">{edition.status || "Planned"}</span>
                   </div>
                 </div>
                 <div className="absolute top-4 right-4 z-30">
                   <span className="inline-flex items-center px-3 py-1 bg-insightRed/90 backdrop-blur-sm text-white text-sm font-bold rounded-full group-hover:shadow-glow animate-pulse">
-                    {edition.status}
+                    {edition.status || "Planned"}
                   </span>
                 </div>
               </div>
@@ -458,29 +474,26 @@ const Home = () => {
           </div>
           <div className="relative px-8 md:px-16">
             <div className="relative overflow-hidden min-h-[300px]">
-              {testimonialsData.map((testimonial: any, index: number) => (
+              {(testimonialsData || []).map((testimonial: any, index: number) => (
                 <div
-                  key={testimonial.id}
-                  className={`absolute inset-0 transition-opacity duration-500 ${
-                    index === activeTestimonial ? "opacity-100" : "opacity-0 pointer-events-none"
-                  }`}
+                  key={testimonial.id || index}
+                  className={`absolute inset-0 transition-opacity duration-500 ${index === activeTestimonial ? "opacity-100" : "opacity-0 pointer-events-none"}`}
                 >
                   <div className="flex flex-col items-center text-center">
                     <div className="w-24 h-24 mb-6 rounded-full overflow-hidden border-2 border-insightRed">
                       <img
-                        src={testimonial.avatar_url}
-                        alt={testimonial.name}
+                        src={testimonial.avatar_url || "/placeholder.svg"}
+                        alt={testimonial.name || "Avatar"}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <blockquote className="max-w-2xl mb-6 text-xl font-medium text-gray-700 italic">
-                      "{testimonial.quote}"
+                      "{testimonial.quote || "No testimonial provided."}"
                     </blockquote>
                     <div>
-                      <cite className="font-semibold text-insightBlack text-lg not-italic">{testimonial.name}</cite>
+                      <cite className="font-semibold text-insightBlack text-lg not-italic">{testimonial.name || "Anonymous"}</cite>
                       <p className="text-insightRed font-medium">
-                        {testimonial.title}
-                        {testimonial.company ? `, ${testimonial.company}` : ""}
+                        {(testimonial.title || "") + (testimonial.company ? `, ${testimonial.company}` : "")}
                       </p>
                     </div>
                   </div>
@@ -488,13 +501,11 @@ const Home = () => {
               ))}
             </div>
             <div className="flex justify-center space-x-2 mt-8">
-              {testimonialsData.map((_: any, index: number) => (
+              {(testimonialsData || []).map((_: any, index: number) => (
                 <button
                   key={index}
                   onClick={() => setActiveTestimonial(index)}
-                  className={`h-3 rounded-full transition-all ${
-                    index === activeTestimonial ? "bg-insightRed w-8" : "bg-gray-300 w-3"
-                  }`}
+                  className={`h-3 rounded-full transition-all ${index === activeTestimonial ? "bg-insightRed w-8" : "bg-gray-300 w-3"}`}
                   aria-label={`Go to testimonial ${index + 1}`}
                 ></button>
               ))}
@@ -528,7 +539,7 @@ const Home = () => {
             </div>
             <div className="hidden lg:block">
               <img
-                src={getMagCover(latestMagazine)}
+                src={safeGetMagCover(latestMagazine)}
                 alt="Latest Magazine"
                 className="w-full max-w-md mx-auto rounded-lg shadow-2xl transform -rotate-6"
               />
