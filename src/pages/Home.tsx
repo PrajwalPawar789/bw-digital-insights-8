@@ -16,43 +16,36 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import ClientLogos from '@/components/ClientLogos';
 
-// Adjust field mappings if necessary, e.g., cover_image_url vs coverImage, etc.
-function getMagCover(imgObj: any) {
-  return imgObj.cover_image_url || imgObj.coverImage;
+// Helper accessors for different magazine field shapes
+function getMagCover(magObj) {
+  return magObj?.cover_image_url || magObj?.coverImage || magObj?.image || '/placeholder.svg';
 }
-function getMagTitle(magObj: any) {
-  return magObj.title || magObj.name;
+function getMagTitle(magObj) {
+  return magObj?.title || magObj?.name || 'Untitled';
 }
-function getMagDesc(magObj: any) {
-  return magObj.description || "";
+function getMagDesc(magObj) {
+  return magObj?.description || '';
 }
-function getMagDate(magObj: any) {
+function getMagDate(magObj) {
   return (
-    magObj.publicationDate ||
-    magObj.publish_date ||
-    magObj.releaseDate ||
+    magObj?.publicationDate ||
+    magObj?.publish_date ||
+    magObj?.releaseDate ||
     ""
   );
 }
-function getMagId(magObj: any) {
-  return magObj.slug || magObj.id;
+function getMagId(magObj) {
+  return magObj?.slug || magObj?.id;
 }
 
 const Home = () => {
-  // Get featured news articles, ensuring there are multiple for the slider
   const featuredNews = newsData.filter(news => news.isFeatured || false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
-  // Use fallback if magazineData is empty
   const latestMagazine = magazineData[0] || {};
-
-  // Categories for the news tabs
   const categories = ['Trending', 'Business', 'Technology'];
-
-  // Function to get news by category
   const getNewsByCategory = (category: string) => {
     if (category === 'Trending') {
-      // For trending, show a mix of featured or recent ones
       return newsData
         .filter(news => news.isFeatured || new Date(news.date) > new Date('2025-02-01'))
         .slice(0, 6);
@@ -61,11 +54,7 @@ const Home = () => {
       .filter(news => news.category === category)
       .slice(0, 6);
   };
-
-  // Top executives from testimonials (using them as featured executives)
   const featuredExecutives = testimonialData.slice(0, 3);
-
-  // Updated upcoming editions data with provided images
   const upcomingEditions = [
     {
       id: 1,
@@ -101,8 +90,6 @@ const Home = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [featuredNews.length]);
-
-  // Carousel auto-play for testimonials
   useEffect(() => {
     if (!testimonialData.length) return;
     const interval = setInterval(() => {
@@ -111,19 +98,15 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Previous slide function
   const prevSlide = () => {
     setActiveSlide((prevSlide) => (prevSlide - 1 + featuredNews.length) % featuredNews.length);
   };
-
-  // Next slide function
   const nextSlide = () => {
     setActiveSlide((prevSlide) => (prevSlide + 1) % featuredNews.length);
   };
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Magazine Brand Statement */}
       <section className="bg-gradient-to-r from-insightBlack to-gray-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -157,13 +140,13 @@ const Home = () => {
             <div className="hidden lg:flex justify-end">
               <div className="relative">
                 <img 
-                  src={getMagCover(latestMagazine)} 
+                  src={getMagCover(latestMagazine)}
                   alt="Latest Magazine Cover" 
                   className="rounded-lg shadow-2xl w-80 h-auto transform rotate-6 z-10" 
                 />
                 {magazineData[1] && (
                   <img 
-                    src={getMagCover(magazineData[1])} 
+                    src={getMagCover(magazineData[1])}
                     alt="Previous Magazine Cover" 
                     className="absolute -left-10 -bottom-5 rounded-lg shadow-xl w-72 h-auto transform -rotate-6" 
                   />
@@ -177,7 +160,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Cover Story Section */}
+      {/* -- Cover Story -- */}
       {featuredNews[0] && (
         <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -193,7 +176,6 @@ const Home = () => {
                 Read Full Story <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
             </div>
-            
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
               <div className="lg:col-span-3 relative h-[400px] rounded-xl overflow-hidden">
                 <img 
@@ -212,7 +194,6 @@ const Home = () => {
                   <p className="text-gray-200 mb-4 max-w-xl">{featuredNews[0].excerpt}</p>
                 </div>
               </div>
-              
               <div className="lg:col-span-2 space-y-8">
                 <div className="flex items-start space-x-4">
                   <span className="text-insightRed font-bold text-5xl">01</span>
@@ -221,7 +202,6 @@ const Home = () => {
                     <p className="text-gray-600">Explore how today's C-level executives are implementing transformative strategies that drive unprecedented growth and innovation.</p>
                   </div>
                 </div>
-                
                 <div className="flex items-start space-x-4">
                   <span className="text-insightRed font-bold text-5xl">02</span>
                   <div>
@@ -229,7 +209,6 @@ const Home = () => {
                     <p className="text-gray-600">Strategic thinking, bold decision-making, and innovative approaches to market disruption defined our conversation with industry leaders.</p>
                   </div>
                 </div>
-                
                 <div className="flex items-start space-x-4">
                   <span className="text-insightRed font-bold text-5xl">03</span>
                   <div>
@@ -242,93 +221,85 @@ const Home = () => {
           </div>
         </section>
       )}
-
-      {/* Top Picks Carousel - More Focused (Editor's Picks) */}
+      {/* -- Editor's Picks Carousel -- */}
       {featuredNews.length > 0 && (
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-insightBlack">Editor's Picks</h2>
-              <p className="text-gray-600">Curated content from our latest issues</p>
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-insightBlack">Editor's Picks</h2>
+                <p className="text-gray-600">Curated content from our latest issues</p>
+              </div>
             </div>
-          </div>
-          
-          <div className="relative overflow-hidden rounded-lg shadow-lg">
-            {/* Carousel */}
-            <div className="relative h-[400px] md:h-[500px]">
-              {featuredNews.map((news, index) => (
-                <div
-                  key={news.id}
-                  className={`absolute inset-0 transition-opacity duration-500 ${
-                    index === activeSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                  }`}
-                >
-                  <div className="relative h-full">
-                    <img
-                      src={news.image}
-                      alt={news.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 p-8 text-white max-w-3xl">
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="bg-insightRed text-white px-3 py-1 text-sm font-bold rounded-md">
-                          {news.category}
-                        </span>
-                        <span className="text-sm text-gray-300">
-                          {news.date}
-                        </span>
+            <div className="relative overflow-hidden rounded-lg shadow-lg">
+              <div className="relative h-[400px] md:h-[500px]">
+                {featuredNews.map((news, index) => (
+                  <div
+                    key={news.id}
+                    className={`absolute inset-0 transition-opacity duration-500 ${
+                      index === activeSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                    }`}
+                  >
+                    <div className="relative h-full">
+                      <img
+                        src={news.image}
+                        alt={news.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                      <div className="absolute bottom-0 left-0 p-8 text-white max-w-3xl">
+                        <div className="flex items-center gap-3 mb-4">
+                          <span className="bg-insightRed text-white px-3 py-1 text-sm font-bold rounded-md">
+                            {news.category}
+                          </span>
+                          <span className="text-sm text-gray-300">
+                            {news.date}
+                          </span>
+                        </div>
+                        <h3 className="text-3xl md:text-4xl font-bold mb-3">{news.title}</h3>
+                        <p className="text-base md:text-lg mb-6 text-gray-200">{news.excerpt}</p>
+                        <Link
+                          to={`/article/${news.slug}`}
+                          className="inline-flex items-center text-white bg-insightRed hover:bg-red-700 px-6 py-3 rounded-md text-base font-medium transition-colors"
+                        >
+                          Read Full Article <ChevronRight className="ml-2 h-5 w-5" />
+                        </Link>
                       </div>
-                      <h3 className="text-3xl md:text-4xl font-bold mb-3">{news.title}</h3>
-                      <p className="text-base md:text-lg mb-6 text-gray-200">{news.excerpt}</p>
-                      <Link
-                        to={`/article/${news.slug}`}
-                        className="inline-flex items-center text-white bg-insightRed hover:bg-red-700 px-6 py-3 rounded-md text-base font-medium transition-colors"
-                      >
-                        Read Full Article <ChevronRight className="ml-2 h-5 w-5" />
-                      </Link>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Navigation Arrows */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-3 text-white backdrop-blur-sm transition-colors"
-              aria-label="Previous slide"
-            >
-              <ChevronLeft className="h-6 w-6" />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-3 text-white backdrop-blur-sm transition-colors"
-              aria-label="Next slide"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </button>
-            
-            {/* Indicators */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-              {featuredNews.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveSlide(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    index === activeSlide ? 'bg-white w-8' : 'bg-white/50 w-2'
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                ></button>
-              ))}
+                ))}
+              </div>
+              <button
+                onClick={prevSlide}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-3 text-white backdrop-blur-sm transition-colors"
+                aria-label="Previous slide"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button
+                onClick={nextSlide}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-3 text-white backdrop-blur-sm transition-colors"
+                aria-label="Next slide"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                {featuredNews.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveSlide(index)}
+                    className={`h-2 rounded-full transition-all ${
+                      index === activeSlide ? 'bg-white w-8' : 'bg-white/50 w-2'
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  ></button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
-
-      {/* Publications Section - Enhanced with Immersive Effects */}
+      {/* -- Publications -- */}
       <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] opacity-5 bg-fixed"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -346,7 +317,6 @@ const Home = () => {
               </p>
             </div>
           </div>
-          
           <Carousel
             opts={{
               align: "center",
@@ -356,7 +326,7 @@ const Home = () => {
             className="w-full"
           >
             <CarouselContent className="-ml-4">
-              {magazineData.map((magazine: any) => (
+              {magazineData.map((magazine) => (
                 <CarouselItem 
                   key={getMagId(magazine)} 
                   className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110"
@@ -371,10 +341,7 @@ const Home = () => {
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                          
-                          {/* Reflection effect */}
                           <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-white/20 to-transparent transform scale-y-[-1] opacity-0 group-hover:opacity-40 transition-opacity duration-500 blur-sm"></div>
-                          
                           <div className="absolute top-0 right-0 m-4">
                             <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-insightBlack text-sm font-semibold rounded-full">
                               {getMagDate(magazine)}
@@ -401,8 +368,7 @@ const Home = () => {
           </Carousel>
         </div>
       </section>
-
-      {/* UPCOMING EDITIONS */}
+      {/* -- Upcoming Editions -- */}
       <section className="py-16 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
@@ -414,7 +380,6 @@ const Home = () => {
               A sneak peek at our future editions currently in development
             </p>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {upcomingEditions.map((edition, index) => (
               <div 
@@ -453,8 +418,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Business Insights Section */}
+      {/* -- Business Insights (Tabs) -- */}
       <section className="py-16 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
@@ -466,7 +430,6 @@ const Home = () => {
               Expert analysis, market trends, and strategic perspectives from C-suite executives shaping the future of business.
             </p>
           </div>
-          
           <Tabs defaultValue={categories[0]} className="w-full">
             <TabsList className="mb-8 flex justify-center bg-white/50 backdrop-blur-sm p-1 rounded-lg border border-gray-200 shadow-sm">
               {categories.map((category) => (
@@ -479,7 +442,6 @@ const Home = () => {
                 </TabsTrigger>
               ))}
             </TabsList>
-            
             {categories.map((category) => (
               <TabsContent key={category} value={category}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -527,11 +489,9 @@ const Home = () => {
           </Tabs>
         </div>
       </section>
-
-      {/* Our Prestigious Clients */}
+      {/* -- Prestigious Clients -- */}
       <ClientLogos />
-
-      {/* Executive Spotlight */}
+      {/* -- Executive Spotlight -- */}
       <section className="py-16 bg-insightBlack text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-10">
@@ -549,7 +509,6 @@ const Home = () => {
               View All Leaders <ChevronRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
-          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featuredExecutives.map((executive) => (
               <div key={executive.id} className="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-6 hover:bg-white/10 transition-colors">
@@ -564,7 +523,7 @@ const Home = () => {
                   <h3 className="text-xl font-bold mb-1">{executive.name}</h3>
                   <p className="text-insightRed font-medium mb-2">{executive.title}</p>
                   <p className="text-gray-400 mb-4 text-sm">{executive.company}</p>
-                  <blockquote className="italic text-gray-300 text-sm mb-4">"{executive.quote.substring(0, 80)}..."</blockquote>
+                  <blockquote className="italic text-gray-300 text-sm mb-4">"{executive.quote?.substring(0, 80)}..."</blockquote>
                   <Link 
                     to={`/leadership/${executive.id}`}
                     className="inline-flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 rounded-md text-sm font-medium transition-colors"
@@ -577,8 +536,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Testimonials */}
+      {/* -- Testimonials -- */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
@@ -588,7 +546,6 @@ const Home = () => {
             <h2 className="text-3xl font-bold text-insightBlack">What Industry Leaders Say</h2>
             <p className="text-gray-600 mt-2">Feedback from our community of business professionals</p>
           </div>
-          
           <div className="relative px-8 md:px-16">
             <div className="relative overflow-hidden min-h-[300px]">
               {testimonialData.map((testimonial, index) => (
@@ -632,8 +589,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Call to Action */}
+      {/* -- CTA -- */}
       <section className="py-16 bg-insightRed text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -661,7 +617,7 @@ const Home = () => {
             </div>
             <div className="hidden lg:block">
               <img 
-                src={getMagCover(latestMagazine)} 
+                src={getMagCover(latestMagazine)}
                 alt="Latest Magazine" 
                 className="w-full max-w-md mx-auto rounded-lg shadow-2xl transform -rotate-6" 
               />
