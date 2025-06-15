@@ -1,15 +1,14 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { Plus, Users, FileText, BookOpen, Megaphone, TrendingUp, BarChart3, Eye } from 'lucide-react';
+import { Users, FileText, BookOpen, Megaphone, BarChart3 } from 'lucide-react';
 import ArticleManager from '@/components/admin/ArticleManager';
 import MagazineManager from '@/components/admin/MagazineManager';
 import LeaderManager from '@/components/admin/LeaderManager';
 import DocumentationManager from '@/components/admin/DocumentationManager';
 import SettingsManager from '@/components/admin/SettingsManager';
+import PressReleaseManager from '@/components/admin/PressReleaseManager';
 
 const AdminDashboard = () => {
   const { data: stats, isLoading } = useDashboardStats();
@@ -75,7 +74,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="articles" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="articles" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Articles
@@ -88,6 +87,10 @@ const AdminDashboard = () => {
               <Users className="h-4 w-4" />
               Leadership
             </TabsTrigger>
+            <TabsTrigger value="press-releases" className="flex items-center gap-2">
+              <Megaphone className="h-4 w-4" />
+              Press Releases
+            </TabsTrigger>
             <TabsTrigger value="documentation" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Docs
@@ -99,45 +102,19 @@ const AdminDashboard = () => {
           </TabsList>
 
           <TabsContent value="articles" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">Articles Management</h2>
-                <p className="text-gray-600">Create and manage your articles</p>
-              </div>
-              <Button className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                New Article
-              </Button>
-            </div>
             <ArticleManager />
           </TabsContent>
 
           <TabsContent value="magazines" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">Magazines Management</h2>
-                <p className="text-gray-600">Create and manage your magazines</p>
-              </div>
-              <Button className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                New Magazine
-              </Button>
-            </div>
             <MagazineManager />
           </TabsContent>
 
           <TabsContent value="leadership" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">Leadership Management</h2>
-                <p className="text-gray-600">Manage leadership profiles</p>
-              </div>
-              <Button className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                New Profile
-              </Button>
-            </div>
             <LeaderManager />
+          </TabsContent>
+
+          <TabsContent value="press-releases" className="space-y-6">
+            <PressReleaseManager />
           </TabsContent>
 
           <TabsContent value="documentation" className="space-y-6">
