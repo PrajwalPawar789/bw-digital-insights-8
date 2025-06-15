@@ -16,7 +16,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import ClientLogos from '@/components/ClientLogos';
 
-// Helper accessors for different magazine field shapes
+// --- Helpers for cover, title, date, id, desc (support multiple field shapes for magazines) --
 function getMagCover(magObj) {
   return magObj?.cover_image_url || magObj?.coverImage || magObj?.image || '/placeholder.svg';
 }
@@ -39,6 +39,7 @@ function getMagId(magObj) {
 }
 
 const Home = () => {
+  // --- Prepare data with robust access ---
   const featuredNews = newsData.filter(news => news.isFeatured || false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -82,7 +83,7 @@ const Home = () => {
     }
   ];
 
-  // Carousel auto-play for top picks
+  // --- Carousel auto-play ---
   useEffect(() => {
     if (!featuredNews.length) return;
     const interval = setInterval(() => {
@@ -107,6 +108,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Hero */}
       <section className="bg-gradient-to-r from-insightBlack to-gray-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -144,6 +146,7 @@ const Home = () => {
                   alt="Latest Magazine Cover" 
                   className="rounded-lg shadow-2xl w-80 h-auto transform rotate-6 z-10" 
                 />
+                {/* Only render previous magazine cover if it exists */}
                 {magazineData[1] && (
                   <img 
                     src={getMagCover(magazineData[1])}
@@ -160,7 +163,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* -- Cover Story -- */}
+      {/* Cover Story */}
       {featuredNews[0] && (
         <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -221,7 +224,7 @@ const Home = () => {
           </div>
         </section>
       )}
-      {/* -- Editor's Picks Carousel -- */}
+      {/* Editor's Picks Carousel */}
       {featuredNews.length > 0 && (
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -299,7 +302,8 @@ const Home = () => {
           </div>
         </section>
       )}
-      {/* -- Publications -- */}
+
+      {/* Publications */}
       <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] opacity-5 bg-fixed"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -418,7 +422,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      {/* -- Business Insights (Tabs) -- */}
+      {/* Business Insights (Tabs) */}
       <section className="py-16 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
@@ -491,7 +495,7 @@ const Home = () => {
       </section>
       {/* -- Prestigious Clients -- */}
       <ClientLogos />
-      {/* -- Executive Spotlight -- */}
+      {/* Executive Spotlight */}
       <section className="py-16 bg-insightBlack text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-10">
@@ -536,7 +540,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      {/* -- Testimonials -- */}
+      {/* Testimonials */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
@@ -589,7 +593,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-      {/* -- CTA -- */}
+      {/* Call to Action */}
       <section className="py-16 bg-insightRed text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
