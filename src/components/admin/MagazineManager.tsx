@@ -31,11 +31,11 @@ interface Magazine {
 const MagazineManager = () => {
   const { data: magazines, isLoading, refetch } = useMagazines();
   const { data: articles } = useArticles();
-  const { mutate: createMagazine } = useCreateMagazine();
-  const { mutate: updateMagazine } = useUpdateMagazine();
-  const { mutate: deleteMagazine } = useDeleteMagazine();
+  const createMagazineMutation = useCreateMagazine();
+  const updateMagazineMutation = useUpdateMagazine();
+  const deleteMagazineMutation = useDeleteMagazine();
   const { uploadImage, uploadPdf, uploading } = useImageUpload();
-  const { mutate: createMagazineArticle } = useCreateMagazineArticle();
+  const createMagazineArticleMutation = useCreateMagazineArticle();
 
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -93,7 +93,7 @@ const MagazineManager = () => {
     setUploadingFile(null);
   };
 
-  const handleCreateMagazine = () => {
+  const handleCreateMagazine = async () => {
     if (!title || !description || !publishDate) {
       toast.error("Please fill in all required fields (title, description, publish date).");
       return;
@@ -111,34 +111,28 @@ const MagazineManager = () => {
       featured_article_id: featuredArticleId,
     };
 
-    console.log('Creating magazine:', newMagazine);
-
-    createMagazine(newMagazine, {
-      onSuccess: (createdMagazine) => {
-        console.log('Magazine created successfully:', createdMagazine);
-        
-        if (featuredArticleId && createdMagazine?.id) {
-          console.log('Adding featured article to magazine');
-          createMagazineArticle({
-            magazine_id: createdMagazine.id,
-            article_id: featuredArticleId,
-            featured: true,
-            page_number: 1,
-          });
-        }
-        
-        setOpen(false);
-        resetForm();
-        refetch();
-      },
-      onError: (error) => {
-        console.error('Error creating magazine:', error);
-        toast.error("Failed to create magazine. Please try again.");
+    try {
+      const createdMagazine = await createMagazineMutation.mutateAsync(newMagazine);
+      
+      if (featuredArticleId && createdMagazine?.id) {
+        await createMagazineArticleMutation.mutateAsync({
+          magazine_id: createdMagazine.id,
+          article_id: featuredArticleId,
+          featured: true,
+          page_number: 1,
+        });
       }
-    });
+      
+      setOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error('Error creating magazine:', error);
+      // Toasts are handled by the mutation hooks, but a generic one can be useful.
+      toast.error("An error occurred during magazine creation.");
+    }
   };
 
-  const handleUpdateMagazine = () => {
+  const handleUpdateMagazine = async () => {
     if (!selectedMagazine?.id) return;
 
     if (!title || !description || !publishDate) {
@@ -159,36 +153,31 @@ const MagazineManager = () => {
       featured_article_id: featuredArticleId,
     };
 
-    console.log('Updating magazine:', updatedMagazine);
-
-    updateMagazine(updatedMagazine, {
-      onSuccess: (magazine) => {
-        console.log('Magazine updated successfully:', magazine);
-        
-        if (featuredArticleId && magazine?.id) {
-          console.log('Adding featured article to magazine');
-          createMagazineArticle({
-            magazine_id: magazine.id,
-            article_id: featuredArticleId,
-            featured: true,
-            page_number: 1,
-          });
-        }
-        
-        setOpen(false);
-        resetForm();
-        refetch();
-      },
-      onError: (error) => {
-        console.error('Error updating magazine:', error);
-        toast.error("Failed to update magazine. Please try again.");
+    try {
+      const magazine = await updateMagazineMutation.mutateAsync(updatedMagazine);
+      
+      if (featuredArticleId && magazine?.id) {
+        // Note: This logic adds a featured article but doesn't handle changes to an existing one.
+        // This matches the previous behavior.
+        await createMagazineArticleMutation.mutateAsync({
+          magazine_id: magazine.id,
+          article_id: featuredArticleId,
+          featured: true,
+          page_number: 1,
+        });
       }
-    });
+      
+      setOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error('Error updating magazine:', error);
+      toast.error("An error occurred during magazine update.");
+    }
   };
 
-  const handleDeleteMagazine = async (id: string) => {
+  const handleDeleteMagazine = (id: string) => {
     if (window.confirm("Are you sure you want to delete this magazine? This action cannot be undone.")) {
-      deleteMagazine(id, {
+      deleteMagazineMutation.mutate(id, {
         onError: (error) => {
           console.error('Error deleting magazine:', error);
         }
@@ -382,8 +371,10 @@ const MagazineManager = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={editMode ? handleUpdateMagazine : handleCreateMagazine} className="flex-1">
-                {editMode ? 'Update Magazine' : 'Create Magazine'}
+              <Button onClick={editMode ? handleUpdateMagazine : handleCreateMagazine} className="flex-1" disabled={createMagazineMutation.isPending || updateMagazineMutation.isPending}>
+                {createMagazineMutation.isPending || updateMagazineMutation.isPending 
+                  ? 'Saving...' 
+                  : (editMode ? 'Update Magazine' : 'Create Magazine')}
               </Button>
               <Button variant="outline" onClick={handleDialogClose}>
                 Cancel
