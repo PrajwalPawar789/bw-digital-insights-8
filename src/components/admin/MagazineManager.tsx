@@ -3,6 +3,7 @@ import { useMagazines, useCreateMagazine, useUpdateMagazine, useDeleteMagazine }
 import { useArticles } from '@/hooks/useArticles';
 import { useMagazineArticles } from '@/hooks/useMagazineArticles';
 import { useImageUpload } from '@/hooks/useImageUpload';
+import { useCreateMagazineArticle } from '@/hooks/useMagazineArticles'; // import the insert hook for magazine_articles
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -35,6 +36,7 @@ const MagazineManager = () => {
   const { mutate: updateMagazine } = useUpdateMagazine();
   const { mutate: deleteMagazine } = useDeleteMagazine();
   const { uploadImage, uploadPdf, uploading } = useImageUpload();
+  const { mutate: createMagazineArticle } = useCreateMagazineArticle();
 
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -111,13 +113,26 @@ const MagazineManager = () => {
         featured_article_id: featuredArticleId,
       };
 
-      createMagazine(newMagazine);
-      setOpen(false);
-      resetForm();
-      refetch();
+      // 1. Create the magazine
+      createMagazine(newMagazine, {
+        onSuccess: (createdMagazine) => {
+          // 2. Optionally link featured_article_id via magazine_articles, if one is selected
+          if (featuredArticleId && createdMagazine?.id) {
+            createMagazineArticle({
+              magazine_id: createdMagazine.id,
+              article_id: featuredArticleId,
+              featured: true,
+              page_number: 1, // or let the user choose/add in UI later
+            });
+          }
+          setOpen(false);
+          resetForm();
+          refetch();
+        }
+      });
     } catch (error) {
-      console.error('Error creating magazine:', error);
       toast.error('Failed to create magazine');
+      console.error('Error creating magazine:', error);
     }
   };
 
@@ -143,13 +158,26 @@ const MagazineManager = () => {
         featured_article_id: featuredArticleId,
       };
 
-      updateMagazine(updatedMagazine);
-      setOpen(false);
-      resetForm();
-      refetch();
+      // 1. Update the magazine
+      updateMagazine(updatedMagazine, {
+        onSuccess: (magazine) => {
+          // 2. Optionally link featured_article_id via magazine_articles, if one is selected
+          if (featuredArticleId && magazine?.id) {
+            createMagazineArticle({
+              magazine_id: magazine.id,
+              article_id: featuredArticleId,
+              featured: true,
+              page_number: 1, // or customize
+            });
+          }
+          setOpen(false);
+          resetForm();
+          refetch();
+        }
+      });
     } catch (error) {
-      console.error('Error updating magazine:', error);
       toast.error('Failed to update magazine');
+      console.error('Error updating magazine:', error);
     }
   };
 
