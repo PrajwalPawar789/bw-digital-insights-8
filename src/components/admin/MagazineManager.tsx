@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useMagazines, useCreateMagazine, useUpdateMagazine, useDeleteMagazine } from '@/hooks/useMagazines';
 import { useArticles } from '@/hooks/useArticles';
@@ -11,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 import { Edit2, Trash2, Plus, Upload, FileText, Calendar, Hash, Star, ExternalLink } from 'lucide-react';
 import { slugify } from '@/lib/slugify';
 
