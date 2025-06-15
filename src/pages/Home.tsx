@@ -52,13 +52,23 @@ function safeGetMagId(magObj: any) {
 
 const Home = () => {
   // Articles & Magazines
-  const { data: newsData = [], isLoading: newsLoading } = useArticles();
-  const { data: magazineData = [], isLoading: magLoading } = useMagazines();
-  const { data: testimonialsData = [] } = useTestimonials();
-  const { data: upcomingEditions = [] } = useUpcomingEditions();
+  const { data: newsDataRaw, isLoading: newsLoading } = useArticles();
+  const { data: magazineDataRaw, isLoading: magLoading } = useMagazines();
+  const { data: testimonialsDataRaw } = useTestimonials();
+  const { data: upcomingEditionsRaw } = useUpcomingEditions();
+
+  // Defensive fallback for all API data
+  const newsData = Array.isArray(newsDataRaw) ? newsDataRaw : [];
+  const magazineData = Array.isArray(magazineDataRaw) ? magazineDataRaw : [];
+  const testimonialsData = Array.isArray(testimonialsDataRaw) ? testimonialsDataRaw : [];
+  const upcomingEditions = Array.isArray(upcomingEditionsRaw) ? upcomingEditionsRaw : [];
+  if (!Array.isArray(newsDataRaw)) console.log("newsData is not an array", newsDataRaw);
+  if (!Array.isArray(magazineDataRaw)) console.log("magazineData is not an array", magazineDataRaw);
+  if (!Array.isArray(testimonialsDataRaw)) console.log("testimonialsData is not an array", testimonialsDataRaw);
+  if (!Array.isArray(upcomingEditionsRaw)) console.log("upcomingEditions is not an array", upcomingEditionsRaw);
 
   // Pick featured news (cover story, editor's picks)
-  const featuredNewsArr = Array.isArray(newsData) ? newsData.filter((n: any) => n?.featured) : [];
+  const featuredNewsArr = newsData.filter((n: any) => n?.featured);
   const coverStory = featuredNewsArr.length > 0 ? featuredNewsArr[0] : null;
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -66,13 +76,11 @@ const Home = () => {
   const latestMagazine = magazineData[0] || {};
 
   // Categories for Tabs, dynamically inferred from articles.
-  const categories = ["Trending", ...Array.from(new Set(newsData.map((n: any) => n.category).filter(Boolean).filter(c => c !== "Trending"))).slice(0, 2)]; // at most 3 tabs
+  const categories = ["Trending", ...Array.from(new Set(newsData.map((n: any) => n.category).filter(Boolean).filter(c => c !== "Trending"))).slice(0, 2)];
 
   const getNewsByCategory = (category: string) => {
     if (category === "Trending") {
-      return newsData
-        .filter((n: any) => n.featured)
-        .slice(0, 6);
+      return newsData.filter((n: any) => n.featured).slice(0, 6);
     }
     return newsData.filter((n: any) => n.category === category).slice(0, 6);
   };
@@ -95,6 +103,14 @@ const Home = () => {
 
   const prevSlide = () => setActiveSlide((prev) => (prev - 1 + featuredNewsArr.length) % featuredNewsArr.length);
   const nextSlide = () => setActiveSlide((prev) => (prev + 1) % featuredNewsArr.length);
+
+  // Debugging: log counts to identify bad data early
+  console.log({
+    newsCount: newsData.length,
+    magazineCount: magazineData.length,
+    testimonialsCount: testimonialsData.length,
+    upcomingEditionsCount: upcomingEditions.length
+  });
 
   return (
     <div className="min-h-screen">
