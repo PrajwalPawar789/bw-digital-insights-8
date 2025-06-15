@@ -23,6 +23,8 @@ const SettingsManager = () => {
   const [previewLogo, setPreviewLogo] = useState<string | null>(null);
   const [tempCompanyName, setTempCompanyName] = useState("");
   const [companyNameChanged, setCompanyNameChanged] = useState(false);
+  const [tempAnalyticsCode, setTempAnalyticsCode] = useState("");
+  const [analyticsCodeChanged, setAnalyticsCodeChanged] = useState(false);
 
   // Initialize temp company name when dbSettings loads
   React.useEffect(() => {
@@ -30,6 +32,12 @@ const SettingsManager = () => {
       setTempCompanyName(dbSettings.company_name);
     }
   }, [dbSettings?.company_name, companyNameChanged]);
+
+  React.useEffect(() => {
+    if (settings.analyticsCode && !analyticsCodeChanged) {
+      setTempAnalyticsCode(settings.analyticsCode);
+    }
+  }, [settings.analyticsCode, analyticsCodeChanged]);
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -101,8 +109,16 @@ const SettingsManager = () => {
     saveSettings({ primaryColor: value });
   };
 
-  const handleAnalyticsCodeChange = (value: string) => {
-    saveSettings({ analyticsCode: value });
+  const handleAnalyticsCodeInputChange = (value: string) => {
+    setTempAnalyticsCode(value);
+    setAnalyticsCodeChanged(true);
+  };
+
+  const handleSaveAnalyticsCode = async () => {
+    const success = await saveSettings({ analyticsCode: tempAnalyticsCode });
+    if (success) {
+      setAnalyticsCodeChanged(false);
+    }
   };
 
   return (
@@ -309,12 +325,26 @@ const SettingsManager = () => {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="analytics-code">Google Analytics Code</Label>
-            <Input
-              id="analytics-code"
-              value={settings.analyticsCode}
-              onChange={(e) => handleAnalyticsCodeChange(e.target.value)}
-              placeholder="GA-XXXXXXXXX-X"
-            />
+            <div className="flex items-center gap-2">
+              <Input
+                id="analytics-code"
+                value={tempAnalyticsCode}
+                onChange={(e) => handleAnalyticsCodeInputChange(e.target.value)}
+                placeholder="GA-XXXXXXXXX-X"
+                disabled={loading}
+              />
+              <Button
+                onClick={handleSaveAnalyticsCode}
+                disabled={loading || !analyticsCodeChanged}
+                size="sm"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import Documentation from "./pages/Documentation";
 import IndustryNews from "./pages/IndustryNews";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AnalyticsInjector from "./components/AnalyticsInjector";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +37,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <AnalyticsInjector />
       <BrowserRouter>
         <Routes>
           <Route path="/admin/*" element={<AdminDashboard />} />
