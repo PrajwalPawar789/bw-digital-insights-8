@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useMagazines, useCreateMagazine, useUpdateMagazine, useDeleteMagazine } from '@/hooks/useMagazines';
 import { useArticles } from '@/hooks/useArticles';
@@ -29,7 +30,7 @@ interface Magazine {
 }
 
 const MagazineManager = () => {
-  const { data: magazines, isLoading, refetch } = useMagazines();
+  const { data: magazines, isLoading } = useMagazines();
   const { data: articles } = useArticles();
   const { mutate: createMagazine } = useCreateMagazine();
   const { mutate: updateMagazine } = useUpdateMagazine();
@@ -59,7 +60,7 @@ const MagazineManager = () => {
       setDescription(selectedMagazine.description);
       setCoverImageUrl(selectedMagazine.cover_image_url);
       setPdfUrl(selectedMagazine.pdf_url);
-      setPublishDate(selectedMagazine.publish_date);
+      setPublishDate(new Date(selectedMagazine.publish_date).toISOString().split('T')[0]);
       setIssueNumber(selectedMagazine.issue_number?.toString() ?? '');
       setFeatured(selectedMagazine.featured);
       setFeaturedArticleId(selectedMagazine.featured_article_id);
@@ -84,6 +85,11 @@ const MagazineManager = () => {
     setUploadingFile(null);
   };
 
+  const handleDialogClose = () => {
+    setOpen(false);
+    resetForm();
+  };
+
   const handleSubmit = () => {
     if (!title || !description || !publishDate) {
       toast.error('Please fill in all required fields (title, description, publish date).');
@@ -101,35 +107,28 @@ const MagazineManager = () => {
       featured,
       featured_article_id: featuredArticleId,
     };
+    
+    const handleSuccess = (magazine: Magazine) => {
+      // This logic for linking a featured article is simplified.
+      // For editing, a more robust solution would handle changing/removing the featured article.
+      if (featuredArticleId && magazine?.id) {
+        createMagazineArticle({
+          magazine_id: magazine.id,
+          article_id: featuredArticleId,
+          featured: true,
+          page_number: 1,
+        });
+      }
+      handleDialogClose();
+    };
 
     if (editMode && selectedMagazine) {
       updateMagazine({ id: selectedMagazine.id, ...magazineData }, {
-        onSuccess: (updatedMagazine) => {
-          if (featuredArticleId && updatedMagazine?.id) {
-            // This logic might need refinement to handle changes of featured articles correctly
-            createMagazineArticle({
-              magazine_id: updatedMagazine.id,
-              article_id: featuredArticleId,
-              featured: true,
-              page_number: 1,
-            });
-          }
-          handleDialogClose();
-        },
+        onSuccess: handleSuccess,
       });
     } else {
       createMagazine(magazineData, {
-        onSuccess: (createdMagazine) => {
-          if (featuredArticleId && createdMagazine?.id) {
-            createMagazineArticle({
-              magazine_id: createdMagazine.id,
-              article_id: featuredArticleId,
-              featured: true,
-              page_number: 1,
-            });
-          }
-          handleDialogClose();
-        },
+        onSuccess: handleSuccess,
       });
     }
   };
@@ -158,11 +157,6 @@ const MagazineManager = () => {
     } finally {
       setUploadingFile(null);
     }
-  };
-
-  const handleDialogClose = () => {
-    setOpen(false);
-    resetForm();
   };
 
   return (
