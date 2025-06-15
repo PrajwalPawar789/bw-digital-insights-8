@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useMagazines, useCreateMagazine, useUpdateMagazine, useDeleteMagazine } from '@/hooks/useMagazines';
 import { useArticles } from '@/hooks/useArticles';
+import { useMagazineArticles, useCreateMagazineArticle } from '@/hooks/useMagazineArticles'; // only import once!
 import { useImageUpload } from '@/hooks/useImageUpload';
-import { useCreateMagazineArticle } from '@/hooks/useMagazineArticles';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,11 +31,11 @@ interface Magazine {
 const MagazineManager = () => {
   const { data: magazines, isLoading, refetch } = useMagazines();
   const { data: articles } = useArticles();
-  const createMagazineMutation = useCreateMagazine();
-  const updateMagazineMutation = useUpdateMagazine();
-  const deleteMagazineMutation = useDeleteMagazine();
+  const { mutate: createMagazine } = useCreateMagazine();
+  const { mutate: updateMagazine } = useUpdateMagazine();
+  const { mutate: deleteMagazine } = useDeleteMagazine();
   const { uploadImage, uploadPdf, uploading } = useImageUpload();
-  const createMagazineArticleMutation = useCreateMagazineArticle();
+  const { mutate: createMagazineArticle } = useCreateMagazineArticle();
 
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -95,40 +95,53 @@ const MagazineManager = () => {
 
   const handleCreateMagazine = async () => {
     if (!title || !description || !publishDate) {
-      toast.error("Please fill in all required fields (title, description, publish date).");
+      toast.error('Please fill in all required fields (title, description, publish date).');
       return;
     }
-
-    const newMagazine = {
-      title,
-      slug: slug || slugify(title),
-      description,
-      cover_image_url: coverImageUrl,
-      pdf_url: pdfUrl,
-      publish_date: publishDate,
-      issue_number: issueNumber !== '' ? Number(issueNumber) : null,
-      featured,
-      featured_article_id: featuredArticleId,
-    };
-
     try {
-      const createdMagazine = await createMagazineMutation.mutateAsync(newMagazine);
-      
-      if (featuredArticleId && createdMagazine?.id) {
-        await createMagazineArticleMutation.mutateAsync({
-          magazine_id: createdMagazine.id,
-          article_id: featuredArticleId,
-          featured: true,
-          page_number: 1,
-        });
-      }
-      
-      setOpen(false);
-      resetForm();
+      const newMagazine = {
+        title,
+        slug: slug || slugify(title),
+        description,
+        cover_image_url: coverImageUrl,
+        pdf_url: pdfUrl,
+        publish_date: publishDate,
+        issue_number: issueNumber !== '' ? Number(issueNumber) : null,
+        featured,
+        featured_article_id: featuredArticleId,
+      };
+
+      // 1. Create the magazine
+      createMagazine(newMagazine, {
+        onSuccess: (createdMagazine) => {
+          console.log('Created magazine from onSuccess:', createdMagazine);
+          // Only create a magazine_article relation if we have both IDs
+          if (
+            featuredArticleId &&
+            createdMagazine &&
+            typeof createdMagazine === "object" &&
+            'id' in createdMagazine &&
+            createdMagazine.id
+          ) {
+            createMagazineArticle({
+              magazine_id: createdMagazine.id,
+              article_id: featuredArticleId,
+              featured: true,
+              page_number: 1, // or let the user choose/add in UI later
+            });
+          }
+          setOpen(false);
+          resetForm();
+          refetch();
+        },
+        onError: (e) => {
+          console.error('Error creating magazine:', e);
+          toast.error('Failed to create magazine');
+        },
+      });
     } catch (error) {
+      toast.error('Failed to create magazine');
       console.error('Error creating magazine:', error);
-      // Toasts are handled by the mutation hooks, but a generic one can be useful.
-      toast.error("An error occurred during magazine creation.");
     }
   };
 
@@ -136,52 +149,66 @@ const MagazineManager = () => {
     if (!selectedMagazine?.id) return;
 
     if (!title || !description || !publishDate) {
-      toast.error("Please fill in all required fields (title, description, publish date).");
+      toast.error('Please fill in all required fields (title, description, publish date).');
       return;
     }
 
-    const updatedMagazine = {
-      id: selectedMagazine.id,
-      title,
-      slug: slug || slugify(title),
-      description,
-      cover_image_url: coverImageUrl,
-      pdf_url: pdfUrl,
-      publish_date: publishDate,
-      issue_number: issueNumber !== '' ? Number(issueNumber) : null,
-      featured,
-      featured_article_id: featuredArticleId,
-    };
-
     try {
-      const magazine = await updateMagazineMutation.mutateAsync(updatedMagazine);
-      
-      if (featuredArticleId && magazine?.id) {
-        // Note: This logic adds a featured article but doesn't handle changes to an existing one.
-        // This matches the previous behavior.
-        await createMagazineArticleMutation.mutateAsync({
-          magazine_id: magazine.id,
-          article_id: featuredArticleId,
-          featured: true,
-          page_number: 1,
-        });
-      }
-      
-      setOpen(false);
-      resetForm();
+      const updatedMagazine = {
+        id: selectedMagazine.id,
+        title,
+        slug: slug || slugify(title),
+        description,
+        cover_image_url: coverImageUrl,
+        pdf_url: pdfUrl,
+        publish_date: publishDate,
+        issue_number: issueNumber !== '' ? Number(issueNumber) : null,
+        featured,
+        featured_article_id: featuredArticleId,
+      };
+
+      // 1. Update the magazine
+      updateMagazine(updatedMagazine, {
+        onSuccess: (magazine) => {
+          console.log('Updated magazine from onSuccess:', magazine);
+          // Only create a magazine_article relation if we have both IDs
+          if (
+            featuredArticleId &&
+            magazine &&
+            typeof magazine === "object" &&
+            'id' in magazine &&
+            magazine.id
+          ) {
+            createMagazineArticle({
+              magazine_id: magazine.id,
+              article_id: featuredArticleId,
+              featured: true,
+              page_number: 1, // or customize
+            });
+          }
+          setOpen(false);
+          resetForm();
+          refetch();
+        },
+        onError: (e) => {
+          console.error('Error updating magazine:', e);
+          toast.error('Failed to update magazine');
+        },
+      });
     } catch (error) {
+      toast.error('Failed to update magazine');
       console.error('Error updating magazine:', error);
-      toast.error("An error occurred during magazine update.");
     }
   };
 
-  const handleDeleteMagazine = (id: string) => {
+  const handleDeleteMagazine = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this magazine? This action cannot be undone.")) {
-      deleteMagazineMutation.mutate(id, {
-        onError: (error) => {
-          console.error('Error deleting magazine:', error);
-        }
-      });
+      try {
+        deleteMagazine(id);
+      } catch (error) {
+        console.error('Error deleting magazine:', error);
+        toast.error('Failed to delete magazine');
+      }
     }
   };
 
@@ -371,10 +398,8 @@ const MagazineManager = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={editMode ? handleUpdateMagazine : handleCreateMagazine} className="flex-1" disabled={createMagazineMutation.isPending || updateMagazineMutation.isPending}>
-                {createMagazineMutation.isPending || updateMagazineMutation.isPending 
-                  ? 'Saving...' 
-                  : (editMode ? 'Update Magazine' : 'Create Magazine')}
+              <Button onClick={editMode ? handleUpdateMagazine : handleCreateMagazine} className="flex-1">
+                {editMode ? 'Update Magazine' : 'Create Magazine'}
               </Button>
               <Button variant="outline" onClick={handleDialogClose}>
                 Cancel
