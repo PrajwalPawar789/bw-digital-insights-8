@@ -20,23 +20,35 @@ const Leadership = () => {
 
   return (
     <div className="min-h-screen bg-white py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16">
+      {/* HERO SECTION with BG IMAGE */}
+      <div className="relative mb-16">
+        <div
+          className="absolute inset-0 w-full h-full bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=1200&q=80')"
+          }}
+        />
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/60" />
+        {/* Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex flex-col items-center text-center">
           <div className="flex justify-center mb-6">
             <div className="p-3 bg-insightRed/10 rounded-full">
               <Users className="h-8 w-8 text-insightRed" />
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-insightBlack mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow">
             Leadership Profiles
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-200 max-w-3xl mx-auto drop-shadow">
             Meet the visionary leaders shaping the future of business and technology. 
             Our featured profiles showcase industry pioneers, innovative CEOs, and transformational executives.
           </p>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Featured Leaders Section */}
         {featuredLeaders.length > 0 && (
           <div className="mb-16">
