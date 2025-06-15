@@ -392,44 +392,47 @@ const Home = () => {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {hasUpcoming ? (
-              upcomingEditions.map((edition: any, index: number) => (
-                <div
-                  key={edition.id || index}
-                  className="group relative overflow-hidden rounded-xl shadow-lg transform transition-all duration-500 hover:-translate-y-2"
-                  style={{ animationDelay: `${index * 150}ms` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 z-10 group-hover:from-black/80"></div>
-                  <img
-                    src={edition.image_url || "/placeholder.svg"}
-                    alt={edition.title || "Upcoming Edition"}
-                    className="w-full h-80 object-cover filter blur-[8px] scale-110 group-hover:scale-125 group-hover:blur-[12px] transition-all duration-1000"
-                  />
-                  <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 text-white">
-                    <div className="inline-flex items-center gap-3 mb-4">
-                      <span className="bg-insightRed text-white px-3 py-1 bg-white/20 backdrop-blur-sm text-sm font-medium rounded-full">
-                        {edition.release_date || "Coming Soon"}
+            {hasUpcoming
+              ? upcomingEditions.map((edition: any, index: number) => (
+                  <div
+                    key={edition.id || index}
+                    className="group relative overflow-hidden rounded-xl shadow-lg transform transition-all duration-500 hover:-translate-y-2"
+                    style={{ animationDelay: `${index * 150}ms` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 z-10 group-hover:from-black/80"></div>
+                    <img
+                      src={edition.image_url || "/placeholder.svg"}
+                      alt={edition.title || "Upcoming Edition"}
+                      className="w-full h-80 object-cover filter blur-[8px] scale-110 group-hover:scale-125 group-hover:blur-[12px] transition-all duration-1000"
+                    />
+                    <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 text-white">
+                      <div className="inline-flex items-center gap-3 mb-4">
+                        <span className="bg-insightRed text-white px-3 py-1 bg-white/20 backdrop-blur-sm text-sm font-medium rounded-full">
+                          {edition.release_date || "Coming Soon"}
+                        </span>
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3 tracking-tight group-hover:text-insightRed transition-colors">
+                        {edition.title || "Upcoming Edition"}
+                      </h3>
+                      <p className="text-gray-200 mb-5 line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
+                        {edition.description || ""}
+                      </p>
+                      <div className="flex items-center text-sm font-medium border-t border-white/20 pt-3">
+                        <span className="pb-0.5">{edition.status || "Planned"}</span>
+                      </div>
+                    </div>
+                    <div className="absolute top-4 right-4 z-30">
+                      <span className="inline-flex items-center px-3 py-1 bg-insightRed/90 backdrop-blur-sm text-white text-sm font-bold rounded-full group-hover:shadow-glow animate-pulse">
+                        {edition.status || "Planned"}
                       </span>
                     </div>
-                    <h3 className="text-2xl font-bold mb-3 tracking-tight group-hover:text-insightRed transition-colors">
-                      {edition.title || "Upcoming Edition"}
-                    </h3>
-                    <p className="text-gray-200 mb-5 line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
-                      {edition.description || ""}
-                    </p>
-                    <div className="flex items-center text-sm font-medium border-t border-white/20 pt-3">
-                      <span className="pb-0.5">{edition.status || "Planned"}</span>
-                    </div>
                   </div>
-                  <div className="absolute top-4 right-4 z-30">
-                    <span className="inline-flex items-center px-3 py-1 bg-insightRed/90 backdrop-blur-sm text-white text-sm font-bold rounded-full group-hover:shadow-glow animate-pulse">
-                      {edition.status || "Planned"}
-                    </span>
-                  </div>
+                ))
+              : (
+                <div className="w-full col-span-3 text-center text-gray-400 py-10">
+                  No upcoming editions available.
                 </div>
-              ))
-            : <div className="w-full col-span-3 text-center text-gray-400 py-10">No upcoming editions available.</div>
-            }
+              )}
           </div>
         </div>
       </section>
