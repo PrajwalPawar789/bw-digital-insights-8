@@ -104,6 +104,13 @@ const Home = () => {
   const prevSlide = () => setActiveSlide((prev) => (prev - 1 + featuredNewsArr.length) % featuredNewsArr.length);
   const nextSlide = () => setActiveSlide((prev) => (prev + 1) % featuredNewsArr.length);
 
+  // Defensive: never try to access .slug, .title etc. if they're missing
+  const hasCoverStory = !!coverStory && typeof coverStory === "object" && (coverStory.title || coverStory.slug);
+  const hasFeaturedNews = Array.isArray(featuredNewsArr) && featuredNewsArr.length > 0;
+  const hasMagazines = Array.isArray(magazineData) && magazineData.length > 0;
+  const hasUpcoming = Array.isArray(upcomingEditions) && upcomingEditions.length > 0;
+  const hasTestimonials = Array.isArray(testimonialsData) && testimonialsData.length > 0;
+
   // Debugging: log counts to identify bad data early
   console.log({
     newsCount: newsData.length,
@@ -167,7 +174,7 @@ const Home = () => {
       </section>
 
       {/* Cover Story */}
-      {coverStory ? (
+      {hasCoverStory ? (
         <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
@@ -232,11 +239,13 @@ const Home = () => {
           </div>
         </section>
       ) : (
-        <section className="py-16 bg-gray-50 text-center"><p className="text-gray-400">No Cover Story Available</p></section>
+        <section className="py-16 bg-gray-50 text-center">
+          <p className="text-gray-400">No Cover Story Available</p>
+        </section>
       )}
 
       {/* Editor's Picks Carousel */}
-      {featuredNewsArr.length > 0 ? (
+      {hasFeaturedNews ? (
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between mb-8">
@@ -305,7 +314,9 @@ const Home = () => {
           </div>
         </section>
       ) : (
-        <section className="py-16 bg-white text-center"><p className="text-gray-400">No Editor's Picks Available</p></section>
+        <section className="py-16 bg-white text-center">
+          <p className="text-gray-400">No Editor's Picks Available</p>
+        </section>
       )}
 
       {/* Publications */}
@@ -328,38 +339,37 @@ const Home = () => {
           </div>
           <Carousel opts={{ align: "center", loop: true, dragFree: true }} className="w-full">
             <CarouselContent className="-ml-4">
-              {(Array.isArray(magazineData) && magazineData.length > 0)
-                ? magazineData.map((magazine: any) => (
-                    <CarouselItem key={safeGetMagId(magazine)} className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110">
-                      <Link to={`/magazine/${safeGetMagId(magazine)}`} className="block group perspective-1000">
-                        <div className="relative transform transition-all duration-500 group-hover:rotate-y-6 preserve-3d">
-                          <div className="overflow-hidden rounded-xl shadow-2xl bg-white">
-                            <div className="relative aspect-[3/4]">
-                              <img src={safeGetMagCover(magazine)} alt={safeGetMagTitle(magazine)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                              <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-white/20 to-transparent transform scale-y-[-1] opacity-0 group-hover:opacity-40 transition-opacity duration-500 blur-sm"></div>
-                              <div className="absolute top-0 right-0 m-4">
-                                <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-insightBlack text-sm font-semibold rounded-full">
-                                  {safeGetMagDate(magazine)}
-                                </span>
-                              </div>
-                              <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                                <h3 className="text-xl font-bold mb-2">{safeGetMagTitle(magazine)}</h3>
-                                <p className="text-sm text-gray-200 line-clamp-2 mb-4">{safeGetMagDesc(magazine)}</p>
-                                <span className="inline-flex items-center text-sm font-medium text-white">
-                                  Read Issue <ChevronRight className="ml-1 h-4 w-4" />
-                                </span>
-                              </div>
+              {hasMagazines ? (
+                magazineData.map((magazine: any) => (
+                  <CarouselItem key={safeGetMagId(magazine)} className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110">
+                    <Link to={`/magazine/${safeGetMagId(magazine)}`} className="block group perspective-1000">
+                      <div className="relative transform transition-all duration-500 group-hover:rotate-y-6 preserve-3d">
+                        <div className="overflow-hidden rounded-xl shadow-2xl bg-white">
+                          <div className="relative aspect-[3/4]">
+                            <img src={safeGetMagCover(magazine)} alt={safeGetMagTitle(magazine)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-white/20 to-transparent transform scale-y-[-1] opacity-0 group-hover:opacity-40 transition-opacity duration-500 blur-sm"></div>
+                            <div className="absolute top-0 right-0 m-4">
+                              <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-insightBlack text-sm font-semibold rounded-full">
+                                {safeGetMagDate(magazine)}
+                              </span>
+                            </div>
+                            <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                              <h3 className="text-xl font-bold mb-2">{safeGetMagTitle(magazine)}</h3>
+                              <p className="text-sm text-gray-200 line-clamp-2 mb-4">{safeGetMagDesc(magazine)}</p>
+                              <span className="inline-flex items-center text-sm font-medium text-white">
+                                Read Issue <ChevronRight className="ml-1 h-4 w-4" />
+                              </span>
                             </div>
                           </div>
                         </div>
                       </Link>
                     </CarouselItem>
                   ))
-                : (
-                  <div className="w-full text-center text-gray-400 py-10">No magazines available.</div>
-                )
-              }
+                ))
+              : (
+                <div className="w-full text-center text-gray-400 py-10">No magazines available.</div>
+              )}
             </CarouselContent>
             <div className="flex justify-center mt-12 space-x-4">
               <CarouselPrevious className="relative static bg-white hover:bg-gray-50 text-insightBlack border-insightRed shadow-lg hover:shadow-xl transition-all hover:scale-105" />
@@ -382,43 +392,43 @@ const Home = () => {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {(Array.isArray(upcomingEditions) && upcomingEditions.length > 0)
-              ? upcomingEditions.map((edition: any, index: number) => (
-                  <div
-                    key={edition.id || index}
-                    className="group relative overflow-hidden rounded-xl shadow-lg transform transition-all duration-500 hover:-translate-y-2"
-                    style={{ animationDelay: `${index * 150}ms` }}
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 z-10 group-hover:from-black/80"></div>
-                    <img
-                      src={edition.image_url || "/placeholder.svg"}
-                      alt={edition.title || "Upcoming Edition"}
-                      className="w-full h-80 object-cover filter blur-[8px] scale-110 group-hover:scale-125 group-hover:blur-[12px] transition-all duration-1000"
-                    />
-                    <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 text-white">
-                      <div className="inline-flex items-center gap-3 mb-4">
-                        <span className="bg-insightRed text-white px-3 py-1 bg-white/20 backdrop-blur-sm text-sm font-medium rounded-full">
-                          {edition.release_date || "Coming Soon"}
-                        </span>
-                      </div>
-                      <h3 className="text-2xl font-bold mb-3 tracking-tight group-hover:text-insightRed transition-colors">
-                        {edition.title || "Upcoming Edition"}
-                      </h3>
-                      <p className="text-gray-200 mb-5 line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
-                        {edition.description || ""}
-                      </p>
-                      <div className="flex items-center text-sm font-medium border-t border-white/20 pt-3">
-                        <span className="pb-0.5">{edition.status || "Planned"}</span>
-                      </div>
-                    </div>
-                    <div className="absolute top-4 right-4 z-30">
-                      <span className="inline-flex items-center px-3 py-1 bg-insightRed/90 backdrop-blur-sm text-white text-sm font-bold rounded-full group-hover:shadow-glow animate-pulse">
-                        {edition.status || "Planned"}
+            {hasUpcoming ? (
+              upcomingEditions.map((edition: any, index: number) => (
+                <div
+                  key={edition.id || index}
+                  className="group relative overflow-hidden rounded-xl shadow-lg transform transition-all duration-500 hover:-translate-y-2"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 z-10 group-hover:from-black/80"></div>
+                  <img
+                    src={edition.image_url || "/placeholder.svg"}
+                    alt={edition.title || "Upcoming Edition"}
+                    className="w-full h-80 object-cover filter blur-[8px] scale-110 group-hover:scale-125 group-hover:blur-[12px] transition-all duration-1000"
+                  />
+                  <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 text-white">
+                    <div className="inline-flex items-center gap-3 mb-4">
+                      <span className="bg-insightRed text-white px-3 py-1 bg-white/20 backdrop-blur-sm text-sm font-medium rounded-full">
+                        {edition.release_date || "Coming Soon"}
                       </span>
                     </div>
+                    <h3 className="text-2xl font-bold mb-3 tracking-tight group-hover:text-insightRed transition-colors">
+                      {edition.title || "Upcoming Edition"}
+                    </h3>
+                    <p className="text-gray-200 mb-5 line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
+                      {edition.description || ""}
+                    </p>
+                    <div className="flex items-center text-sm font-medium border-t border-white/20 pt-3">
+                      <span className="pb-0.5">{edition.status || "Planned"}</span>
+                    </div>
                   </div>
-                ))
-              : <div className="w-full col-span-3 text-center text-gray-400 py-10">No upcoming editions available.</div>
+                  <div className="absolute top-4 right-4 z-30">
+                    <span className="inline-flex items-center px-3 py-1 bg-insightRed/90 backdrop-blur-sm text-white text-sm font-bold rounded-full group-hover:shadow-glow animate-pulse">
+                      {edition.status || "Planned"}
+                    </span>
+                  </div>
+                </div>
+              ))
+            : <div className="w-full col-span-3 text-center text-gray-400 py-10">No upcoming editions available.</div>
             }
           </div>
         </div>
@@ -452,7 +462,7 @@ const Home = () => {
                 {(getNewsByCategory(category) || []).length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {getNewsByCategory(category).map((news: any) => (
-                      <Card key={news.id || news.slug} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
+                      <Card key={news.id || news.slug || Math.random()} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
                         <div className="relative overflow-hidden aspect-video">
                           <img
                             src={news.image_url}
@@ -512,36 +522,37 @@ const Home = () => {
           </div>
           <div className="relative px-8 md:px-16">
             <div className="relative overflow-hidden min-h-[300px]">
-              {(Array.isArray(testimonialsData) && testimonialsData.length > 0)
-                ? testimonialsData.map((testimonial: any, index: number) => (
-                    <div
-                      key={testimonial.id || index}
-                      className={`absolute inset-0 transition-opacity duration-500 ${index === activeTestimonial ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-                    >
-                      <div className="flex flex-col items-center text-center">
-                        <div className="w-24 h-24 mb-6 rounded-full overflow-hidden border-2 border-insightRed">
-                          <img
-                            src={testimonial.avatar_url || "/placeholder.svg"}
-                            alt={testimonial.name || "Avatar"}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <blockquote className="max-w-2xl mb-6 text-xl font-medium text-gray-700 italic">
-                          "{testimonial.quote || "No testimonial provided."}"
-                        </blockquote>
-                        <div>
-                          <cite className="font-semibold text-insightBlack text-lg not-italic">{testimonial.name || "Anonymous"}</cite>
-                          <p className="text-insightRed font-medium">
-                            {(testimonial.title || "") + (testimonial.company ? `, ${testimonial.company}` : "")}
-                          </p>
-                        </div>
+              {hasTestimonials ? (
+                testimonialsData.map((testimonial: any, index: number) => (
+                  <div
+                    key={testimonial.id || index}
+                    className={`absolute inset-0 transition-opacity duration-500 ${index === activeTestimonial ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-24 h-24 mb-6 rounded-full overflow-hidden border-2 border-insightRed">
+                        <img
+                          src={testimonial.avatar_url || "/placeholder.svg"}
+                          alt={testimonial.name || "Avatar"}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <blockquote className="max-w-2xl mb-6 text-xl font-medium text-gray-700 italic">
+                        "{testimonial.quote || "No testimonial provided."}"
+                      </blockquote>
+                      <div>
+                        <cite className="font-semibold text-insightBlack text-lg not-italic">{testimonial.name || "Anonymous"}</cite>
+                        <p className="text-insightRed font-medium">
+                          {(testimonial.title || "") + (testimonial.company ? `, ${testimonial.company}` : "")}
+                        </p>
                       </div>
                     </div>
-                  ))
-                : <div className="w-full text-center py-10 text-gray-400">No testimonials available.</div>
-              }
+                  </div>
+                ))
+              ) : (
+                <div className="w-full text-center py-10 text-gray-400">No testimonials available.</div>
+              )}
             </div>
-            {Array.isArray(testimonialsData) && testimonialsData.length > 1 && (
+            {hasTestimonials && testimonialsData.length > 1 && (
               <div className="flex justify-center space-x-2 mt-8">
                 {testimonialsData.map((_: any, index: number) => (
                   <button
