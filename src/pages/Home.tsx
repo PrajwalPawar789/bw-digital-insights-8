@@ -15,6 +15,10 @@ import { useMagazines, useFeaturedMagazines } from "@/hooks/useMagazines";
 import { useArticles, useFeaturedArticles } from "@/hooks/useArticles";
 import { useTestimonials } from "@/hooks/useTestimonials";
 import { useUpcomingEditions } from "@/hooks/useUpcomingEditions";
+import { useSettings } from "@/hooks/useSettings";
+import PremiumHero from "@/components/home/PremiumHero";
+import PremiumCoverStory from "@/components/home/PremiumCoverStory";
+import PremiumMagazineShowcase from "@/components/home/PremiumMagazineShowcase";
 
 // Helper accessors
 function getMagCover(magObj: any) {
@@ -57,6 +61,7 @@ const Home = () => {
   const { data: magazineDataRaw, isLoading: magLoading } = useMagazines();
   const { data: testimonialsDataRaw } = useTestimonials();
   const { data: upcomingEditionsRaw } = useUpcomingEditions();
+  const { settings } = useSettings();
 
   // Defensive fallback for all API data
   const newsData = Array.isArray(newsDataRaw) ? newsDataRaw : [];
@@ -133,126 +138,15 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="bg-gradient-to-r from-insightBlack to-gray-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div className="space-y-6">
-              <div className="inline-flex items-center px-4 py-2 bg-insightRed rounded-full text-sm font-medium">
-                <Star className="w-4 h-4 mr-2" /> The Leading Business Magazine
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                Exclusive Insights from <span className="text-insightRed">C-Suite Leaders</span>
-              </h1>
-              <p className="text-lg md:text-xl text-gray-300">
-                Spotlighting the strategic minds behind global business success. Discover exclusive interviews, success stories, and expert insights from the world's top executives.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  to="/magazine"
-                  className="inline-flex items-center px-6 py-3 bg-insightRed hover:bg-red-700 text-white rounded-md font-medium transition-colors"
-                >
-                  Latest Issue <ChevronRight className="ml-2 h-5 w-5" />
-                </Link>
-                <Link
-                  to="/leadership"
-                  className="inline-flex items-center px-6 py-3 border border-white/30 hover:bg-white/20 text-white rounded-md font-medium transition-colors"
-                >
-                  Meet The Executives <ChevronRight className="ml-2 h-5 w-5" />
-                </Link>
-              </div>
-            </div>
-            <div className="hidden lg:flex justify-end">
-              <div className="relative">
-                <img
-                  src={safeGetMagCover(magazineData[0])}
-                  alt={safeGetMagTitle(magazineData[0])}
-                  className="rounded-lg shadow-2xl w-80 h-auto transform rotate-6 z-10"
-                />
-                {magazineData[1] && (
-                  <img
-                    src={safeGetMagCover(magazineData[1])}
-                    alt={safeGetMagTitle(magazineData[1])}
-                    className="absolute -left-10 -bottom-5 rounded-lg shadow-xl w-72 h-auto transform -rotate-6"
-                  />
-                )}
-                <div className="absolute -right-8 -top-8 bg-insightRed text-white rounded-full p-4 shadow-lg z-20">
-                  <BookOpen className="h-8 w-8" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Premium Hero */}
+      <PremiumHero 
+        latestMagazine={latestMagazine}
+        magazineData={magazineData}
+        companyName={settings.companyName}
+      />
 
-      {/* Cover Story */}
-      {hasCoverStory ? (
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-insightBlack">Cover Story</h2>
-              </div>
-              <Link
-                to={`/article/${coverStory.slug || ""}`}
-                className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium transition-colors"
-              >
-                Read Full Story <ChevronRight className="ml-1 h-4 w-4" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-              <div className="lg:col-span-3 relative h-[400px] rounded-xl overflow-hidden">
-                <img
-                  src={coverStory.image_url || "/placeholder.svg"}
-                  alt={coverStory.title || "Cover Story"}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 p-6 text-white">
-                  <div className="flex items-center mb-4">
-                    <span className="bg-insightRed text-white px-3 py-1 text-sm font-bold rounded-md">Cover Story</span>
-                  </div>
-                  <h3 className="text-3xl font-bold mb-2 max-w-xl">{coverStory.title || "Untitled"}</h3>
-                </div>
-              </div>
-              {/* ... Highlights -- skip for now */}
-              <div className="lg:col-span-2 space-y-8">
-                <div className="flex items-start space-x-4">
-                  <span className="text-insightRed font-bold text-5xl">01</span>
-                  <div>
-                    <h4 className="text-xl font-bold mb-2">The Leadership Approach That's Reshaping Industries</h4>
-                    <p className="text-gray-600">
-                      Explore how today's C-level executives are implementing transformative strategies that drive unprecedented growth and innovation.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <span className="text-insightRed font-bold text-5xl">02</span>
-                  <div>
-                    <h4 className="text-xl font-bold mb-2">Key Insights from the Interview</h4>
-                    <p className="text-gray-600">
-                      Strategic thinking, bold decision-making, and innovative approaches to market disruption defined our conversation with industry leaders.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-4">
-                  <span className="text-insightRed font-bold text-5xl">03</span>
-                  <div>
-                    <h4 className="text-xl font-bold mb-2">What's Next for Industry Leaders</h4>
-                    <p className="text-gray-600">
-                      Examining future trends and upcoming challenges that will shape the next generation of executive leadership and business strategy.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : (
-        <section className="py-16 bg-gray-50 text-center">
-          <p className="text-gray-400">No Cover Story Available</p>
-        </section>
-      )}
+      {/* Premium Cover Story */}
+      <PremiumCoverStory coverStory={coverStory} />
 
       {/* Editor's Picks Carousel */}
       {hasFeaturedNews && featuredNewsArr.length > 1 ? (

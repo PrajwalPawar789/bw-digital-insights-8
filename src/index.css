@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
  
-    --primary: 222.1 83.2% 9.8%;
+    --primary: 0 72% 50%;
     --primary-foreground: 210 40% 98%;
  
     --secondary: 210 40% 96.1%;
@@ -35,8 +35,34 @@
  
     --radius: 0.5rem;
 
-    --insightRed: #dc2626;
-    --insightBlack: #18181b;
+    /* Premium Magazine Brand Colors */
+    --insight-red: 0 72% 50%;
+    --insight-red-dark: 0 72% 45%;
+    --insight-red-light: 0 72% 55%;
+    --insight-black: 240 10% 3.9%;
+    --insight-black-light: 240 6% 10%;
+    --insight-gold: 45 94% 57%;
+    --insight-gold-light: 45 94% 65%;
+    
+    /* Premium Gradients */
+    --gradient-premium: linear-gradient(135deg, hsl(var(--insight-red)) 0%, hsl(var(--insight-red-dark)) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(var(--insight-gold)) 0%, hsl(var(--insight-gold-light)) 100%);
+    --gradient-dark: linear-gradient(135deg, hsl(var(--insight-black)) 0%, hsl(var(--insight-black-light)) 100%);
+    --gradient-magazine: linear-gradient(135deg, hsl(var(--insight-black)) 0%, hsl(var(--insight-red-dark)) 100%);
+    
+    /* Shadows */
+    --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-magazine: 0 20px 40px -8px hsl(var(--insight-red) / 0.3);
+    --shadow-gold: 0 20px 40px -8px hsl(var(--insight-gold) / 0.3);
+    --shadow-elevated: 0 32px 64px -12px rgba(0, 0, 0, 0.35);
+    
+    /* Typography */
+    --font-premium: 'Playfair Display', serif;
+    --font-modern: 'Inter', sans-serif;
+    
+    /* Spacing */
+    --section-padding: 5rem;
+    --container-padding: 1.5rem;
   }
  
   .dark {
@@ -69,8 +95,14 @@
  
     --ring: 212.7 26.8% 83.9%;
  
-    --insightRed: #dc2626;
-    --insightBlack: #f4f4f5;
+    /* Dark Mode Brand Colors */
+    --insight-red: 0 72% 55%;
+    --insight-red-dark: 0 72% 50%;
+    --insight-red-light: 0 72% 60%;
+    --insight-black: 210 40% 98%;
+    --insight-black-light: 210 40% 95%;
+    --insight-gold: 45 94% 62%;
+    --insight-gold-light: 45 94% 70%;
   }
 }
  
@@ -113,14 +145,72 @@
   animation: marquee 20s linear infinite;
 }
 
+/* Premium Magazine Effects */
+.premium-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.premium-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-premium);
+  border-color: hsl(var(--insight-red) / 0.3);
+}
+
+.magazine-cover {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.magazine-cover:hover {
+  transform: rotateY(5deg) rotateX(5deg);
+  box-shadow: var(--shadow-magazine);
+}
+
+.magazine-cover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+.magazine-cover:hover::before {
+  opacity: 0;
+}
+
 /* Enhanced hover effects */
 .hover-lift {
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Premium text effects */
+.premium-text {
+  background: var(--gradient-premium);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gold-text {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Gradient text animation */
@@ -138,16 +228,112 @@
   animation: gradient-shift 3s ease infinite;
 }
 
-/* Pulse glow effect */
-@keyframes pulse-glow {
+/* Premium pulse effect */
+@keyframes premium-pulse {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+    box-shadow: 0 0 20px hsl(var(--insight-red) / 0.3);
   }
   50% {
-    box-shadow: 0 0 40px rgba(220, 38, 38, 0.8);
+    box-shadow: 0 0 40px hsl(var(--insight-red) / 0.6);
   }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+.animate-premium-pulse {
+  animation: premium-pulse 2s ease-in-out infinite;
+}
+
+/* Magazine grid effects */
+.magazine-grid-item {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.magazine-grid-item:hover {
+  transform: rotateY(10deg) scale(1.05);
+}
+
+/* Premium buttons */
+.btn-premium {
+  background: var(--gradient-premium);
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-magazine);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+.btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.btn-premium:hover::before {
+  left: 100%;
+}
+
+/* Premium loading states */
+.premium-loading {
+  background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* PDF Viewer Enhancements */
+.pdf-viewer-container {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-premium);
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.pdf-viewer-toolbar {
+  background: var(--gradient-dark);
+  color: white;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pdf-page {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Responsive enhancements */
+@media (max-width: 768px) {
+  .magazine-cover:hover {
+    transform: none;
+  }
+  
+  .premium-card:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
 }

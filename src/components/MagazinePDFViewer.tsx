@@ -74,114 +74,132 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg">
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b">
-        <h2 className="text-xl font-bold text-gray-900">
-          {fullScreen ? 'Reading Mode' : 'Magazine Preview'}
-        </h2>
-        <div className="flex space-x-2">
-          {onFullScreen && (
-            <Button onClick={onFullScreen} variant="outline" size="sm">
-              <Maximize className="h-4 w-4" />
-            </Button>
-          )}
-          {pdfError && (
-            <Button onClick={retryLoad} variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-1" /> Retry
-            </Button>
-          )}
+    <div className="pdf-viewer-container">
+      {/* Premium Header */}
+      <div className="pdf-viewer-toolbar">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-insightRed rounded-full flex items-center justify-center">
+              <FileWarning className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-white">
+                {fullScreen ? 'Premium Reading Mode' : 'Interactive Magazine Preview'}
+              </h2>
+              <p className="text-sm text-gray-300">{title}</p>
+            </div>
+          </div>
+          <div className="flex space-x-2">
+            {onFullScreen && (
+              <Button 
+                onClick={onFullScreen} 
+                variant="outline" 
+                size="sm"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40"
+              >
+                <Maximize className="h-4 w-4" />
+              </Button>
+            )}
+            {pdfError && (
+              <Button 
+                onClick={retryLoad} 
+                variant="outline" 
+                size="sm"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40"
+              >
+                <RefreshCw className="h-4 w-4 mr-1" /> Retry
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* PDF Viewer */}
-      <div className="relative">
+      {/* Enhanced PDF Viewer */}
+      <div className="relative bg-gray-50">
         {loading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-90">
-            <div className="text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-2" />
-              <p className="text-gray-600">Loading PDF...</p>
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 backdrop-blur-sm">
+            <div className="text-center premium-card p-8">
+              <Loader2 className="h-12 w-12 animate-spin text-insightRed mx-auto mb-4" />
+              <p className="text-insightBlack font-medium text-lg mb-2">Loading Premium Content</p>
+              <p className="text-gray-600">Preparing your magazine experience...</p>
             </div>
           </div>
         )}
 
         {pdfError ? (
-          <div className="text-center py-16 bg-red-50 rounded-lg border border-red-100 m-4">
-            <FileWarning className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <p className="text-red-700 font-medium mb-2 text-lg">Failed to load PDF</p>
-            <p className="text-red-600 text-sm mb-4">Error: {pdfError}</p>
-            <Button onClick={retryLoad} variant="outline">
-              <RefreshCw className="mr-2 h-4 w-4" /> Retry
-            </Button>
+          <div className="text-center py-16 mx-4">
+            <div className="premium-card p-8 max-w-md mx-auto">
+              <FileWarning className="h-16 w-16 text-insightRed mx-auto mb-4" />
+              <h3 className="text-insightBlack font-bold text-xl mb-2">Content Loading Issue</h3>
+              <p className="text-gray-600 mb-4">We're having trouble loading this premium content.</p>
+              <p className="text-sm text-gray-500 mb-6">Error: {pdfError}</p>
+              <Button 
+                onClick={retryLoad} 
+                className="btn-premium"
+              >
+                <RefreshCw className="mr-2 h-4 w-4" /> Try Again
+              </Button>
+            </div>
           </div>
         ) : (
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+          <Worker workerUrl="/pdf.worker.min.js">
             <div
+              className="flex flex-col bg-white"
               style={{
-                border: '1px solid rgba(0, 0, 0, .1)',
-                display: 'flex',
-                flexDirection: 'column',
-                height: fullScreen ? 'calc(100vh - 120px)' : '600px',
+                height: fullScreen ? 'calc(100vh - 140px)' : '700px',
+                maxHeight: fullScreen ? 'calc(100vh - 140px)' : '700px',
               }}
             >
-              {/* Toolbar */}
-              <div
-                style={{
-                  borderBottom: '1px solid rgba(0, 0, 0, .1)',
-                  padding: '8px',
-                  backgroundColor: '#f8f9fa',
-                }}
-              >
-                <div className="flex items-center justify-center space-x-4">
-                  <ZoomOutButton />
-                  <ZoomPopover />
-                  <ZoomInButton />
-                  <div className="border-l border-gray-300 h-6 mx-2"></div>
-                  <MinimalButton onClick={jumpToPreviousPage}>
-                    <PreviousIcon />
-                  </MinimalButton>
-                  <MinimalButton onClick={jumpToNextPage}>
-                    <NextIcon />
-                  </MinimalButton>
+              {/* Enhanced Toolbar */}
+              <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-4">
+                <div className="flex items-center justify-center space-x-6">
+                  <div className="flex items-center space-x-2">
+                    <ZoomOutButton />
+                    <ZoomPopover />
+                    <ZoomInButton />
+                  </div>
+                  <div className="border-l border-gray-300 h-8"></div>
+                  <div className="flex items-center space-x-2">
+                    <MinimalButton onClick={jumpToPreviousPage}>
+                      <PreviousIcon />
+                    </MinimalButton>
+                    <MinimalButton onClick={jumpToNextPage}>
+                      <NextIcon />
+                    </MinimalButton>
+                  </div>
                 </div>
               </div>
 
-              {/* Main viewer */}
-              <div
-                style={{
-                  flex: 1,
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <Viewer
-                  fileUrl={fileUrl}
-                  defaultScale={SpecialZoomLevel.PageFit}
-                  scrollMode={ScrollMode.Page}
-                  viewMode={ViewMode.SinglePage}
-                  plugins={[pageNavigationPluginInstance, thumbnailPluginInstance, zoomPluginInstance]}
-                  onDocumentLoad={handleDocumentLoad}
-                  renderLoader={(percentages: number) => (
-                    <div className="flex items-center justify-center h-full">
-                      <div className="text-center">
-                        <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-2" />
-                        <p className="text-gray-600">Loading... {Math.round(percentages)}%</p>
-                      </div>
-                    </div>
-                  )}
-                />
+              {/* Main Viewer with Enhanced Styling */}
+              <div className="flex-1 relative overflow-hidden bg-gray-100 p-4">
+                <div className="h-full flex items-center justify-center">
+                  <div className="pdf-page w-full h-full max-w-4xl mx-auto">
+                    <Viewer
+                      fileUrl={fileUrl}
+                      defaultScale={SpecialZoomLevel.PageFit}
+                      scrollMode={ScrollMode.Page}
+                      viewMode={ViewMode.SinglePage}
+                      plugins={[pageNavigationPluginInstance, thumbnailPluginInstance, zoomPluginInstance]}
+                      onDocumentLoad={handleDocumentLoad}
+                      renderLoader={(percentages: number) => (
+                        <div className="flex items-center justify-center h-full">
+                          <div className="text-center premium-card p-6">
+                            <Loader2 className="h-8 w-8 animate-spin text-insightRed mx-auto mb-3" />
+                            <p className="text-insightBlack font-medium">Loading...</p>
+                            <p className="text-sm text-gray-500">{Math.round(percentages)}% Complete</p>
+                          </div>
+                        </div>
+                      )}
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* Thumbnails */}
-              <div
-                style={{
-                  height: '120px',
-                  overflow: 'auto',
-                  borderTop: '1px solid rgba(0, 0, 0, .1)',
-                  backgroundColor: '#f8f9fa',
-                }}
-              >
-                <Thumbnails thumbnailDirection={ThumbnailDirection.Horizontal} />
+              {/* Enhanced Thumbnails */}
+              <div className="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-2">
+                <div className="h-24 overflow-auto">
+                  <Thumbnails thumbnailDirection={ThumbnailDirection.Horizontal} />
+                </div>
               </div>
             </div>
           </Worker>
