@@ -35,23 +35,17 @@ function safeGetMagId(magObj: any) {
 }
 
 const Home = () => {
-  console.log("Rendering Home");
   // Articles & Magazines
   const { data: newsDataRaw } = useArticles();
   const { data: magazineDataRaw } = useMagazines();
   const { data: testimonialsDataRaw } = useTestimonials();
   const { data: upcomingEditionsRaw } = useUpcomingEditions();
-  const { settings = {} } = useSettings();
 
   // Defensive fallback for all API data
   const newsData = Array.isArray(newsDataRaw) ? newsDataRaw : [];
   const magazineData = Array.isArray(magazineDataRaw) ? magazineDataRaw : [];
   const testimonialsData = Array.isArray(testimonialsDataRaw) ? testimonialsDataRaw : [];
   const upcomingEditions = Array.isArray(upcomingEditionsRaw) ? upcomingEditionsRaw : [];
-  if (!Array.isArray(newsDataRaw)) console.log("newsData is not an array", newsDataRaw);
-  if (!Array.isArray(magazineDataRaw)) console.log("magazineData is not an array", magazineDataRaw);
-  if (!Array.isArray(testimonialsDataRaw)) console.log("testimonialsData is not an array", testimonialsDataRaw);
-  if (!Array.isArray(upcomingEditionsRaw)) console.log("upcomingEditions is not an array", upcomingEditionsRaw);
 
   // Pick featured news (cover story, editor's picks)
   const featuredNewsArr = newsData.filter((n: any) => n?.featured);
@@ -107,12 +101,12 @@ const Home = () => {
   const hasTestimonials = Array.isArray(testimonialsData) && testimonialsData.length > 0;
 
   // Debugging: log counts to identify bad data early
-  console.log({
-    newsCount: newsData.length,
-    magazineCount: magazineData.length,
-    testimonialsCount: testimonialsData.length,
-    upcomingEditionsCount: upcomingEditions.length
-  });
+  // console.log({
+  //   newsCount: newsData.length,
+  //   magazineCount: magazineData.length,
+  //   testimonialsCount: testimonialsData.length,
+  //   upcomingEditionsCount: upcomingEditions.length
+  // });
 
   return (
     <div className="min-h-screen">
