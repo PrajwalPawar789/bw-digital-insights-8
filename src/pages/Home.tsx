@@ -16,9 +16,6 @@ import { useArticles, useFeaturedArticles } from "@/hooks/useArticles";
 import { useTestimonials } from "@/hooks/useTestimonials";
 import { useUpcomingEditions } from "@/hooks/useUpcomingEditions";
 import { useSettings } from "@/hooks/useSettings";
-import PremiumHero from "@/components/home/PremiumHero";
-import PremiumCoverStory from "@/components/home/PremiumCoverStory";
-import PremiumMagazineShowcase from "@/components/home/PremiumMagazineShowcase";
 
 // Helper accessors
 function getMagCover(magObj: any) {
@@ -138,15 +135,74 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Premium Hero */}
-      <PremiumHero 
-        latestMagazine={latestMagazine}
-        magazineData={magazineData}
-        companyName={settings.companyName}
-      />
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-insightBlack via-insightBlack to-gray-900 text-white overflow-hidden min-h-screen flex items-center">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] opacity-10 bg-cover bg-center"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                <span className="block">Where Business</span>
+                <span className="block text-transparent bg-gradient-to-r from-insightRed to-insightGold bg-clip-text">
+                  Leaders Connect
+                </span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 leading-relaxed">
+                Exclusive insights, strategic analysis, and the stories that shape tomorrow's business landscape.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/magazine" className="bg-insightRed hover:bg-red-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors flex items-center">
+                  <BookOpen className="mr-2 h-6 w-6" />
+                  Explore Latest Issue
+                </Link>
+                <Link to="/about" className="border border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-lg text-lg font-semibold transition-colors">
+                  Learn More
+                </Link>
+              </div>
+            </div>
+            {hasMagazines && (
+              <div className="relative flex justify-center">
+                <div className="relative transform rotate-6 hover:rotate-3 transition-transform duration-500">
+                  <img
+                    src={safeGetMagCover(latestMagazine)}
+                    alt={safeGetMagTitle(latestMagazine)}
+                    className="w-80 h-auto rounded-xl shadow-2xl"
+                  />
+                  <div className="absolute top-4 left-4 bg-insightRed text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    Latest Issue
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
 
-      {/* Premium Cover Story */}
-      <PremiumCoverStory coverStory={coverStory} />
+      {/* Cover Story */}
+      {hasCoverStory && (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="relative">
+                <img src={coverStory.image_url || "/placeholder.svg"} alt={coverStory.title} className="w-full h-[500px] object-cover rounded-xl shadow-lg" />
+                <div className="absolute top-4 left-4 bg-insightRed text-white px-3 py-1 rounded-full text-sm font-semibold">
+                  Cover Story
+                </div>
+              </div>
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <span className="bg-insightRed text-white px-3 py-1 text-sm font-bold rounded-md">{coverStory.category}</span>
+                  <span className="text-sm text-gray-500">{coverStory.date}</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold text-insightBlack">{coverStory.title}</h2>
+                <Link to={`/article/${coverStory.slug}`} className="inline-flex items-center bg-insightRed text-white hover:bg-red-700 px-6 py-3 rounded-lg font-semibold transition-colors">
+                  Read Full Story <ChevronRight className="ml-2 h-5 w-5" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Editor's Picks Carousel */}
       {hasFeaturedNews && featuredNewsArr.length > 1 ? (
