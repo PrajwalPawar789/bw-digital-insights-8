@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useMagazineBySlug } from '@/hooks/useMagazines';
 import { useMagazineArticles } from '@/hooks/useMagazineArticles';
-import { ChevronLeft, Loader2, BookOpen, ArrowRight } from 'lucide-react';
-import { toast } from "@/hooks/use-toast";
+import { ChevronLeft, Download, Loader2, BookOpen, ArrowRight } from 'lucide-react';
+import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import MagazinePDFViewer from '@/components/MagazinePDFViewer';
@@ -19,10 +19,51 @@ const MagazineDetail = () => {
   useEffect(() => {
     console.log("Magazine slug:", slug);
     console.log("Magazine data:", magazine);
-    console.log("Magazine articles:", magazineArticles);
     console.log("Loading state:", isLoading);
     console.log("Error state:", error);
-  }, [slug, magazine, magazineArticles, isLoading, error]);
+  }, [slug, magazine, isLoading, error]);
+
+  const downloadPdf = async () => {
+    if (!magazine?.pdf_url) {
+      toast({
+        title: "No PDF available",
+        description: "This magazine doesn't have a PDF file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      console.log("Downloading PDF from:", magazine.pdf_url);
+      const response = await fetch(magazine.pdf_url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `${magazine.title}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Download started",
+        description: "The PDF download has begun.",
+      });
+    } catch (error) {
+      console.error("Download error:", error);
+      toast({
+        title: "Download failed",
+        description: "Failed to download the PDF file.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const toggleFullScreen = () => setFullScreen(!fullScreen);
 
@@ -107,6 +148,14 @@ const MagazineDetail = () => {
                     })}
                   </span>
                   <div className="flex gap-3">
+                    {magazine.pdf_url && (
+                      <Button
+                        onClick={downloadPdf}
+                        className="inline-flex items-center bg-insightBlack hover:bg-insightRed text-white px-6 py-3 rounded-md text-sm font-medium transition-colors"
+                      >
+                        <Download className="mr-2 h-4 w-4" /> Download PDF
+                      </Button>
+                    )}
                     <Button
                       onClick={() => document.getElementById('pdf-viewer')?.scrollIntoView({ behavior: 'smooth' })}
                       className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md text-sm font-medium transition-colors"
@@ -168,6 +217,7 @@ const MagazineDetail = () => {
           <MagazinePDFViewer
             fileUrl={magazine.pdf_url || "/sample-magazine.pdf"}
             title={magazine.title}
+            onDownload={downloadPdf}
             onFullScreen={toggleFullScreen}
             fullScreen={fullScreen}
           />
@@ -194,8 +244,14 @@ const MagazineDetail = () => {
                   </div>
                 </div>
                 <div className="flex flex-col justify-center">
-                  <h3 className="text-lg font-semibold mb-4">Read Options</h3>
+                  <h3 className="text-lg font-semibold mb-4">Download Options</h3>
                   <div className="space-y-3">
+                    <Button
+                      onClick={downloadPdf}
+                      className="inline-flex items-center justify-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md font-medium transition-colors w-full"
+                    >
+                      <Download className="mr-2 h-5 w-5" /> Download Full PDF
+                    </Button>
                     <Button
                       onClick={() => window.print()}
                       variant="outline"

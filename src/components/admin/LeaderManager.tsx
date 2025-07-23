@@ -6,15 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, Plus, Loader2 } from 'lucide-react';
 import CreateLeaderForm from './CreateLeaderForm';
-import EditLeaderForm from './EditLeaderForm';
 
 const LeaderManager = () => {
   const { data: leaders = [], isLoading, error } = useLeadershipProfiles();
   const deleteLeader = useDeleteLeadership();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [createFormOpen, setCreateFormOpen] = useState(false);
-  const [editFormOpen, setEditFormOpen] = useState(false);
-  const [selectedLeader, setSelectedLeader] = useState<any>(null);
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this leadership profile?')) {
@@ -27,11 +24,6 @@ const LeaderManager = () => {
         setDeletingId(null);
       }
     }
-  };
-
-  const handleEdit = (leader: any) => {
-    setSelectedLeader(leader);
-    setEditFormOpen(true);
   };
 
   if (isLoading) {
@@ -103,7 +95,7 @@ const LeaderManager = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 ml-4">
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(leader)}>
+                    <Button variant="outline" size="sm">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
@@ -130,17 +122,6 @@ const LeaderManager = () => {
         open={createFormOpen} 
         onOpenChange={setCreateFormOpen} 
       />
-
-      {selectedLeader && (
-        <EditLeaderForm
-          leader={selectedLeader}
-          open={editFormOpen}
-          onOpenChange={(open) => {
-            setEditFormOpen(open);
-            if (!open) setSelectedLeader(null);
-          }}
-        />
-      )}
     </div>
   );
 };

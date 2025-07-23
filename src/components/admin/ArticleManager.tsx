@@ -7,15 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, Plus, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import CreateArticleForm from './CreateArticleForm';
-import EditArticleForm from './EditArticleForm';
 
 const ArticleManager = () => {
   const { data: articles = [], isLoading, error } = useArticles();
   const deleteArticle = useDeleteArticle();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [createFormOpen, setCreateFormOpen] = useState(false);
-  const [editFormOpen, setEditFormOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<any>(null);
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this article?')) {
@@ -28,11 +25,6 @@ const ArticleManager = () => {
         setDeletingId(null);
       }
     }
-  };
-
-  const handleEdit = (article: any) => {
-    setSelectedArticle(article);
-    setEditFormOpen(true);
   };
 
   if (isLoading) {
@@ -101,7 +93,7 @@ const ArticleManager = () => {
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 ml-4">
-                    <Button variant="outline" size="sm" onClick={() => handleEdit(article)}>
+                    <Button variant="outline" size="sm">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
@@ -128,17 +120,6 @@ const ArticleManager = () => {
         open={createFormOpen} 
         onOpenChange={setCreateFormOpen} 
       />
-
-      {selectedArticle && (
-        <EditArticleForm
-          article={selectedArticle}
-          open={editFormOpen}
-          onOpenChange={(open) => {
-            setEditFormOpen(open);
-            if (!open) setSelectedArticle(null);
-          }}
-        />
-      )}
     </div>
   );
 };

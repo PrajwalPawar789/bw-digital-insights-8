@@ -114,10 +114,10 @@ const IndustryNews = () => {
                   className="w-full group-hover:bg-insightRed group-hover:text-white group-hover:border-insightRed"
                   asChild
                 >
-                  <Link to={`/article/${news.slug}`}>
+                  <a href={`#news-${news.slug}`}>
                     Read Full Analysis
                     <ExternalLink className="ml-2 h-4 w-4" />
-                  </Link>
+                  </a>
                 </Button>
               </CardContent>
             </Card>

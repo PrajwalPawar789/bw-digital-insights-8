@@ -3,69 +3,8 @@ import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useSettings } from '@/hooks/useSettings';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from "@/hooks/use-toast";
-import React, { useRef, useState } from "react";
 
 const Footer = () => {
-  const { settings } = useSettings();
-
-  // Newsletter subscription states
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Newsletter subscription handler
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) {
-      toast({
-        title: "Email is required",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { error } = await supabase.from("newsletter_subscribers").insert([{ email: email.trim() }]);
-      if (error) {
-        if (error.code === '23505') {
-          toast({
-            title: "Already Subscribed",
-            description: "This email is already subscribed to the newsletter.",
-            variant: "default",
-          });
-        } else {
-          toast({
-            title: "Subscription failed",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-      } else {
-        toast({
-          title: "Thank you for subscribing!",
-          description: "You have been added to our newsletter.",
-          variant: "default",
-        });
-        setEmail('');
-        if (inputRef.current) {
-          inputRef.current.value = '';
-        }
-      }
-    } catch (err: any) {
-      toast({
-        title: "Subscription failed",
-        description: err.message,
-        variant: "destructive",
-      });
-    }
-    setLoading(false);
-  };
-
   return (
     <footer className="bg-insightBlack text-white">
       {/* Newsletter Section */}
@@ -76,29 +15,20 @@ const Footer = () => {
               <h3 className="text-3xl font-bold">Subscribe to Our Newsletter</h3>
               <p className="text-gray-400 mt-3 text-lg">Stay updated with the latest business insights and executive news</p>
             </div>
-            <form className="flex w-full max-w-lg space-x-3" onSubmit={handleSubscribe}>
-              <Input
-                ref={inputRef}
-                type="email"
-                placeholder="Enter your email address"
+            <div className="flex w-full max-w-lg space-x-3">
+              <Input 
+                type="email" 
+                placeholder="Enter your email address" 
                 className="bg-gray-800 border-gray-700 placeholder-gray-500 text-white h-12 text-base"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                disabled={loading}
-                required
               />
-              <Button
-                size="lg"
-                className="bg-insightRed hover:bg-insightRed/90 text-white border-insightRed px-8"
-                disabled={loading}
-                type="submit"
-              >
-                {loading ? "Subscribing..." : "Subscribe"}
+              <Button size="lg" className="bg-insightRed hover:bg-insightRed/90 text-white border-insightRed px-8">
+                Subscribe
               </Button>
-            </form>
+            </div>
           </div>
         </div>
       </div>
+
       {/* Footer Links */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -206,11 +136,11 @@ const Footer = () => {
                   </div>
                 </div>
                 <div>
-                  <span className="text-xl font-bold text-white">{settings.companyName}</span>
+                  <span className="text-xl font-bold text-white">Insights</span>
                   <div className="text-xs font-semibold text-gray-400 -mt-1">BUSINESS MAGAZINE</div>
                 </div>
               </Link>
-              <span className="text-gray-400 ml-6 text-base">© 2025 {settings.companyName}. All rights reserved.</span>
+              <span className="text-gray-400 ml-6 text-base">© 2025 Insights Business Magazine. All rights reserved.</span>
             </div>
             
             <div className="flex space-x-6 mt-6 md:mt-0">
@@ -238,4 +168,3 @@ const Footer = () => {
 };
 
 export default Footer;
-

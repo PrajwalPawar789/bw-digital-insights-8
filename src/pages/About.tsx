@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { teamData } from '../data/teamData';
 import { 
@@ -12,7 +13,6 @@ import {
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useCompanyName } from '@/hooks/useDatabaseSettings';
 
 const About = () => {
   const [activeTeamMember, setActiveTeamMember] = useState<number | null>(null);
@@ -26,7 +26,7 @@ const About = () => {
 
   // Timeline data for company history
   const timeline = [
-    { year: 2015, title: "Company Founded", description: "CIO VISION was founded with a vision to transform business intelligence." },
+    { year: 2015, title: "Company Founded", description: "InsightsBW was founded with a vision to transform business intelligence." },
     { year: 2017, title: "Global Expansion", description: "Opened offices in Europe and Asia, expanding our international presence." },
     { year: 2019, title: "Technology Innovation", description: "Launched our proprietary analytics platform revolutionizing data insights." },
     { year: 2021, title: "Industry Recognition", description: "Received multiple awards for thought leadership and innovation." },
@@ -41,8 +41,6 @@ const About = () => {
     { icon: <TrendingUp className="h-6 w-6 text-insightRed" />, title: "Growth", description: "We foster continuous learning and development." },
     { icon: <Globe className="h-6 w-6 text-insightRed" />, title: "Integrity", description: "We operate with honesty, transparency, and ethical conduct." }
   ];
-
-  const companyName = useCompanyName();
 
   useEffect(() => {
     // Set up intersection observer for scroll animations
@@ -73,7 +71,7 @@ const About = () => {
         <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">About {companyName}</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">About InsightsBW</h1>
             <p className="max-w-3xl mx-auto text-lg text-gray-200 mb-8">
               Transforming complex business data into actionable intelligence for forward-thinking leaders.
             </p>
@@ -94,7 +92,7 @@ const About = () => {
               </div>
               <h2 className="text-2xl font-bold text-insightBlack mb-4">Our Mission</h2>
               <p className="text-gray-600">
-                At CIO VISION, we are dedicated to providing cutting-edge insights and thought leadership 
+                At InsightsBW, we are dedicated to providing cutting-edge insights and thought leadership 
                 in the technology and business landscape. Our mission is to empower leaders with actionable 
                 intelligence, innovative perspectives, and in-depth analysis that drives strategic decision-making.
               </p>
@@ -120,9 +118,9 @@ const About = () => {
       <section id="values" className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-insight CIO VISION Black mb-4">Our Core Values</h2>
+            <h2 className="text-3xl font-bold text-insightBlack mb-4">Our Core Values</h2>
             <p className="max-w-3xl mx-auto text-gray-600">
-              These principles guide everything we do at .
+              These principles guide everything we do at InsightsBW.
             </p>
           </div>
           
@@ -223,7 +221,7 @@ const About = () => {
                         </div>
                         <div className="flex items-center">
                           <Mail className="h-4 w-4 mr-1" />
-                          <p className="text-sm">{member.name.toLowerCase().replace(' ', '.')}@ciovision.com</p>
+                          <p className="text-sm">{member.name.toLowerCase().replace(' ', '.')}@insightsbw.com</p>
                         </div>
                       </div>
                     </div>
@@ -245,7 +243,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Business?</h2>
           <p className="max-w-3xl mx-auto text-gray-300 mb-8">
-            Discover how CIO VISION can help your organization navigate complexity and drive innovation.
+            Discover how InsightsBW can help your organization navigate complexity and drive innovation.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button className="bg-insightRed hover:bg-red-700 text-white">

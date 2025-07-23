@@ -8,36 +8,14 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useImageUpload } from "@/hooks/useImageUpload";
 import { useSettings } from "@/hooks/useSettings";
-import { useUpdateDatabaseSettings } from "@/hooks/useUpdateDatabaseSettings";
-import { useDatabaseSettings } from "@/hooks/useDatabaseSettings";
 import { toast } from "sonner";
-import { Loader2, Upload, X, Save } from "lucide-react";
-import React from "react";
+import { Loader2, Upload, X } from "lucide-react";
 
 const SettingsManager = () => {
   const { settings, loading, saveSettings, updateHomepageSection, resetSettings } = useSettings();
-  const { data: dbSettings } = useDatabaseSettings();
-  const { mutate: updateDbSetting, isPending: updatingDbSetting } = useUpdateDatabaseSettings();
   const { uploadImage, uploading } = useImageUpload();
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [previewLogo, setPreviewLogo] = useState<string | null>(null);
-  const [tempCompanyName, setTempCompanyName] = useState("");
-  const [companyNameChanged, setCompanyNameChanged] = useState(false);
-  const [tempAnalyticsCode, setTempAnalyticsCode] = useState("");
-  const [analyticsCodeChanged, setAnalyticsCodeChanged] = useState(false);
-
-  // Initialize temp company name when dbSettings loads
-  React.useEffect(() => {
-    if (dbSettings?.company_name && !companyNameChanged) {
-      setTempCompanyName(dbSettings.company_name);
-    }
-  }, [dbSettings?.company_name, companyNameChanged]);
-
-  React.useEffect(() => {
-    if (settings.analyticsCode && !analyticsCodeChanged) {
-      setTempAnalyticsCode(settings.analyticsCode);
-    }
-  }, [settings.analyticsCode, analyticsCodeChanged]);
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -87,38 +65,12 @@ const SettingsManager = () => {
     saveSettings({ siteTitle: value });
   };
 
-  const handleCompanyNameInputChange = (value: string) => {
-    setTempCompanyName(value);
-    setCompanyNameChanged(true);
-  };
-
-  const handleSaveCompanyName = () => {
-    updateDbSetting({ key: 'company_name', value: tempCompanyName }, {
-      onSuccess: () => {
-        setCompanyNameChanged(false);
-        toast.success("Company name updated successfully");
-      },
-      onError: () => {
-        setTempCompanyName(dbSettings?.company_name || "");
-        setCompanyNameChanged(false);
-      }
-    });
-  };
-
   const handlePrimaryColorChange = (value: string) => {
     saveSettings({ primaryColor: value });
   };
 
-  const handleAnalyticsCodeInputChange = (value: string) => {
-    setTempAnalyticsCode(value);
-    setAnalyticsCodeChanged(true);
-  };
-
-  const handleSaveAnalyticsCode = async () => {
-    const success = await saveSettings({ analyticsCode: tempAnalyticsCode });
-    if (success) {
-      setAnalyticsCodeChanged(false);
-    }
+  const handleAnalyticsCodeChange = (value: string) => {
+    saveSettings({ analyticsCode: value });
   };
 
   return (
@@ -140,33 +92,6 @@ const SettingsManager = () => {
               onChange={(e) => handleSiteTitleChange(e.target.value)}
               placeholder="Enter site title"
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="company-name">Company Name</Label>
-            <div className="flex gap-2">
-              <Input
-                id="company-name"
-                value={tempCompanyName}
-                onChange={(e) => handleCompanyNameInputChange(e.target.value)}
-                placeholder="Enter company name"
-                disabled={updatingDbSetting}
-              />
-              <Button 
-                onClick={handleSaveCompanyName}
-                disabled={updatingDbSetting || !companyNameChanged}
-                size="sm"
-              >
-                {updatingDbSetting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-            {updatingDbSetting && (
-              <p className="text-sm text-muted-foreground">Updating...</p>
-            )}
           </div>
 
           <div className="space-y-2">
@@ -325,26 +250,12 @@ const SettingsManager = () => {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="analytics-code">Google Analytics Code</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="analytics-code"
-                value={tempAnalyticsCode}
-                onChange={(e) => handleAnalyticsCodeInputChange(e.target.value)}
-                placeholder="GA-XXXXXXXXX-X"
-                disabled={loading}
-              />
-              <Button
-                onClick={handleSaveAnalyticsCode}
-                disabled={loading || !analyticsCodeChanged}
-                size="sm"
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
+            <Input
+              id="analytics-code"
+              value={settings.analyticsCode}
+              onChange={(e) => handleAnalyticsCodeChange(e.target.value)}
+              placeholder="GA-XXXXXXXXX-X"
+            />
           </div>
         </CardContent>
       </Card>

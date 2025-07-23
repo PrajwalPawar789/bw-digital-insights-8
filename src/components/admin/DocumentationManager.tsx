@@ -1,17 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { FileText, Plus, Edit, Trash2 } from 'lucide-react';
 
 const DocumentationManager = () => {
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedDoc, setSelectedDoc] = useState<any>(null);
-
+  // Mock data for now - you can replace with actual data fetching
   const docs = [
     {
       id: '1',
@@ -35,17 +29,6 @@ const DocumentationManager = () => {
       lastUpdated: '2024-01-05'
     }
   ];
-
-  const handleEdit = (doc: any) => {
-    setSelectedDoc(doc);
-    setEditDialogOpen(true);
-  };
-
-  const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this document?')) {
-      console.log('Delete document:', id);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -78,10 +61,10 @@ const DocumentationManager = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 ml-4">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(doc)}>
+                  <Button variant="outline" size="sm">
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleDelete(doc.id)}>
+                  <Button variant="outline" size="sm">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -90,41 +73,6 @@ const DocumentationManager = () => {
           </Card>
         ))}
       </div>
-
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Document</DialogTitle>
-            <DialogDescription>
-              Update the document information below.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="doc-title">Title</Label>
-              <Input id="doc-title" defaultValue={selectedDoc?.title} />
-            </div>
-            <div>
-              <Label htmlFor="doc-description">Description</Label>
-              <Textarea id="doc-description" defaultValue={selectedDoc?.description} />
-            </div>
-            <div>
-              <Label htmlFor="doc-category">Category</Label>
-              <Input id="doc-category" defaultValue={selectedDoc?.category} />
-            </div>
-          </div>
-
-          <div className="flex justify-end space-x-2 mt-4">
-            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={() => setEditDialogOpen(false)}>
-              Save Changes
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

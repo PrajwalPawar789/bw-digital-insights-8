@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMagazines, useFeaturedMagazines } from '@/hooks/useMagazines';
-import { useCompanyName } from '@/hooks/useDatabaseSettings';
 import {
   Pagination,
   PaginationContent,
@@ -11,14 +10,14 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { BookOpen, Star, Loader2, Search, Filter, Calendar, Download, Eye, ArrowRight, Crown } from 'lucide-react';
+import { BookOpen, Star, Loader2, Search, Filter, Calendar, Download, Eye, ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-const Magazine = () => {
+const MagazinePage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('newest');
@@ -140,8 +139,6 @@ const Magazine = () => {
     avgReadTime: '15 min'
   };
 
-  const companyName = useCompanyName();
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -155,30 +152,41 @@ const Magazine = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-20">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Enhanced Hero Section */}
+      <div className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-20">
         <div className="absolute inset-0 opacity-20">
           <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center"></div>
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="mb-8">
-            <Badge className="mb-6 bg-gradient-to-r from-insightRed to-red-600 text-white border-none text-sm px-6 py-3 shadow-xl">
-              <Crown className="w-4 h-4 mr-2" />
-              Premium Business Intelligence
-            </Badge>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Insights Business
+              <span className="block text-insightRed">Magazine Archive</span>
+            </h1>
+            <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-200 leading-relaxed mb-8">
+              Access our complete collection of quarterly publications featuring exclusive CEO interviews, 
+              market analysis, and strategic insights that drive business transformation.
+            </p>
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            {companyName} Archive
-          </h1>
-          
-          <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-200 leading-relaxed mb-8">
-            Access our complete collection of quarterly publications featuring exclusive CEO interviews, 
-            market analysis, and strategic insights that drive business transformation.
-          </p>
+          {/* Enhanced Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { label: "Total Issues", value: magazineStats.total.toString(), icon: BookOpen },
+              { label: "Featured Stories", value: `${magazineStats.featured}+`, icon: Star },
+              { label: "Industry Sectors", value: magazineStats.categories.toString(), icon: Filter },
+              { label: "Avg. Read Time", value: magazineStats.avgReadTime, icon: Calendar },
+            ].map((stat, index) => (
+              <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 text-center p-6 hover:bg-white/20 transition-all duration-300">
+                <stat.icon className="h-8 w-8 mx-auto mb-3 text-insightRed" />
+                <div className="text-2xl md:text-3xl font-bold mb-1 text-white">{stat.value}</div>
+                <div className="text-sm text-gray-300">{stat.label}</div>
+              </Card>
+            ))}
+          </div>
         </div>
-      </section>
+      </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Advanced Search and Filter Controls */}
@@ -422,4 +430,4 @@ const Magazine = () => {
   );
 };
 
-export default Magazine;
+export default MagazinePage;

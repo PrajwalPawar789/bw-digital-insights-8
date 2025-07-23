@@ -1,273 +1,202 @@
-import React from 'react';
-import { useLeadershipProfiles } from '@/hooks/useLeadership';
+
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Linkedin, Twitter, ArrowRight, Users, Award, Building2 } from 'lucide-react';
+import { useLeadershipProfiles, useFeaturedLeadership } from '@/hooks/useLeadership';
+import { Search, Linkedin, Twitter, Loader2 } from 'lucide-react';
 
 const Leadership = () => {
-  const { data: leaders, isLoading } = useLeadershipProfiles();
+  const [searchTerm, setSearchTerm] = useState('');
+  const { data: allLeaders = [], isLoading } = useLeadershipProfiles();
+  const { data: featuredLeaders = [] } = useFeaturedLeadership();
+
+  const filteredLeaders = allLeaders.filter(leader =>
+    leader.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    leader.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (leader.company && leader.company.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-8 w-8 animate-spin text-insightRed" />
+          <span className="text-lg">Loading leadership profiles...</span>
+        </div>
       </div>
     );
   }
 
-  const featuredLeaders = Array.isArray(leaders) ? leaders.filter((leader) => leader.featured) : [];
-  const regularLeaders = Array.isArray(leaders) ? leaders.filter((leader) => !leader.featured) : [];
-
   return (
-    <div className="min-h-screen bg-white">
-      {/* HERO SECTION with BG IMAGE */}
-      <div className="relative w-full h-[360px] sm:h-[420px] md:h-[480px] lg:h-[520px] flex items-end">
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=1200&q=80')"
-          }}
-        />
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/60" />
-        {/* Content */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-20 flex flex-col items-center text-center">
-          <div className="flex justify-center mb-6">
-            <div className="p-3 bg-insightRed/10 rounded-full">
-              <Users className="h-8 w-8 text-insightRed" />
-            </div>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 drop-shadow">
-            Leadership Profiles
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Hero Section */}
+      <div className="relative bg-insightBlack text-white py-16 mb-12">
+        <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+            Leadership Excellence
           </h1>
-          <p className="text-xl text-gray-200 max-w-3xl mx-auto drop-shadow">
-            Meet the visionary leaders shaping the future of business and technology. 
-            Our featured profiles showcase industry pioneers, innovative CEOs, and transformational executives.
+          <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-200 leading-relaxed">
+            Meet the visionary leaders who are shaping the future of technology and business. Their insights drive innovation and transformation across industries.
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Featured Leaders Section */}
         {featuredLeaders.length > 0 && (
           <div className="mb-16">
-            <div className="flex items-center mb-8">
-              <Award className="h-6 w-6 text-insightRed mr-3" />
-              <h2 className="text-2xl font-bold text-insightBlack">Featured Leaders</h2>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* First featured leader - larger card */}
-              {featuredLeaders.length > 0 && (
-                <div className="lg:col-span-2 lg:row-span-2">
-                  <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 h-full">
-                    <div className="aspect-[4/3] overflow-hidden">
-                      <img
-                        src={featuredLeaders[0].image_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800'}
-                        alt={featuredLeaders[0].name}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-8">
-                      <div className="flex items-center mb-4">
-                        <span className="bg-insightRed text-white px-3 py-1 rounded-full text-sm font-medium">
-                          Featured Leader
-                        </span>
-                      </div>
-                      <h3 className="text-2xl font-bold text-insightBlack mb-2">
-                        {featuredLeaders[0].name}
-                      </h3>
-                      <p className="text-insightRed font-semibold mb-2">
-                        {featuredLeaders[0].title}
-                      </p>
-                      {featuredLeaders[0].company && (
-                        <div className="flex items-center text-gray-600 mb-4">
-                          <Building2 className="h-4 w-4 mr-2" />
-                          <span>{featuredLeaders[0].company}</span>
-                        </div>
-                      )}
-                      <p className="text-gray-600 mb-6 line-clamp-4">
-                        {featuredLeaders[0].bio}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex space-x-3">
-                          {featuredLeaders[0].linkedin_url && (
-                            <a
-                              href={featuredLeaders[0].linkedin_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-gray-400 hover:text-blue-600 transition-colors"
-                            >
-                              <Linkedin className="h-5 w-5" />
-                            </a>
-                          )}
-                          {featuredLeaders[0].twitter_url && (
-                            <a
-                              href={featuredLeaders[0].twitter_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-gray-400 hover:text-blue-400 transition-colors"
-                            >
-                              <Twitter className="h-5 w-5" />
-                            </a>
-                          )}
-                        </div>
-                        <Link
-                          to={`/leadership/${featuredLeaders[0].slug}`}
-                          className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium transition-colors"
-                        >
-                          Read Profile <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Other featured leaders - smaller cards */}
-              {featuredLeaders.length > 1 && (
-                <div className="lg:col-span-1 space-y-8">
-                  {featuredLeaders.slice(1, 3).map((leader) => (
-                    <div key={leader.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-                      <div className="aspect-[4/3] overflow-hidden">
-                        <img
-                          src={leader.image_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400'}
-                          alt={leader.name}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="p-6">
-                        <span className="bg-insightRed text-white px-2 py-1 rounded-full text-xs font-medium mb-3 inline-block">
-                          Featured
-                        </span>
-                        <h3 className="text-xl font-bold text-insightBlack mb-2">
-                          {leader.name}
-                        </h3>
-                        <p className="text-insightRed font-semibold mb-2">
-                          {leader.title}
-                        </p>
-                        {leader.company && (
-                          <div className="flex items-center text-gray-600 mb-3">
-                            <Building2 className="h-4 w-4 mr-2" />
-                            <span className="text-sm">{leader.company}</span>
-                          </div>
-                        )}
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                          {leader.bio}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex space-x-2">
-                            {leader.linkedin_url && (
-                              <a
-                                href={leader.linkedin_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-blue-600 transition-colors"
-                              >
-                                <Linkedin className="h-4 w-4" />
-                              </a>
-                            )}
-                            {leader.twitter_url && (
-                              <a
-                                href={leader.twitter_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-blue-400 transition-colors"
-                              >
-                                <Twitter className="h-4 w-4" />
-                              </a>
-                            )}
-                          </div>
-                          <Link
-                            to={`/leadership/${leader.slug}`}
-                            className="text-insightRed hover:text-insightBlack font-medium text-sm transition-colors"
-                          >
-                            View Profile
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* All Leaders Section */}
-        {regularLeaders.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold text-insightBlack mb-8">All Leadership Profiles</h2>
+            <h2 className="text-3xl font-bold text-insightBlack mb-8 text-center">Featured Leaders</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {regularLeaders.map((leader) => (
-                <div key={leader.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-                  <div className="aspect-[4/3] overflow-hidden">
+              {featuredLeaders.map((leader) => (
+                <Link
+                  key={leader.id}
+                  to={`/leadership/${leader.slug}`}
+                  className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                >
+                  <div className="relative">
                     <img
-                      src={leader.image_url || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400'}
+                      src={leader.image_url || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400'}
                       alt={leader.name}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      className="w-full h-64 object-cover transition-transform group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-insightBlack mb-2">
+                    <h3 className="text-xl font-bold text-insightBlack group-hover:text-insightRed transition-colors mb-2">
                       {leader.name}
                     </h3>
-                    <p className="text-insightRed font-semibold mb-2">
-                      {leader.title}
-                    </p>
+                    <p className="text-insightRed font-medium mb-1">{leader.title}</p>
                     {leader.company && (
-                      <div className="flex items-center text-gray-600 mb-3">
-                        <Building2 className="h-4 w-4 mr-2" />
-                        <span className="text-sm">{leader.company}</span>
-                      </div>
+                      <p className="text-gray-600 text-sm mb-3">{leader.company}</p>
                     )}
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      {leader.bio}
+                    <p className="text-gray-700 text-sm line-clamp-3 mb-4">
+                      {leader.bio.substring(0, 150)}...
                     </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex space-x-2">
-                        {leader.linkedin_url && (
-                          <a
-                            href={leader.linkedin_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-blue-600 transition-colors"
-                          >
-                            <Linkedin className="h-4 w-4" />
-                          </a>
-                        )}
-                        {leader.twitter_url && (
-                          <a
-                            href={leader.twitter_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-blue-400 transition-colors"
-                          >
-                            <Twitter className="h-4 w-4" />
-                          </a>
-                        )}
-                      </div>
-                      <Link
-                        to={`/leadership/${leader.slug}`}
-                        className="text-insightRed hover:text-insightBlack font-medium text-sm transition-colors"
-                      >
-                        View Profile
-                      </Link>
+                    <div className="flex items-center space-x-3">
+                      {leader.linkedin_url && (
+                        <a
+                          href={leader.linkedin_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Linkedin className="w-5 h-5" />
+                        </a>
+                      )}
+                      {leader.twitter_url && (
+                        <a
+                          href={leader.twitter_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400 hover:text-blue-600 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Twitter className="w-5 h-5" />
+                        </a>
+                      )}
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
         )}
 
-        {/* Empty state */}
-        {(Array.isArray(leaders) && leaders.length === 0) && (
-          <div className="text-center py-16">
-            <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-medium text-gray-900 mb-2">No Leadership Profiles Available</h3>
-            <p className="text-gray-500">Check back soon for inspiring leadership stories and profiles.</p>
+        {/* Search Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm mb-10">
+          <h2 className="text-xl font-semibold mb-4 text-insightBlack">Find Leadership Profiles</h2>
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name, title, or company..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-insightRed focus:border-transparent"
+            />
           </div>
-        )}
+        </div>
+
+        {/* All Leaders Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-insightBlack mb-8 text-center">
+            {searchTerm ? 'Search Results' : 'All Leaders'}
+          </h2>
+          
+          {filteredLeaders.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredLeaders.map((leader) => (
+                <Link
+                  key={leader.id}
+                  to={`/leadership/${leader.slug}`}
+                  className="group bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+                >
+                  <div className="relative">
+                    <img
+                      src={leader.image_url || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400'}
+                      alt={leader.name}
+                      className="w-full h-64 object-cover transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-insightBlack group-hover:text-insightRed transition-colors mb-2">
+                      {leader.name}
+                    </h3>
+                    <p className="text-insightRed font-medium mb-1">{leader.title}</p>
+                    {leader.company && (
+                      <p className="text-gray-600 text-sm mb-3">{leader.company}</p>
+                    )}
+                    <p className="text-gray-700 text-sm line-clamp-3 mb-4">
+                      {leader.bio.substring(0, 150)}...
+                    </p>
+                    <div className="flex items-center space-x-3">
+                      {leader.linkedin_url && (
+                        <a
+                          href={leader.linkedin_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Linkedin className="w-5 h-5" />
+                        </a>
+                      )}
+                      {leader.twitter_url && (
+                        <a
+                          href={leader.twitter_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-400 hover:text-blue-600 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Twitter className="w-5 h-5" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="max-w-md mx-auto">
+                <p className="text-gray-600 text-lg mb-4">
+                  {searchTerm ? 'No leaders found matching your search.' : 'No leadership profiles available.'}
+                </p>
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="text-insightRed hover:text-insightBlack transition-colors"
+                  >
+                    Clear search
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

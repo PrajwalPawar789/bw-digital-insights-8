@@ -12,7 +12,6 @@ interface HomepageSettings {
 
 interface SiteSettings {
   siteTitle: string;
-  companyName: string;
   siteLogo: string | null;
   primaryColor: string;
   analyticsCode: string;
@@ -21,7 +20,6 @@ interface SiteSettings {
 
 const DEFAULT_SETTINGS: SiteSettings = {
   siteTitle: "Insights Business Magazine",
-  companyName: "Insights Business Magazine",
   siteLogo: null,
   primaryColor: "#0f172a",
   analyticsCode: "",
@@ -45,15 +43,10 @@ export const useSettings = () => {
   const loadSettings = () => {
     try {
       const savedSettings = localStorage.getItem('siteSettings');
-      let localSettings = DEFAULT_SETTINGS;
-      
       if (savedSettings) {
         const parsed = JSON.parse(savedSettings);
-        localSettings = { ...DEFAULT_SETTINGS, ...parsed };
+        setSettings({ ...DEFAULT_SETTINGS, ...parsed });
       }
-      
-      
-      setSettings(localSettings);
     } catch (error) {
       console.error('Error loading settings:', error);
       setSettings(DEFAULT_SETTINGS);

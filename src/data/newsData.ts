@@ -1,3 +1,4 @@
+
 import { slugify } from "../lib/slugify";
 
 export interface Article {
@@ -18,18 +19,6 @@ export type NewsItem = Article; // Alias for backward compatibility
 export const newsData: Article[] = [
   {
     id: 1,
-    title: "The Future of Digital Banking: How Fintech is Reshaping Financial Services",
-    author: "Sarah Johnson",
-    date: "2025-01-20",
-    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600",
-    category: "Finance",
-    excerpt: "Explore how digital-first banks are revolutionizing customer experience and driving innovation in the financial sector.",
-    content: "Digital banking has transformed from a convenience to a necessity, fundamentally changing how consumers interact with financial institutions. Digital-first banks are leveraging advanced technologies like artificial intelligence, machine learning, and blockchain to create seamless, personalized banking experiences that traditional banks struggle to match.\n\nThe rise of neobanks and challenger banks has forced established financial institutions to accelerate their digital transformation initiatives. These digital natives offer features like instant account opening, real-time transaction notifications, budgeting tools, and 24/7 customer support through chatbots and mobile apps.\n\nKey innovations driving this transformation include open banking APIs that enable third-party integrations, biometric authentication for enhanced security, and AI-powered financial advisory services. As regulatory frameworks evolve to support fintech innovation, we can expect even more disruptive changes in how financial services are delivered and consumed.",
-    slug: "future-digital-banking-fintech-reshaping-financial-services",
-    isFeatured: true
-  },
-  {
-    id: 2,
     title: "AI and Machine Learning Transforming Business Operations",
     author: "Sarah Johnson",
     date: "April 12, 2025",
@@ -41,7 +30,7 @@ export const newsData: Article[] = [
     isFeatured: true
   },
   {
-    id: 3,
+    id: 2,
     title: "Supply Chain Resilience: Lessons from Global Disruptions",
     author: "Michael Chen",
     date: "April 5, 2025",
@@ -52,7 +41,7 @@ export const newsData: Article[] = [
     slug: "supply-chain-resilience-lessons-from-global-disruptions"
   },
   {
-    id: 4,
+    id: 3,
     title: "ESG Initiatives Driving Long-term Business Value",
     author: "Jennifer Martinez",
     date: "March 28, 2025",
@@ -63,7 +52,7 @@ export const newsData: Article[] = [
     slug: "esg-initiatives-driving-long-term-business-value"
   },
   {
-    id: 5,
+    id: 4,
     title: "Digital Transformation in Financial Services",
     author: "Robert Williams",
     date: "March 21, 2025",
@@ -75,7 +64,7 @@ export const newsData: Article[] = [
     isFeatured: true
   },
   {
-    id: 6,
+    id: 5,
     title: "Remote Work Revolution: Building Effective Virtual Teams",
     author: "Emily Brown",
     date: "March 15, 2025",
@@ -87,7 +76,7 @@ export const newsData: Article[] = [
     isFeatured: true
   },
   {
-    id: 7,
+    id: 6,
     title: "Emerging Markets: Growth Opportunities and Strategic Considerations",
     author: "David Patel",
     date: "March 8, 2025",
@@ -99,7 +88,7 @@ export const newsData: Article[] = [
     isFeatured: true
   },
   {
-    id: 8,
+    id: 7,
     title: "Cybersecurity Imperatives for the Modern Enterprise",
     author: "Thomas Jackson",
     date: "March 1, 2025",
@@ -111,7 +100,7 @@ export const newsData: Article[] = [
     isFeatured: true
   },
   {
-    id: 9,
+    id: 8,
     title: "Next-Generation Customer Experience Strategies",
     author: "Lisa Wong",
     date: "February 22, 2025",
@@ -122,7 +111,7 @@ export const newsData: Article[] = [
     slug: "next-generation-customer-experience-strategies"
   },
   {
-    id: 10,
+    id: 9,
     title: "Sustainable Supply Chain Management",
     author: "Mark Johnson",
     date: "February 15, 2025",
@@ -134,7 +123,7 @@ export const newsData: Article[] = [
     isFeatured: true
   },
   {
-    id: 11,
+    id: 10,
     title: "The Future of Work: Automation, Skills, and Organizational Design",
     author: "Alexandra Chen",
     date: "February 8, 2025",
@@ -145,7 +134,7 @@ export const newsData: Article[] = [
     slug: "future-of-work-automation-skills-organizational-design"
   },
   {
-    id: 12,
+    id: 11,
     title: "Data-Driven Decision Making in Modern Business",
     author: "Jordan Smith",
     date: "February 1, 2025",
@@ -156,7 +145,7 @@ export const newsData: Article[] = [
     slug: "data-driven-decision-making-modern-business"
   },
   {
-    id: 13,
+    id: 12,
     title: "Healthcare Innovation: Digital Transformation and Personalized Medicine",
     author: "Dr. Sarah Williams",
     date: "January 25, 2025",
@@ -167,7 +156,7 @@ export const newsData: Article[] = [
     slug: "healthcare-innovation-digital-transformation-personalized-medicine"
   },
   {
-    id: 14,
+    id: 13,
     title: "Regulatory Compliance in an Era of Changing Standards",
     author: "Michael Rodriguez",
     date: "January 18, 2025",
@@ -178,7 +167,7 @@ export const newsData: Article[] = [
     slug: "regulatory-compliance-era-changing-standards"
   },
   {
-    id: 15,
+    id: 14,
     title: "The Rise of Sustainable Finance and ESG Investing",
     author: "Katherine Zhao",
     date: "January 12, 2025",
@@ -189,7 +178,7 @@ export const newsData: Article[] = [
     slug: "rise-sustainable-finance-esg-investing"
   },
   {
-    id: 16,
+    id: 15,
     title: "Digital Marketing Evolution: Data Privacy and Personalization Balance",
     author: "Rachel Thompson",
     date: "January 5, 2025",
@@ -200,7 +189,7 @@ export const newsData: Article[] = [
     slug: "digital-marketing-evolution-data-privacy-personalization-balance"
   },
   {
-    id: 17,
+    id: 16,
     title: "Blockchain Beyond Cryptocurrency: Enterprise Applications and Adoption",
     author: "Daniel Lee",
     date: "December 28, 2024",
@@ -212,7 +201,7 @@ export const newsData: Article[] = [
     isFeatured: true
   },
   {
-    id: 18,
+    id: 17,
     title: "Digital Twins: Transforming Asset Management and Operational Excellence",
     author: "James Wilson",
     date: "December 21, 2024",
@@ -223,7 +212,7 @@ export const newsData: Article[] = [
     slug: "digital-twins-transforming-asset-management-operational-excellence"
   },
   {
-    id: 19,
+    id: 18,
     title: "Circular Economy Business Models: Creating Value Through Sustainability",
     author: "Sophia Park",
     date: "December 15, 2024",
@@ -234,7 +223,7 @@ export const newsData: Article[] = [
     slug: "circular-economy-business-models-creating-value-through-sustainability"
   },
   {
-    id: 20,
+    id: 19,
     title: "Agile Transformation Beyond Software Development",
     author: "Nathan Chen",
     date: "December 8, 2024",
@@ -245,7 +234,7 @@ export const newsData: Article[] = [
     slug: "agile-transformation-beyond-software-development"
   },
   {
-    id: 21,
+    id: 20,
     title: "Quantum Computing: Business Implications and Preparation Strategies",
     author: "Dr. Alan Richardson",
     date: "December 1, 2024",
@@ -255,50 +244,6 @@ export const newsData: Article[] = [
     content: "Quantum computing represents a fundamental shift in computational capabilities that could eventually transform industries from pharmaceuticals and materials science to logistics and cybersecurity. While widespread practical applications remain years away, forward-thinking organizations are beginning to assess potential impacts and develop preparation strategies.\n\nThe most immediate business implications involve complex optimization problems where quantum algorithms could potentially deliver exponential speedups. These include supply chain optimization, financial portfolio management, and transportation routing. Drug discovery and materials development could accelerate dramatically through quantum simulations of molecular interactions that are computationally infeasible with classical systems.\n\nOrganizations can prepare by identifying specific business problems where quantum approaches might deliver advantages, building quantum literacy among technical teams, and exploring hybrid approaches that combine classical and quantum methods. Industry-academic partnerships provide access to expertise and early-stage technology without requiring substantial direct investment. By developing awareness and capabilities now, companies can position themselves to leverage quantum advantages as the technology matures while managing risks like potential impacts on current cryptographic security systems.",
     slug: "quantum-computing-business-implications-preparation-strategies",
     isFeatured: true
-  },
-  {
-    id: 22,
-    title: "AI Transformation Drives 40% Revenue Growth in Fortune 500 Companies",
-    author: "Tech Business Weekly",
-    date: "2025-01-15",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400",
-    category: "Technology",
-    excerpt: "New research reveals how artificial intelligence implementations are reshaping business operations and driving unprecedented revenue growth across major corporations.",
-    content: "A comprehensive study of Fortune 500 companies reveals that organizations implementing comprehensive AI strategies are experiencing an average revenue growth of 40% compared to their traditional counterparts. This remarkable transformation is being driven by AI applications across multiple business functions, from customer service automation to predictive analytics and supply chain optimization.\n\nThe research, conducted over 18 months, found that companies achieving the highest growth rates shared several common characteristics: they invested heavily in data infrastructure, prioritized employee AI literacy training, and implemented AI solutions systematically rather than in isolated pilots. Customer experience improvements were particularly significant, with AI-powered personalization increasing customer satisfaction scores by an average of 35%.\n\nExperts predict this trend will accelerate as AI technologies become more accessible and cost-effective. However, successful implementation requires strategic planning, substantial investment in change management, and a commitment to ongoing learning and adaptation as the technology continues to evolve.",
-    slug: "ai-transformation-revenue-growth-fortune-500"
-  },
-  {
-    id: 23,
-    title: "Sustainable Finance Reaches $35 Trillion Globally as ESG Investing Accelerates",
-    author: "Financial Leadership Today",
-    date: "2025-01-14",
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400",
-    category: "Finance",
-    excerpt: "Environmental, Social, and Governance (ESG) investing continues its explosive growth, with institutional investors leading the charge toward sustainable financial practices.",
-    content: "The global sustainable finance market has reached a milestone of $35 trillion in assets under management, representing nearly 40% of all professionally managed investments worldwide. This growth reflects a fundamental shift in how investors evaluate opportunities, with ESG criteria becoming central to investment decision-making processes across both institutional and retail markets.\n\nInstitutional investors, including pension funds, insurance companies, and sovereign wealth funds, are driving much of this growth as they recognize the long-term financial benefits of sustainable investing. Many are finding that ESG-focused portfolios often outperform traditional investments while reducing risk exposure to environmental and social factors that could impact future returns.\n\nThe acceleration in ESG adoption is being supported by improved data availability, standardized reporting frameworks, and regulatory requirements in major markets. As climate change concerns intensify and social responsibility becomes increasingly important to stakeholders, experts predict sustainable finance will continue its rapid expansion, potentially reaching $50 trillion within the next three years.",
-    slug: "sustainable-finance-esg-investing-growth"
-  },
-  {
-    id: 24,
-    title: "Healthcare Innovation: Telehealth Market Projected to Hit $659 Billion by 2030",
-    author: "Healthcare Business Review",
-    date: "2025-01-13",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400",
-    category: "Healthcare",
-    excerpt: "Digital health solutions and remote care technologies are revolutionizing patient care delivery, creating massive market opportunities for healthcare innovators.",
-    content: "The telehealth market is experiencing unprecedented growth, with projections indicating it will reach $659 billion by 2030, up from $83 billion in 2022. This explosive growth is being driven by technological advances, changing patient expectations, and healthcare providers' need to improve efficiency while expanding access to care.\n\nKey growth drivers include the widespread adoption of wearable health devices, AI-powered diagnostic tools, and integrated electronic health records that enable seamless virtual consultations. Patient acceptance has increased dramatically, with satisfaction rates for telehealth services now matching or exceeding traditional in-person visits for many types of care.\n\nThe market expansion is creating opportunities across multiple segments, including virtual primary care, mental health services, chronic disease management, and specialized consultations. Major healthcare systems are investing heavily in digital infrastructure, while technology companies are partnering with medical providers to develop innovative solutions that improve patient outcomes while reducing costs.",
-    slug: "telehealth-market-growth-digital-health"
-  },
-  {
-    id: 25,
-    title: "Supply Chain Resilience: Companies Invest $2.4 Trillion in Diversification Strategies",
-    author: "Supply Chain Executive",
-    date: "2025-01-12",
-    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400",
-    category: "Manufacturing",
-    excerpt: "Global supply chain disruptions drive unprecedented investment in resilience strategies, with companies restructuring operations for greater flexibility and security.",
-    content: "In response to recent global supply chain disruptions, companies worldwide have committed $2.4 trillion to supply chain diversification and resilience initiatives over the next five years. This massive investment represents a fundamental shift from efficiency-focused, just-in-time models toward more robust, flexible supply networks capable of withstanding various types of disruptions.\n\nThe investment is being allocated across multiple strategies, including geographic diversification of suppliers, development of alternative transportation routes, increased inventory buffers for critical components, and advanced supply chain visibility technologies. Many companies are also investing in local and regional suppliers to reduce dependence on distant sources, even if this means higher short-term costs.\n\nTechnology plays a crucial role in these resilience strategies, with companies implementing AI-powered supply chain monitoring systems, blockchain-based traceability solutions, and predictive analytics platforms that can identify potential disruptions before they occur. Early adopters of these comprehensive resilience strategies are already seeing benefits in terms of reduced risk exposure and improved ability to respond quickly to market changes.",
-    slug: "supply-chain-resilience-diversification-investment"
   }
 ];
 

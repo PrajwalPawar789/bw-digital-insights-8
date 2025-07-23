@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState } from 'react';
 import { Bot, X, Send, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,34 +9,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useCompanyName } from '@/hooks/useDatabaseSettings';
 
 // Enhanced prompts for business magazine inquiries
+const suggestedPrompts = [
+  "How can I subscribe to Insights Business Magazine?",
+  "Tell me about your featured C-suite executives",
+  "Which industries do you cover in your publications?",
+  "How can my company be featured in your magazine?",
+  "When is the next issue releasing?",
+  "What are your advertising opportunities?",
+  "How do I submit a press release?",
+  "Can you provide insights on industry trends?"
+];
+
 const ChatBot = () => {
-  const companyName = useCompanyName();
-  
-  const suggestedPrompts = [
-    `How can I subscribe to ${companyName}?`,
-    "Tell me about your featured C-suite executives",
-    "Which industries do you cover in your publications?",
-    "How can my company be featured in your magazine?",
-    "When is the next issue releasing?",
-    "What are your advertising opportunities?",
-    "How do I submit a press release?",
-    "Can you provide insights on industry trends?"
-  ];
   const [isOpen, setIsOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([
     { text: "Hello! I'm your Insights Business Magazine Assistant. How can I help you with magazine subscriptions, business insights, or industry inquiries today?", isUser: false }
   ]);
   const [input, setInput] = useState("");
-
-  useEffect(() => {
-    setMessages([
-      { text: `Hello! I'm your ${companyName} Assistant. How can I help you with magazine subscriptions, business insights, or industry inquiries today?`, isUser: false }
-    ]);
-  }, [companyName]);
 
   const handleSend = (e: React.FormEvent | string) => {
     if (typeof e !== 'string') {
@@ -61,13 +54,13 @@ const ChatBot = () => {
       const lowerMessage = messageText.toLowerCase();
       
       if (lowerMessage.includes("subscribe") || lowerMessage.includes("subscription")) {
-        response = `${companyName} offers premium subscriptions with exclusive access to C-suite interviews, industry analysis, and leadership insights. Visit our Contact page or call our subscription team at 1-800-INSIGHTS for personalized plans.`;
+        response = "Insights Business Magazine offers premium subscriptions with exclusive access to C-suite interviews, industry analysis, and leadership insights. Visit our Contact page or call our subscription team at 1-800-INSIGHTS for personalized plans.";
       } else if (lowerMessage.includes("featured") || lowerMessage.includes("executive")) {
         response = "Our magazine regularly features Fortune 500 CEOs, innovative startup founders, and transformational leaders. Recent features include executives from technology, finance, healthcare, and sustainable business sectors.";
       } else if (lowerMessage.includes("industry") || lowerMessage.includes("industries")) {
         response = "We cover Technology & Innovation, Financial Services, Healthcare & Biotechnology, Sustainable Business, Manufacturing & Supply Chain, Retail & E-commerce, and Emerging Markets. Each issue provides deep-dive analysis and strategic insights.";
       } else if (lowerMessage.includes("advertise") || lowerMessage.includes("advertising")) {
-        response = `${companyName} offers premium advertising opportunities including full-page spreads, sponsored content, and digital placements. Our readership includes 2.5M+ C-suite executives globally. Contact our media team for advertising packages.`;
+        response = "Insights Business Magazine offers premium advertising opportunities including full-page spreads, sponsored content, and digital placements. Our readership includes 2.5M+ C-suite executives globally. Contact our media team for advertising packages.";
       } else if (lowerMessage.includes("press release") || lowerMessage.includes("submit")) {
         response = "Submit your press releases through our Press Releases section. We prioritize announcements about leadership changes, strategic partnerships, innovation launches, and market expansions from established companies.";
       } else if (lowerMessage.includes("trend") || lowerMessage.includes("insight")) {
@@ -111,7 +104,7 @@ const ChatBot = () => {
               </div>
               <div>
                 <div className="text-xl font-bold">Insights Assistant</div>
-                <div className="text-white/90 text-sm font-normal">{companyName} Support</div>
+                <div className="text-white/90 text-sm font-normal">Business Magazine Support</div>
               </div>
             </DialogTitle>
           </DialogHeader>
