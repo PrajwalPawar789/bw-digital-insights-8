@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMagazines, useFeaturedMagazines } from '@/hooks/useMagazines';
@@ -11,29 +10,71 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { BookOpen, Star, Loader2 } from 'lucide-react';
+import { BookOpen, Star, Loader2, Search, Filter, Calendar, Download, Eye, ArrowRight } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 const MagazinePage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('newest');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 9;
   
   const { data: allMagazines = [], isLoading } = useMagazines();
   const { data: featuredMagazines = [] } = useFeaturedMagazines();
   
-  // Extract unique categories from magazines
-  const categories = ['all', ...Array.from(new Set(allMagazines.map(mag => mag.title.toLowerCase().includes('ai') ? 'technology' : 
-    mag.title.toLowerCase().includes('cybersecurity') ? 'security' : 
-    mag.title.toLowerCase().includes('innovation') ? 'innovation' : 'business')))];
+  // Enhanced category extraction with more specific categorization
+  const categories = ['all', ...Array.from(new Set(allMagazines.map(mag => {
+    const title = mag.title.toLowerCase();
+    if (title.includes('ai') || title.includes('artificial intelligence') || title.includes('tech')) return 'technology';
+    if (title.includes('cyber') || title.includes('security')) return 'security';
+    if (title.includes('innovation') || title.includes('startup')) return 'innovation';
+    if (title.includes('finance') || title.includes('banking')) return 'finance';
+    if (title.includes('health') || title.includes('medical')) return 'healthcare';
+    if (title.includes('sustain') || title.includes('green') || title.includes('environment')) return 'sustainability';
+    if (title.includes('leader') || title.includes('management')) return 'leadership';
+    return 'business';
+  })))];
   
-  const filteredMagazines = selectedCategory === 'all'
-    ? allMagazines
-    : allMagazines.filter(magazine => {
-        const category = magazine.title.toLowerCase().includes('ai') ? 'technology' : 
-          magazine.title.toLowerCase().includes('cybersecurity') ? 'security' : 
-          magazine.title.toLowerCase().includes('innovation') ? 'innovation' : 'business';
-        return category === selectedCategory;
-      });
+  // Advanced filtering and search
+  const filteredMagazines = allMagazines
+    .filter(magazine => {
+      const matchesCategory = selectedCategory === 'all' || (() => {
+        const title = magazine.title.toLowerCase();
+        if (selectedCategory === 'technology') return title.includes('ai') || title.includes('artificial intelligence') || title.includes('tech');
+        if (selectedCategory === 'security') return title.includes('cyber') || title.includes('security');
+        if (selectedCategory === 'innovation') return title.includes('innovation') || title.includes('startup');
+        if (selectedCategory === 'finance') return title.includes('finance') || title.includes('banking');
+        if (selectedCategory === 'healthcare') return title.includes('health') || title.includes('medical');
+        if (selectedCategory === 'sustainability') return title.includes('sustain') || title.includes('green') || title.includes('environment');
+        if (selectedCategory === 'leadership') return title.includes('leader') || title.includes('management');
+        return selectedCategory === 'business';
+      })();
+      
+      const matchesSearch = searchTerm === '' || 
+        magazine.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        magazine.description.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      return matchesCategory && matchesSearch;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.publish_date).getTime() - new Date(a.publish_date).getTime();
+        case 'oldest':
+          return new Date(a.publish_date).getTime() - new Date(b.publish_date).getTime();
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'featured':
+          return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+        default:
+          return 0;
+      }
+    });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -45,39 +86,66 @@ const MagazinePage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
+  const handleSortChange = (sort: string) => {
+    setSortBy(sort);
+    setCurrentPage(1); // Reset to first page when sorting
+  };
+
   const getPageNumbers = () => {
     const pageNumbers = [];
     
-    // Always show first page
-    pageNumbers.push(1);
-    
-    // If there are many pages, add ellipsis after page 1
-    if (currentPage > 3) pageNumbers.push('ellipsis1');
-    
-    // Add previous page if not first or second
-    if (currentPage > 2) pageNumbers.push(currentPage - 1);
-    
-    // Add current page if not first
-    if (currentPage !== 1) pageNumbers.push(currentPage);
-    
-    // Add next page if not last
-    if (currentPage < totalPages - 1) pageNumbers.push(currentPage + 1);
-    
-    // If there are many pages, add ellipsis before last page
-    if (currentPage < totalPages - 2) pageNumbers.push('ellipsis2');
-    
-    // Always show last page if more than 1 page
-    if (totalPages > 1) pageNumbers.push(totalPages);
+    if (totalPages <= 7) {
+      // Show all pages if 7 or fewer
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // Always show first page
+      pageNumbers.push(1);
+      
+      if (currentPage > 4) pageNumbers.push('ellipsis1');
+      
+      // Show pages around current page
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      
+      for (let i = start; i <= end; i++) {
+        pageNumbers.push(i);
+      }
+      
+      if (currentPage < totalPages - 3) pageNumbers.push('ellipsis2');
+      
+      // Always show last page if more than 1 page
+      if (totalPages > 1) pageNumbers.push(totalPages);
+    }
     
     return pageNumbers;
   };
 
+  const magazineStats = {
+    total: allMagazines.length,
+    featured: featuredMagazines.length,
+    categories: categories.length - 1, // Exclude 'all'
+    avgReadTime: '15 min'
+  };
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center space-x-2">
-          <Loader2 className="h-8 w-8 animate-spin text-insightRed" />
-          <span className="text-lg">Loading magazines...</span>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader2 className="h-12 w-12 animate-spin text-insightRed" />
+          <p className="text-lg font-medium">Loading magazines...</p>
+          <p className="text-sm text-gray-600">Preparing the latest business insights for you</p>
         </div>
       </div>
     );
@@ -85,126 +153,225 @@ const MagazinePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section with Enhanced Design */}
-      <div className="relative bg-insightBlack text-white py-16 mb-12">
-        <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-            Executive Insights Magazine
-          </h1>
-          <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-200 leading-relaxed">
-            Join the elite circle of C-suite leaders shaping tomorrow's business landscape. Discover exclusive interviews, strategic insights, and transformative ideas.
-          </p>
+      {/* Enhanced Hero Section */}
+      <div className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-20">
+        <div className="absolute inset-0 opacity-20">
+          <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1557425955-df376b5903c8?ixlib=rb-1.2.1&auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center"></div>
         </div>
-      </div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Featured Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-          {[
-            { label: "Global Readers", value: "185K+" },
-            { label: "C-Suite Features", value: "472+" },
-            { label: "Industry Leaders", value: "126+" },
-            { label: "Countries Reached", value: "68+" },
-          ].map((stat, index) => (
-            <div key={index} className="text-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <div className="text-2xl md:text-3xl font-bold text-insightRed mb-2">{stat.value}</div>
-              <div className="text-sm text-gray-600">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Enhanced Category Filter */}
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-10">
-          <h2 className="text-xl font-semibold mb-4 text-insightBlack">Browse by Category</h2>
-          <div className="flex flex-wrap gap-3">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => {
-                  setSelectedCategory(category);
-                  setCurrentPage(1);
-                }}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-all transform hover:scale-105 ${
-                  selectedCategory === category
-                    ? 'bg-insightRed text-white shadow-md'
-                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                }`}
-              >
-                {category.charAt(0).toUpperCase() + category.slice(1)}
-              </button>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Insights Business
+              <span className="block text-insightRed">Magazine Archive</span>
+            </h1>
+            <p className="max-w-3xl mx-auto text-lg md:text-xl text-gray-200 leading-relaxed mb-8">
+              Access our complete collection of quarterly publications featuring exclusive CEO interviews, 
+              market analysis, and strategic insights that drive business transformation.
+            </p>
+          </div>
+          
+          {/* Enhanced Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {[
+              { label: "Total Issues", value: magazineStats.total.toString(), icon: BookOpen },
+              { label: "Featured Stories", value: `${magazineStats.featured}+`, icon: Star },
+              { label: "Industry Sectors", value: magazineStats.categories.toString(), icon: Filter },
+              { label: "Avg. Read Time", value: magazineStats.avgReadTime, icon: Calendar },
+            ].map((stat, index) => (
+              <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 text-center p-6 hover:bg-white/20 transition-all duration-300">
+                <stat.icon className="h-8 w-8 mx-auto mb-3 text-insightRed" />
+                <div className="text-2xl md:text-3xl font-bold mb-1 text-white">{stat.value}</div>
+                <div className="text-sm text-gray-300">{stat.label}</div>
+              </Card>
             ))}
           </div>
         </div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Advanced Search and Filter Controls */}
+        <Card className="p-6 mb-8 shadow-sm">
+          <div className="space-y-4">
+            <div className="flex flex-col lg:flex-row gap-4">
+              {/* Search */}
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search magazines by title, description, or keywords..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="pl-10 h-12"
+                />
+              </div>
+              
+              {/* Category Filter */}
+              <div className="lg:w-48">
+                <Select value={selectedCategory} onValueChange={handleCategoryChange}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category.charAt(0).toUpperCase() + category.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Sort */}
+              <div className="lg:w-48">
+                <Select value={sortBy} onValueChange={handleSortChange}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="title">Title A-Z</SelectItem>
+                    <SelectItem value="featured">Featured First</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            {/* Filter Summary */}
+            <div className="flex flex-wrap gap-2 items-center text-sm text-gray-600">
+              <span>Showing {filteredMagazines.length} of {allMagazines.length} magazines</span>
+              {searchTerm && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  Search: "{searchTerm}"
+                  <button onClick={() => handleSearchChange('')} className="ml-1 hover:text-red-600">×</button>
+                </Badge>
+              )}
+              {selectedCategory !== 'all' && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  Category: {selectedCategory}
+                  <button onClick={() => handleCategoryChange('all')} className="ml-1 hover:text-red-600">×</button>
+                </Badge>
+              )}
+            </div>
+          </div>
+        </Card>
         
-        {/* Magazine Grid with Enhanced Cards */}
+        {/* Enhanced Magazine Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {currentMagazines.length > 0 ? (
             currentMagazines.map((magazine) => (
-              <Link
-                key={magazine.id}
-                to={`/magazine/${magazine.slug}`}
-                className="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-              >
+              <Card key={magazine.id} className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-200">
                 <div className="relative">
-                  <div className="aspect-w-3 aspect-h-4">
+                  <div className="aspect-[3/4] overflow-hidden">
                     <img
                       src={magazine.cover_image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'}
                       alt={magazine.title}
-                      className="w-full h-64 object-cover transition-transform group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   </div>
-                  <div className="absolute top-0 right-0 bg-insightRed text-white text-xs font-bold px-3 py-2 m-3 rounded-full">
-                    {magazine.issue_number ? `Issue ${magazine.issue_number}` : 'Latest'}
-                  </div>
-                  {/* Premium Badge */}
-                  {magazine.featured && (
-                    <div className="absolute top-0 left-0 m-3">
-                      <div className="flex items-center bg-black bg-opacity-75 text-white text-xs px-3 py-1 rounded-full">
-                        <Star className="w-3 h-3 mr-1" />
+                  
+                  {/* Enhanced Overlay with Multiple Badges */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Top Badges */}
+                  <div className="absolute top-3 left-3 right-3 flex justify-between items-start">
+                    <Badge className="bg-insightRed/90 hover:bg-insightRed text-white font-semibold">
+                      {magazine.issue_number ? `Issue ${magazine.issue_number}` : 'Latest'}
+                    </Badge>
+                    {magazine.featured && (
+                      <Badge className="bg-yellow-500/90 text-black font-semibold flex items-center gap-1">
+                        <Star className="w-3 h-3" />
                         Featured
-                      </div>
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {/* Bottom Action Buttons */}
+                  <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                    <div className="flex gap-2">
+                      <Link to={`/magazine/${magazine.slug}`} className="flex-1">
+                        <Button size="sm" className="w-full bg-white/90 text-black hover:bg-white text-xs font-medium">
+                          <Eye className="w-3 h-3 mr-1" />
+                          Read Now
+                        </Button>
+                      </Link>
+                      <Button size="sm" variant="outline" className="bg-white/90 border-white text-black hover:bg-white">
+                        <Download className="w-3 h-3" />
+                      </Button>
                     </div>
-                  )}
+                  </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-3 text-insightBlack group-hover:text-insightRed transition-colors line-clamp-2">
-                    {magazine.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4 line-clamp-3">{magazine.description}</p>
+                
+                <CardContent className="p-6">
+                  <div className="mb-3">
+                    <h3 className="text-xl font-bold mb-3 text-insightBlack group-hover:text-insightRed transition-colors line-clamp-2 leading-tight">
+                      {magazine.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 line-clamp-3 text-sm leading-relaxed">
+                      {magazine.description}
+                    </p>
+                  </div>
+                  
                   <div className="flex items-center justify-between">
                     <div className="flex items-center text-sm text-gray-500">
-                      <BookOpen className="w-4 h-4 mr-1" />
-                      <span>{new Date(magazine.publish_date).toLocaleDateString()}</span>
+                      <Calendar className="w-4 h-4 mr-2" />
+                      <span>{new Date(magazine.publish_date).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long',
+                        day: 'numeric'
+                      })}</span>
                     </div>
-                    <span className="inline-flex items-center text-insightRed font-medium">
-                      Read More
-                      <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </span>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <BookOpen className="w-4 h-4 mr-1" />
+                      <span>15 min</span>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                  
+                  <Link to={`/magazine/${magazine.slug}`} className="block mt-4">
+                    <Button variant="outline" className="w-full group-hover:bg-insightRed group-hover:text-white group-hover:border-insightRed transition-all">
+                      Read Full Issue
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
             ))
           ) : (
-            <div className="col-span-3 text-center py-12">
-              <div className="max-w-md mx-auto">
-                <p className="text-gray-600 text-lg mb-4">No magazines found in this category.</p>
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className="text-insightRed hover:text-insightBlack transition-colors"
-                >
-                  View all magazines
-                </button>
-              </div>
+            <div className="col-span-full">
+              <Card className="p-12 text-center">
+                <BookOpen className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No magazines found</h3>
+                <p className="text-gray-600 mb-6">
+                  {searchTerm || selectedCategory !== 'all' 
+                    ? "Try adjusting your search criteria or browse all magazines." 
+                    : "New magazine issues will appear here as they're published."
+                  }
+                </p>
+                <div className="flex gap-3 justify-center">
+                  {(searchTerm || selectedCategory !== 'all') && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        handleSearchChange('');
+                        handleCategoryChange('all');
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  )}
+                  <Link to="/contact">
+                    <Button className="bg-insightRed hover:bg-red-700">
+                      Contact Us
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
             </div>
           )}
         </div>
 
         {/* Enhanced Pagination */}
         {totalPages > 1 && (
-          <div className="mt-12 mb-16">
+          <div className="flex flex-col items-center space-y-4">
             <Pagination>
               <PaginationContent>
                 {currentPage > 1 && (
@@ -252,6 +419,10 @@ const MagazinePage = () => {
                 )}
               </PaginationContent>
             </Pagination>
+            
+            <p className="text-sm text-gray-600">
+              Page {currentPage} of {totalPages} • {filteredMagazines.length} total results
+            </p>
           </div>
         )}
       </div>

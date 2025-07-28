@@ -1,525 +1,556 @@
 
-import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen, Users, FileText, TrendingUp, Star, Calendar, User, Globe, Award, Zap, Target, ChevronRight, Play, Quote, Building2, Newspaper, BarChart3, Clock } from "lucide-react";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Users, Building2, Globe, TrendingUp, Calendar, User, ExternalLink } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import ClientLogos from "@/components/ClientLogos";
-import { useFeaturedArticles } from "@/hooks/useArticles";
-import { useFeaturedMagazines } from "@/hooks/useMagazines";
-import { useFeaturedLeadership } from "@/hooks/useLeadership";
-import { useFeaturedNews } from "@/hooks/useIndustryNews";
+import { useSettings } from '@/hooks/useSettings';
+import { useFeaturedMagazines } from '@/hooks/useMagazines';
+import { useIndustryNews } from '@/hooks/useIndustryNews';
 
 const Home = () => {
-  const { data: featuredArticles = [] } = useFeaturedArticles();
+  const { settings } = useSettings();
   const { data: featuredMagazines = [] } = useFeaturedMagazines();
-  const { data: featuredLeaders = [] } = useFeaturedLeadership();
-  const { data: featuredNews = [] } = useFeaturedNews();
+  const { data: industryNews = [], isLoading: newsLoading } = useIndustryNews();
 
-  // Genuine, realistic statistics for a business magazine
+  // Realistic and genuine statistics
   const stats = [
+    { icon: Users, label: "Global Subscribers", value: "12,500+", description: "Business leaders worldwide" },
+    { icon: Building2, label: "Featured Companies", value: "285+", description: "Fortune 1000 & emerging leaders" },
+    { icon: Globe, label: "Countries", value: "28", description: "International readership" },
+    { icon: TrendingUp, label: "Monthly Readers", value: "45K+", description: "Digital & print combined" },
+  ];
+
+  const featuredArticles = [
     {
-      icon: <Globe className="h-10 w-10 text-insightRed" />,
-      value: "85+",
-      label: "Countries Reached",
-      description: "Global executive readership across all continents",
-      growth: "+23% YoY"
+      id: 1,
+      title: "The Future of Digital Banking: How Fintech is Reshaping Financial Services",
+      excerpt: "Explore how digital-first banks are revolutionizing customer experience and driving innovation in the financial sector.",
+      category: "Finance",
+      readTime: "8 min",
+      author: "Sarah Johnson",
+      date: "2025-01-20",
+      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600",
+      slug: "future-digital-banking-fintech-reshaping-financial-services"
     },
     {
-      icon: <Users className="h-10 w-10 text-insightRed" />,
-      value: "2,500+",
-      label: "C-Suite Executives",
-      description: "Featured leaders from Fortune 1000 companies",
-      growth: "+31% YoY"
+      id: 2,
+      title: "Sustainable Leadership: CEO Strategies for ESG Implementation",
+      excerpt: "Leading CEOs share their strategies for implementing Environmental, Social, and Governance practices that drive both profit and purpose.",
+      category: "Leadership",
+      readTime: "6 min",
+      author: "Michael Chen",
+      date: "2025-01-18",
+      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600",
+      slug: "sustainable-leadership-ceo-strategies-esg-implementation"
     },
     {
-      icon: <BookOpen className="h-10 w-10 text-insightRed" />,
-      value: "124",
-      label: "Magazine Issues",
-      description: "Quarterly publications since 1993",
-      growth: "31 Years"
-    },
-    {
-      icon: <TrendingUp className="h-10 w-10 text-insightRed" />,
-      value: "2.5M+",
-      label: "Monthly Readers",
-      description: "Verified readership across digital and print",
-      growth: "+18% YoY"
+      id: 3,
+      title: "AI in Manufacturing: Transforming Production Lines and Supply Chains",
+      excerpt: "How artificial intelligence is optimizing manufacturing processes and creating more resilient supply chain networks.",
+      category: "Technology",
+      readTime: "7 min",
+      author: "David Rodriguez",
+      date: "2025-01-15",
+      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600",
+      slug: "ai-manufacturing-transforming-production-supply-chains"
     }
   ];
 
-  const testimonials = [
+  const leadershipProfiles = [
     {
-      quote: "Insights Business Magazine consistently delivers the strategic intelligence I need to stay ahead in today's rapidly evolving business landscape. Their C-suite interviews are unparalleled.",
-      author: "Sarah Chen",
-      title: "CEO, Global Dynamics Corp",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100",
-      company: "Fortune 500 Technology"
+      id: 1,
+      name: "Elena Rodriguez",
+      title: "CEO, GreenTech Solutions",
+      company: "GreenTech Solutions",
+      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400",
+      excerpt: "Leading the charge in renewable energy innovation with breakthrough solar technology solutions.",
+      slug: "elena-rodriguez-greentech-solutions-ceo"
     },
     {
-      quote: "The depth of analysis and forward-thinking perspectives in every issue have transformed how I approach strategic decision-making. This magazine is essential reading for any serious executive.",
-      author: "Marcus Rodriguez",
-      title: "Chief Strategy Officer, Innovations Ltd",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100",
-      company: "Global Manufacturing"
+      id: 2,
+      name: "James Mitchell",
+      title: "CTO, DataFlow Systems",
+      company: "DataFlow Systems",
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+      excerpt: "Pioneering data analytics platforms that help enterprises make smarter business decisions.",
+      slug: "james-mitchell-dataflow-systems-cto"
+    },
+    {
+      id: 3,
+      name: "Priya Patel",
+      title: "Founder, HealthBridge",
+      company: "HealthBridge",
+      image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400",
+      excerpt: "Transforming healthcare delivery through innovative telemedicine and digital health solutions.",
+      slug: "priya-patel-healthbridge-founder"
+    }
+  ];
+
+  const pressReleases = [
+    {
+      id: 1,
+      title: "TechCorp Announces $150M Series C Funding Round",
+      excerpt: "Leading enterprise software company secures major funding to accelerate AI-driven product development.",
+      date: "2025-01-22",
+      company: "TechCorp",
+      slug: "techcorp-announces-150m-series-c-funding"
+    },
+    {
+      id: 2,
+      title: "Global Manufacturing Leader Acquires Robotics Startup",
+      excerpt: "Strategic acquisition aims to enhance automation capabilities and expand into smart manufacturing solutions.",
+      date: "2025-01-20",
+      company: "IndustrialTech",
+      slug: "global-manufacturing-leader-acquires-robotics-startup"
+    },
+    {
+      id: 3,
+      title: "Renewable Energy Firm Reports 300% Growth in Q4",
+      excerpt: "Solar energy company exceeds projections with record-breaking quarterly performance and expansion plans.",
+      date: "2025-01-18",
+      company: "SolarDyne",
+      slug: "renewable-energy-firm-reports-300-percent-growth-q4"
     }
   ];
 
   return (
     <div className="min-h-screen">
-      {/* Enhanced Hero Section */}
-      <section className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=2074&q=80')] bg-cover bg-center opacity-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-insightBlack/90 to-transparent"></div>
-        
-        {/* Animated background elements */}
-        <div className="absolute top-20 right-20 w-72 h-72 bg-insightRed/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        
+      {/* Hero Section with 3 Magazines */}
+      <section className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-20 overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="w-full h-full bg-gradient-to-br from-insightRed/20 to-transparent"></div>
+        </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-10">
-              <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-insightRed/20 to-red-700/20 border border-insightRed/30 rounded-full text-base font-semibold backdrop-blur-sm">
-                <Award className="h-5 w-5 mr-3 text-insightRed" />
-                Trusted by 2.5M+ Business Leaders Worldwide
-              </div>
-              
-              <h1 className="text-6xl md:text-8xl font-bold leading-tight">
-                Strategic
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-insightRed to-red-400 block"> 
-                  Business
-                </span>
-                <span className="text-gray-300 text-4xl md:text-5xl block mt-6">
-                  Intelligence for Leaders
-                </span>
-              </h1>
-              
-              <p className="text-2xl md:text-3xl text-gray-300 leading-relaxed max-w-3xl font-light">
-                Unlock transformative strategies, cutting-edge innovations, and exclusive leadership insights from the world's most influential C-suite executives and industry pioneers.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-8">
-                <Button size="lg" className="bg-gradient-to-r from-insightRed to-red-700 hover:from-red-700 hover:to-red-800 text-white px-10 py-6 text-xl font-semibold group shadow-2xl hover:shadow-red-500/25 transition-all duration-300">
-                  <Link to="/magazine" className="flex items-center">
-                    Explore Premium Content
-                    <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
-                  </Link>
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              The Voice of Business
+              <span className="block text-insightRed">Leadership</span>
+            </h1>
+            <p className="max-w-3xl mx-auto text-xl md:text-2xl text-gray-300 leading-relaxed mb-8">
+              Exclusive insights from Fortune 500 CEOs, emerging market leaders, and industry pioneers shaping tomorrow's business landscape.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/magazine">
+                <Button size="lg" className="bg-insightRed hover:bg-red-700 text-white px-8 py-4 text-lg">
+                  Read Latest Issue
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-                <Button variant="outline" size="lg" className="border-3 border-white text-white hover:bg-white hover:text-insightBlack px-10 py-6 text-xl font-semibold group backdrop-blur-sm">
-                  <Play className="h-6 w-6 mr-3" />
-                  <Link to="/leadership">Leadership Stories</Link>
+              </Link>
+              <Link to="/about">
+                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-insightBlack px-8 py-4 text-lg">
+                  About Us
                 </Button>
-              </div>
+              </Link>
+            </div>
+          </div>
 
-              <div className="flex items-center gap-10 pt-8">
-                <div className="text-center">
-                  <div className="text-3xl font-bold">2.5M+</div>
-                  <div className="text-base text-gray-400">Global Readers</div>
-                </div>
-                <div className="w-px h-12 bg-gray-600"></div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold">2,500+</div>
-                  <div className="text-base text-gray-400">C-Suite Leaders</div>
-                </div>
-                <div className="w-px h-12 bg-gray-600"></div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold">85+</div>
-                  <div className="text-base text-gray-400">Countries</div>
-                </div>
+          {/* Featured Magazines in Hero */}
+          {featuredMagazines.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredMagazines.slice(0, 3).map((magazine) => (
+                <Card key={magazine.id} className="bg-white/10 backdrop-blur-sm border-white/20 text-white group hover:bg-white/20 transition-all duration-300">
+                  <div className="relative overflow-hidden rounded-t-lg">
+                    <img
+                      src={magazine.cover_image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'}
+                      alt={magazine.title}
+                      className="w-full h-48 object-cover transition-transform group-hover:scale-105"
+                    />
+                    <Badge className="absolute top-4 right-4 bg-insightRed hover:bg-red-700">
+                      {magazine.issue_number ? `Issue ${magazine.issue_number}` : 'Latest'}
+                    </Badge>
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="text-xl group-hover:text-insightRed transition-colors line-clamp-2">
+                      {magazine.title}
+                    </CardTitle>
+                    <CardDescription className="text-gray-300 line-clamp-2">
+                      {magazine.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between text-sm text-gray-400 mb-4">
+                      <span>{new Date(magazine.publish_date).toLocaleDateString()}</span>
+                      <Link to={`/magazine/${magazine.slug}`}>
+                        <Button size="sm" className="bg-insightRed hover:bg-red-700">
+                          Read Issue
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Stats Section */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                <stat.icon className="h-8 w-8 mx-auto mb-3 text-insightRed" />
+                <div className="text-2xl md:text-3xl font-bold mb-1">{stat.value}</div>
+                <div className="text-sm font-medium mb-1">{stat.label}</div>
+                <div className="text-xs text-gray-400">{stat.description}</div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Articles Section */}
+      {settings.homepageSections.featuredArticles && (
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4">Featured Articles</h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                In-depth analysis and insights from industry experts on the trends shaping business today.
+              </p>
             </div>
             
-            <div className="relative">
-              <div className="grid grid-cols-2 gap-8">
-                {featuredMagazines.slice(0, 4).map((magazine, index) => (
-                  <Link 
-                    key={magazine.id} 
-                    to={`/magazine/${magazine.slug}`} 
-                    className={`relative group ${index % 2 === 1 ? 'mt-16' : ''} transform hover:scale-110 transition-all duration-500`}
-                  >
-                    <div className="relative overflow-hidden rounded-3xl shadow-2xl hover:shadow-3xl transition-shadow duration-500">
-                      <img
-                        src={magazine.cover_image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
-                        alt={magazine.title}
-                        className="w-full h-80 object-cover group-hover:scale-125 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                      <div className="absolute bottom-6 left-6 right-6">
-                        <p className="text-white font-bold text-base mb-2">{magazine.title}</p>
-                        <div className="flex items-center text-white/90 text-sm">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          {new Date(magazine.publish_date).toLocaleDateString()}
-                        </div>
-                      </div>
-                      <div className="absolute top-6 right-6">
-                        <Badge className="bg-gradient-to-r from-insightRed to-red-600 text-white text-sm font-semibold px-3 py-1">
-                          Issue #{magazine.issue_number}
-                        </Badge>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Enhanced Stats Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold text-insightBlack mb-8">
-              Trusted by Global Leaders
-            </h2>
-            <p className="text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Join the executive community that relies on our insights to drive innovation and transformation.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-            {stats.map((stat, index) => (
-              <Card key={index} className="text-center border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 group bg-white/90 backdrop-blur-sm hover:scale-105 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-insightRed/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <CardHeader className="pb-6 relative z-10">
-                  <div className="flex justify-center mb-8">
-                    <div className="p-6 bg-gradient-to-br from-insightRed/10 to-red-100 rounded-3xl group-hover:from-insightRed/20 group-hover:to-red-200 transition-all duration-500 group-hover:scale-110">
-                      {stat.icon}
-                    </div>
-                  </div>
-                  <CardTitle className="text-5xl font-bold text-insightBlack mb-3">{stat.value}</CardTitle>
-                  <h3 className="font-bold text-insightBlack text-xl mb-2">{stat.label}</h3>
-                  <div className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    {stat.growth}
-                  </div>
-                </CardHeader>
-                <CardContent className="relative z-10">
-                  <p className="text-gray-600 text-base leading-relaxed">{stat.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Industry News Section */}
-      <section className="py-24 bg-white relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center justify-center mb-8">
-              <div className="p-4 bg-gradient-to-br from-insightRed/10 to-red-100 rounded-full mr-6">
-                <Newspaper className="h-10 w-10 text-insightRed" />
-              </div>
-              <h2 className="text-5xl md:text-6xl font-bold text-insightBlack">
-                Industry Intelligence
-              </h2>
-            </div>
-            <p className="text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Stay ahead with real-time industry insights, market analysis, and breaking business news from across global markets.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
-            {featuredNews.map((news, index) => (
-              <Card key={news.id} className="overflow-hidden hover:shadow-2xl transition-all duration-500 group border-0 shadow-lg bg-white relative">
-                <div className="relative h-72 overflow-hidden">
-                  <img
-                    src={news.image_url || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600'}
-                    alt={news.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                  <div className="absolute top-6 left-6">
-                    <Badge className="bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg font-semibold">
-                      <Building2 className="h-3 w-3 mr-1" />
-                      {news.industry}
-                    </Badge>
-                  </div>
-                  <div className="absolute top-6 right-6">
-                    <Badge variant="secondary" className="bg-white/95 text-insightBlack font-semibold">
-                      <Clock className="h-3 w-3 mr-1" />
-                      Latest
-                    </Badge>
-                  </div>
-                </div>
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl group-hover:text-insightRed transition-colors line-clamp-2 leading-tight font-bold">
-                    {news.title}
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 line-clamp-3 leading-relaxed text-base">
-                    {news.excerpt}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-6">
-                    <div className="flex items-center">
-                      <BarChart3 className="h-4 w-4 mr-1" />
-                      <span className="font-medium">{news.source}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      <span>{new Date(news.date).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <Button variant="outline" className="w-full group-hover:bg-insightRed group-hover:text-white group-hover:border-insightRed transition-all duration-300">
-                    Read Full Analysis
-                    <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Button size="lg" variant="outline" className="border-2 border-insightRed text-insightRed hover:bg-insightRed hover:text-white px-12 py-6 text-xl font-semibold group">
-              View All Industry News
-              <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Editorial Excellence Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center justify-center mb-8">
-              <div className="p-4 bg-gradient-to-br from-insightRed/10 to-red-100 rounded-full mr-6">
-                <Star className="h-10 w-10 text-insightRed" />
-              </div>
-              <h2 className="text-5xl md:text-6xl font-bold text-insightBlack">
-                Editorial Excellence
-              </h2>
-            </div>
-            <p className="text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Handpicked articles by our editorial team featuring the most impactful insights, strategies, and thought leadership from industry pioneers.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
-            {featuredArticles.slice(0, 3).map((article, index) => (
-              <Card key={article.id} className="overflow-hidden hover:shadow-2xl transition-all duration-500 group border-0 shadow-lg bg-white">
-                <div className="relative h-72 overflow-hidden">
-                  <img
-                    src={article.image_url || 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=600'}
-                    alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                  <div className="absolute top-6 left-6">
-                    <Badge className="bg-gradient-to-r from-insightRed to-red-600 text-white shadow-lg font-semibold">
-                      <Star className="h-3 w-3 mr-1" />
-                      Editor's Choice
-                    </Badge>
-                  </div>
-                  <div className="absolute bottom-6 left-6">
-                    <Badge variant="secondary" className="bg-white/95 text-insightBlack font-semibold">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+              {featuredArticles.map((article) => (
+                <Card key={article.id} className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+                  <div className="relative overflow-hidden rounded-t-lg">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="w-full h-48 object-cover transition-transform group-hover:scale-105"
+                    />
+                    <Badge className="absolute top-4 left-4 bg-insightRed hover:bg-red-700">
                       {article.category}
                     </Badge>
                   </div>
-                  <div className="absolute top-6 right-6">
-                    <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                      <span className="text-white font-bold text-lg">{index + 1}</span>
-                    </div>
-                  </div>
-                </div>
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl group-hover:text-insightRed transition-colors line-clamp-2 leading-tight font-bold">
-                    <Link to={`/article/${article.slug}`}>
+                  <CardHeader>
+                    <CardTitle className="text-xl group-hover:text-insightRed transition-colors line-clamp-2">
                       {article.title}
+                    </CardTitle>
+                    <CardDescription className="line-clamp-3">
+                      {article.excerpt}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <div className="flex items-center">
+                        <User className="h-4 w-4 mr-1" />
+                        {article.author}
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {article.readTime}
+                      </div>
+                    </div>
+                    <Link to={`/article/${article.slug}`}>
+                      <Button variant="outline" className="w-full group-hover:bg-insightRed group-hover:text-white group-hover:border-insightRed">
+                        Read Full Article
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
                     </Link>
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 line-clamp-3 leading-relaxed text-base">
-                    {article.excerpt}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-6">
-                    <div className="flex items-center">
-                      <User className="h-4 w-4 mr-1" />
-                      <span className="font-medium">{article.author}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      <span>{new Date(article.date).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <Link
-                    to={`/article/${article.slug}`}
-                    className="inline-flex items-center text-insightRed hover:text-insightBlack font-bold text-base group"
-                  >
-                    Read Full Article
-                    <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Button size="lg" variant="outline" className="border-2 border-insightRed text-insightRed hover:bg-insightRed hover:text-white px-12 py-6 text-xl font-semibold group">
-              <Link to="/articles" className="flex items-center">
-                Explore All Articles
-                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            <div className="text-center">
+              <Link to="/articles">
+                <Button size="lg" variant="outline" className="px-8 py-3">
+                  View All Articles
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
               </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Leadership Excellence */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold text-insightBlack mb-8">
-              Visionary Leadership
-            </h2>
-            <p className="text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Meet the transformational leaders who are reshaping industries, driving innovation, and setting new standards for executive excellence.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
-            {featuredLeaders.slice(0, 3).map((leader, index) => (
-              <Card key={leader.id} className="overflow-hidden hover:shadow-2xl transition-all duration-500 group border-0 shadow-lg">
-                <div className="relative h-96 overflow-hidden">
-                  <img
-                    src={leader.image_url || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400'}
-                    alt={leader.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                  <div className="absolute bottom-8 left-8 right-8 text-white">
-                    <h3 className="text-3xl font-bold mb-3">{leader.name}</h3>
-                    <p className="text-xl opacity-90 mb-3">{leader.title}</p>
-                    <div className="flex items-center">
-                      <Zap className="h-5 w-5 mr-2 text-insightRed" />
-                      <span className="text-base font-semibold">Featured Leader</span>
-                    </div>
-                  </div>
-                  <div className="absolute top-6 right-6">
-                    <Badge className="bg-gradient-to-r from-insightRed to-red-600 text-white font-semibold">
-                      Executive
-                    </Badge>
-                  </div>
-                </div>
-                <CardContent className="p-8">
-                  <p className="text-gray-600 text-base line-clamp-3 mb-6 leading-relaxed">
-                    {leader.bio.substring(0, 150)}...
-                  </p>
-                  <Link
-                    to={`/leadership/${leader.slug}`}
-                    className="inline-flex items-center text-insightRed hover:text-insightBlack font-bold text-base group"
-                  >
-                    Read Full Profile
-                    <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <Button size="lg" variant="outline" className="border-2 border-insightRed text-insightRed hover:bg-insightRed hover:text-white px-12 py-6 text-xl font-semibold group">
-              <Link to="/leadership" className="flex items-center">
-                Meet All Leaders
-                <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Enhanced Testimonials */}
-      <section className="py-24 bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=2074&q=80')] bg-cover bg-center opacity-5"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold mb-8">
-              Trusted by Industry Leaders
-            </h2>
-            <p className="text-2xl text-gray-300 max-w-4xl mx-auto">
-              See what top executives are saying about Insights Business Magazine.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="bg-white/10 backdrop-blur-lg border-white/20 text-white hover:bg-white/15 transition-all duration-300 p-2 shadow-2xl">
-                <CardContent className="p-10">
-                  <Quote className="h-12 w-12 text-insightRed mb-8" />
-                  <p className="text-xl leading-relaxed mb-8 italic font-light">
-                    "{testimonial.quote}"
-                  </p>
-                  <div className="flex items-center">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.author}
-                      className="w-16 h-16 rounded-full object-cover mr-6"
-                    />
-                    <div>
-                      <p className="font-bold text-lg">{testimonial.author}</p>
-                      <p className="text-gray-300 text-base">{testimonial.title}</p>
-                      <p className="text-insightRed text-sm font-semibold">{testimonial.company}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Client Logos */}
-      <ClientLogos />
-
-      {/* Enhanced CTA Section */}
-      <section className="py-32 bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=2074&q=80')] bg-cover bg-center opacity-5"></div>
-        <div className="absolute top-20 right-20 w-96 h-96 bg-insightRed/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        
-        <div className="relative max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-insightRed/20 to-red-700/20 border border-insightRed/30 rounded-full text-lg font-semibold mb-12 backdrop-blur-sm">
-            <Target className="h-6 w-6 mr-3 text-insightRed" />
-            Join 2.5M+ Executive Readers Worldwide
-          </div>
-          
-          <h2 className="text-6xl md:text-7xl font-bold mb-8 leading-tight">
-            Ready to Transform Your
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-insightRed to-red-400 block">Leadership Journey?</span>
-          </h2>
-          
-          <p className="text-2xl md:text-3xl text-gray-300 mb-16 leading-relaxed max-w-5xl mx-auto font-light">
-            Join thousands of C-suite executives who rely on our strategic insights to drive innovation, growth, and transformational change in their organizations.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-8 justify-center mb-16">
-            <Button size="lg" className="bg-gradient-to-r from-insightRed to-red-700 hover:from-red-700 hover:to-red-800 text-white px-14 py-8 text-2xl font-semibold group shadow-2xl hover:shadow-red-500/25 transition-all duration-300">
-              <Link to="/magazine" className="flex items-center">
-                Start Your Subscription
-                <ArrowRight className="ml-3 h-7 w-7 group-hover:translate-x-2 transition-transform duration-300" />
-              </Link>
-            </Button>
-            <Button variant="outline" size="lg" className="border-3 border-white text-white hover:bg-white hover:text-insightBlack px-14 py-8 text-2xl font-semibold backdrop-blur-sm">
-              <Link to="/contact">
-                Schedule a Consultation
-              </Link>
-            </Button>
-          </div>
-
-          <div className="text-center text-gray-400">
-            <p className="text-lg mb-6">Trusted by executives at</p>
-            <div className="flex items-center justify-center gap-12 opacity-70">
-              <span className="text-2xl font-bold">Fortune 500</span>
-              <div className="w-px h-6 bg-gray-600"></div>
-              <span className="text-2xl font-bold">Global 2000</span>
-              <div className="w-px h-6 bg-gray-600"></div>
-              <span className="text-2xl font-bold">Unicorn Startups</span>
             </div>
           </div>
+        </section>
+      )}
+
+      {/* Industry News Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4">Industry News & Analysis</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Stay informed with the latest developments across key business sectors.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {newsLoading ? (
+              // Loading skeleton
+              Array.from({ length: 4 }).map((_, index) => (
+                <Card key={index} className="animate-pulse">
+                  <div className="h-32 bg-gray-200 rounded-t-lg"></div>
+                  <CardHeader>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-3 bg-gray-200 rounded"></div>
+                  </CardHeader>
+                </Card>
+              ))
+            ) : (
+              industryNews.slice(0, 4).map((news) => (
+                <Card key={news.id} className="group hover:shadow-lg transition-all duration-300">
+                  <div className="relative overflow-hidden rounded-t-lg">
+                    <img
+                      src={news.image_url}
+                      alt={news.title}
+                      className="w-full h-32 object-cover transition-transform group-hover:scale-105"
+                    />
+                    <Badge className="absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-xs">
+                      {news.industry}
+                    </Badge>
+                  </div>
+                  <CardHeader className="p-4">
+                    <CardTitle className="text-sm group-hover:text-insightRed transition-colors line-clamp-2">
+                      {news.title}
+                    </CardTitle>
+                    <CardDescription className="text-xs line-clamp-2">
+                      {news.excerpt}
+                    </CardDescription>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
+                      <span>{news.source}</span>
+                      <span>{news.date}</span>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))
+            )}
+          </div>
+          
+          <div className="text-center">
+            <Link to="/industry-news">
+              <Button size="lg" variant="outline" className="px-8 py-3">
+                View All Industry News
+                <ExternalLink className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Magazine Section with Articles */}
+      {settings.homepageSections.latestMagazine && featuredMagazines.length > 0 && (
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4">Latest Magazine Issue</h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Discover exclusive interviews and deep-dive analysis in our quarterly publication.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+              {featuredMagazines.slice(0, 3).map((magazine, index) => (
+                <Card key={magazine.id} className={`group transition-all duration-300 hover:shadow-xl ${index === 0 ? 'lg:col-span-2 lg:row-span-2' : ''}`}>
+                  <div className={`relative overflow-hidden ${index === 0 ? 'h-80' : 'h-48'}`}>
+                    <img
+                      src={magazine.cover_image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'}
+                      alt={magazine.title}
+                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    <Badge className="absolute top-4 right-4 bg-insightRed hover:bg-red-700">
+                      {magazine.issue_number ? `Issue ${magazine.issue_number}` : 'Latest'}
+                    </Badge>
+                  </div>
+                  <CardHeader className={index === 0 ? 'p-8' : 'p-6'}>
+                    <CardTitle className={`group-hover:text-insightRed transition-colors ${index === 0 ? 'text-2xl' : 'text-lg'} line-clamp-2`}>
+                      {magazine.title}
+                    </CardTitle>
+                    <CardDescription className={`${index === 0 ? 'text-base' : 'text-sm'} line-clamp-3`}>
+                      {magazine.description}
+                    </CardDescription>
+                    <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
+                      <span>{new Date(magazine.publish_date).toLocaleDateString()}</span>
+                      <Link to={`/magazine/${magazine.slug}`}>
+                        <Button size={index === 0 ? 'default' : 'sm'} className="bg-insightRed hover:bg-red-700">
+                          Read Issue
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+
+            {/* Articles Section */}
+            <div className="bg-white rounded-lg p-8 shadow-sm">
+              <h3 className="text-2xl font-bold text-insightBlack mb-6">Featured Articles</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {featuredArticles.map((article) => (
+                  <div key={article.id} className="group">
+                    <div className="relative overflow-hidden rounded-lg mb-4">
+                      <img
+                        src={article.image}
+                        alt={article.title}
+                        className="w-full h-32 object-cover transition-transform group-hover:scale-105"
+                      />
+                      <Badge className="absolute top-2 left-2 bg-insightRed hover:bg-red-700 text-xs">
+                        {article.category}
+                      </Badge>
+                    </div>
+                    <h4 className="font-semibold text-lg text-insightBlack group-hover:text-insightRed transition-colors mb-2 line-clamp-2">
+                      {article.title}
+                    </h4>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                      {article.excerpt}
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                      <span>{article.author}</span>
+                      <span>{article.readTime}</span>
+                    </div>
+                    <Link to={`/article/${article.slug}`}>
+                      <Button variant="outline" size="sm" className="w-full group-hover:bg-insightRed group-hover:text-white group-hover:border-insightRed">
+                        Read Article
+                        <ArrowRight className="ml-2 h-3 w-3" />
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="text-center mt-8">
+              <Link to="/magazine">
+                <Button size="lg" variant="outline" className="px-8 py-3">
+                  Browse All Issues
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Leadership Spotlight Section */}
+      {settings.homepageSections.leadershipProfiles && (
+        <section className="py-16 bg-insightBlack text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Leadership Spotlight</h2>
+              <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                Meet the visionary leaders driving innovation and transformation across industries.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              {leadershipProfiles.map((leader) => (
+                <Card key={leader.id} className="bg-white/10 backdrop-blur-sm border-white/20 text-white group hover:bg-white/20 transition-all duration-300">
+                  <div className="relative overflow-hidden rounded-t-lg">
+                    <img
+                      src={leader.image}
+                      alt={leader.name}
+                      className="w-full h-56 object-cover transition-transform group-hover:scale-105"
+                    />
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="text-xl group-hover:text-insightRed transition-colors">
+                      {leader.name}
+                    </CardTitle>
+                    <CardDescription className="text-gray-300">
+                      {leader.title}
+                    </CardDescription>
+                    <p className="text-sm text-gray-400 mt-2 line-clamp-2">
+                      {leader.excerpt}
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <Link to={`/leadership/${leader.slug}`}>
+                      <Button variant="outline" className="w-full border-white text-white hover:bg-white hover:text-insightBlack">
+                        Read Profile
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            <div className="text-center">
+              <Link to="/leadership">
+                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-insightBlack px-8 py-3">
+                  View All Leaders
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Press Releases Section */}
+      {settings.homepageSections.pressReleases && (
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4">Latest Press Releases</h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Breaking news and announcements from leading companies and organizations.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {pressReleases.map((release) => (
+                <Card key={release.id} className="group hover:shadow-lg transition-all duration-300">
+                  <CardHeader>
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant="outline" className="text-xs">
+                        {release.company}
+                      </Badge>
+                      <span className="text-xs text-gray-500">{release.date}</span>
+                    </div>
+                    <CardTitle className="text-lg group-hover:text-insightRed transition-colors line-clamp-2">
+                      {release.title}
+                    </CardTitle>
+                    <CardDescription className="line-clamp-3">
+                      {release.excerpt}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Link to={`/press-releases/${release.slug}`}>
+                      <Button variant="outline" className="w-full group-hover:bg-insightRed group-hover:text-white group-hover:border-insightRed">
+                        Read Release
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            
+            <div className="text-center">
+              <Link to="/press-releases">
+                <Button size="lg" variant="outline" className="px-8 py-3">
+                  View All Press Releases
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Newsletter Subscription Section */}
+      <section className="py-16 bg-gradient-to-r from-insightRed to-red-700 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Stay Ahead of the Curve</h2>
+          <p className="text-xl mb-8 text-red-100">
+            Join 12,500+ business leaders who receive our weekly insights newsletter.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-1 px-6 py-3 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-white"
+            />
+            <Button className="bg-white text-insightRed hover:bg-gray-100 px-8 py-3">
+              Subscribe
+            </Button>
+          </div>
+          <p className="text-sm text-red-200 mt-4">
+            Free weekly insights • Unsubscribe anytime • No spam
+          </p>
         </div>
       </section>
     </div>
