@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -66,11 +66,7 @@ const Contact = () => {
     
     // Basic validation
     if (!formData.name || !formData.email || !formData.message) {
-      toast({
-        title: "Missing information",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -79,10 +75,7 @@ const Contact = () => {
     
     setTimeout(() => {
       setFormStatus('success');
-      toast({
-        title: "Message sent!",
-        description: "Thank you for your message. We will get back to you soon.",
-      });
+      toast.success("Thank you for your message. We will get back to you soon.");
       
       // Reset form
       setFormData({
