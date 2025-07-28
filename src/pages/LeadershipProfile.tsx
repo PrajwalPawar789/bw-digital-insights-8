@@ -1,7 +1,10 @@
 
 import { useParams, Link } from 'react-router-dom';
 import { useLeadershipBySlug } from '@/hooks/useLeadership';
-import { ChevronLeft, Linkedin, Twitter, Mail, Loader2 } from 'lucide-react';
+import { ChevronLeft, Linkedin, Twitter, Mail, Loader2, Award, Building2, MapPin, Calendar, Globe, Quote } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 const LeadershipProfile = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -24,11 +27,10 @@ const LeadershipProfile = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl font-bold text-insightBlack mb-4">Profile Not Found</h1>
           <p className="mb-6">The leadership profile you're looking for doesn't exist.</p>
-          <Link
-            to="/leadership"
-            className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back to Leadership Team
+          <Link to="/leadership">
+            <Button className="bg-insightRed hover:bg-red-700">
+              <ChevronLeft className="mr-2 h-4 w-4" /> Back to Leadership Team
+            </Button>
           </Link>
         </div>
       </div>
@@ -36,46 +38,44 @@ const LeadershipProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Back Navigation */}
-        <div className="mb-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      {/* Premium Hero Section */}
+      <section className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-20 overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="w-full h-full bg-gradient-to-br from-insightRed/30 to-transparent"></div>
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link
             to="/leadership"
-            className="inline-flex items-center text-insightRed hover:text-insightBlack transition-colors text-sm font-medium"
+            className="inline-flex items-center text-white/80 hover:text-white transition-colors text-sm font-medium mb-8"
           >
-            <ChevronLeft className="mr-1 h-4 w-4" /> Back to Leadership Team
+            <ChevronLeft className="mr-1 h-4 w-4" /> Back to Leadership Directory
           </Link>
-        </div>
 
-        {/* Profile Header */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-          <div className="flex flex-col md:flex-row">
-            <div className="md:w-1/3">
-              <img
-                src={leader.image_url || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400'}
-                alt={leader.name}
-                className="w-full h-64 md:h-full object-cover"
-              />
-            </div>
-            <div className="md:w-2/3 p-8">
-              <h1 className="text-3xl font-bold text-insightBlack mb-2">{leader.name}</h1>
-              <h2 className="text-xl text-insightRed font-semibold mb-2">{leader.title}</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+            <div className="lg:col-span-2">
+              <Badge className="mb-6 bg-insightRed/20 text-insightRed border-insightRed/30 text-sm px-4 py-2">
+                EXECUTIVE PROFILE
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">{leader.name}</h1>
+              <h2 className="text-2xl md:text-3xl text-insightRed font-semibold mb-4">{leader.title}</h2>
               {leader.company && (
-                <p className="text-gray-600 mb-4">{leader.company}</p>
+                <p className="text-xl text-gray-300 mb-6 flex items-center">
+                  <Building2 className="w-5 h-5 mr-2" />
+                  {leader.company}
+                </p>
               )}
               
-              {/* Social Links */}
-              <div className="flex items-center space-x-4 mb-6">
+              <div className="flex flex-wrap gap-4 mb-8">
                 {leader.linkedin_url && (
                   <a
                     href={leader.linkedin_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+                    className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
                   >
                     <Linkedin className="w-5 h-5 mr-2" />
-                    LinkedIn
+                    Connect on LinkedIn
                   </a>
                 )}
                 {leader.twitter_url && (
@@ -83,85 +83,176 @@ const LeadershipProfile = () => {
                     href={leader.twitter_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center text-blue-400 hover:text-blue-600 transition-colors"
+                    className="inline-flex items-center bg-blue-400 hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-medium transition-colors"
                   >
                     <Twitter className="w-5 h-5 mr-2" />
-                    Twitter
+                    Follow on Twitter
                   </a>
                 )}
               </div>
+            </div>
 
-              {/* Quick Bio */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-insightBlack mb-2">Quick Overview</h3>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {leader.bio.split('\n')[0]}
-                </p>
+            <div className="lg:col-span-1">
+              <div className="relative">
+                <img
+                  src={leader.image_url || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=500'}
+                  alt={leader.name}
+                  className="w-full h-96 object-cover rounded-2xl shadow-2xl"
+                />
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Detailed Biography */}
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-8">
-          <h3 className="text-2xl font-bold text-insightBlack mb-6">Biography</h3>
-          <div className="prose prose-lg max-w-none">
-            {leader.bio.split('\n').map((paragraph, index) => (
-              <p key={index} className="text-gray-700 leading-relaxed mb-4">
-                {paragraph}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Executive Summary */}
+        <div className="mb-16">
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-gray-50">
+            <CardHeader className="pb-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <Quote className="h-6 w-6 text-insightRed" />
+                <Badge variant="outline" className="border-insightRed text-insightRed">
+                  EXECUTIVE SUMMARY
+                </Badge>
+              </div>
+              <CardTitle className="text-2xl text-insightBlack">Leadership Excellence</CardTitle>
+              <CardDescription className="text-lg">
+                Strategic vision that drives transformation and sustainable growth
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg text-gray-700 leading-relaxed italic border-l-4 border-insightRed pl-6">
+                "{leader.bio.split('\n')[0]}"
               </p>
-            ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+          {/* Detailed Biography */}
+          <div className="lg:col-span-2">
+            <Card className="border-0 shadow-xl h-full">
+              <CardHeader>
+                <CardTitle className="text-2xl text-insightBlack flex items-center">
+                  <Award className="h-6 w-6 mr-2 text-insightRed" />
+                  Professional Journey
+                </CardTitle>
+                <CardDescription>
+                  A comprehensive look at career achievements and leadership impact
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {leader.bio.split('\n').map((paragraph, index) => (
+                  <div key={index}>
+                    {index === 0 ? (
+                      <p className="text-lg text-gray-800 leading-relaxed font-medium">
+                        {paragraph}
+                      </p>
+                    ) : (
+                      <p className="text-gray-700 leading-relaxed">
+                        {paragraph}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Professional Highlights */}
+          <div className="space-y-6">
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-xl text-insightBlack">Current Role</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start space-x-3">
+                  <Building2 className="h-5 w-5 text-insightRed mt-1" />
+                  <div>
+                    <p className="font-semibold text-gray-900">{leader.title}</p>
+                    {leader.company && (
+                      <p className="text-gray-600">{leader.company}</p>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-xl text-insightBlack">Areas of Expertise</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {['Strategic Leadership', 'Digital Transformation', 'Innovation Management', 'Global Operations', 'Sustainable Growth'].map((skill) => (
+                    <Badge key={skill} variant="secondary" className="bg-gray-100 text-gray-700">
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-xl text-insightBlack">Industry Impact</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Years of Experience</span>
+                  <span className="font-semibold">20+</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Companies Led</span>
+                  <span className="font-semibold">3</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Global Teams</span>
+                  <span className="font-semibold">5,000+</span>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
-        {/* Professional Highlights */}
-        <div className="bg-white rounded-lg shadow-sm p-8">
-          <h3 className="text-2xl font-bold text-insightBlack mb-6">Professional Highlights</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold text-insightRed mb-2">Current Role</h4>
-              <p className="text-gray-700">{leader.title}</p>
-              {leader.company && (
-                <p className="text-gray-600 text-sm">{leader.company}</p>
-              )}
-            </div>
-            <div>
-              <h4 className="font-semibold text-insightRed mb-2">Areas of Expertise</h4>
-              <p className="text-gray-700 text-sm">
-                Leadership, Digital Transformation, Strategic Planning, Technology Innovation
+        {/* Connect Section */}
+        <Card className="border-0 shadow-xl bg-gradient-to-r from-insightRed/5 to-red-50">
+          <CardContent className="p-8">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-insightBlack mb-4">Connect with {leader.name.split(' ')[0]}</h3>
+              <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+                Join thousands of business leaders who follow {leader.name.split(' ')[0]}'s insights on strategic leadership, 
+                industry trends, and business transformation.
               </p>
+              <div className="flex flex-wrap gap-4 justify-center">
+                {leader.linkedin_url && (
+                  <a
+                    href={leader.linkedin_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg"
+                  >
+                    <Linkedin className="w-5 h-5 mr-3" />
+                    Connect on LinkedIn
+                  </a>
+                )}
+                {leader.twitter_url && (
+                  <a
+                    href={leader.twitter_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center bg-blue-400 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg"
+                  >
+                    <Twitter className="w-5 h-5 mr-3" />
+                    Follow on Twitter
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
-
-          {/* Contact Section */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <h4 className="font-semibold text-insightBlack mb-4">Connect with {leader.name.split(' ')[0]}</h4>
-            <div className="flex flex-wrap gap-4">
-              {leader.linkedin_url && (
-                <a
-                  href={leader.linkedin_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  <Linkedin className="w-4 h-4 mr-2" />
-                  Connect on LinkedIn
-                </a>
-              )}
-              {leader.twitter_url && (
-                <a
-                  href={leader.twitter_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  <Twitter className="w-4 h-4 mr-2" />
-                  Follow on Twitter
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

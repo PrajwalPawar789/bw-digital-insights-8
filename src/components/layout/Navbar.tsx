@@ -41,37 +41,37 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center">
-            <div className="ml-10 flex items-baseline space-x-8">
-              <Link to="/" className="px-4 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group">
+          <div className="hidden lg:flex items-center">
+            <div className="ml-10 flex items-baseline space-x-6">
+              <Link to="/" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
                 Home
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
               </Link>
-              <Link to="/magazine" className="px-4 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group">
+              <Link to="/magazine" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
                 Magazine
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
               </Link>
-              <Link to="/leadership" className="px-4 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group">
+              <Link to="/leadership" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
                 Leadership
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
               </Link>
-              <Link to="/press-releases" className="px-4 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group">
-                Press Releases
+              <Link to="/press-releases" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
+                Press&nbsp;Releases
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
               </Link>
-              <Link to="/about" className="px-4 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group">
-                About Us
+              <Link to="/about" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
+                About&nbsp;Us
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
               </Link>
-              <Link to="/contact" className="px-4 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group">
-                Contact Us
+              <Link to="/contact" className="px-3 py-2 text-base font-medium text-insightBlack hover:text-insightRed transition-colors duration-200 relative group whitespace-nowrap">
+                Contact&nbsp;Us
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full"></span>
               </Link>
             </div>
           </div>
 
           {/* Social Media Icons - Desktop */}
-          <div className="hidden md:flex items-center">
+          <div className="hidden lg:flex items-center">
             <div className="ml-6 flex items-center space-x-4">
               <a href="#" className="text-gray-400 hover:text-insightRed transition-colors duration-200 p-2 rounded-full hover:bg-gray-100">
                 <Facebook size={20} />
@@ -89,7 +89,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             <button
               type="button"
               className="inline-flex items-center justify-center p-3 rounded-md text-insightBlack hover:text-insightRed hover:bg-gray-100 focus:outline-none transition-colors duration-200"
@@ -104,7 +104,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
+        <div className="lg:hidden bg-white border-t border-gray-100 shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link
               to="/"

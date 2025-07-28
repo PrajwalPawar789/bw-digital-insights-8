@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { slugify } from '@/lib/slugify';
-import { Upload } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 
 interface CreateArticleFormProps {
   open: boolean;
@@ -19,7 +19,7 @@ interface CreateArticleFormProps {
 }
 
 const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
-  const { mutate: createArticle } = useCreateArticle();
+  const { mutate: createArticle, isPending } = useCreateArticle();
   const { uploadImage, uploading } = useImageUpload();
   
   const [title, setTitle] = useState('');
@@ -30,18 +30,26 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
   const [category, setCategory] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [featured, setFeatured] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const categories = ['Technology', 'Business', 'Leadership', 'Innovation', 'Strategy', 'Finance', 'Marketing'];
 
   const handleImageUpload = async (file: File) => {
     try {
+      console.log('Starting image upload...', file.name, file.type);
+      setSelectedFile(file);
       const url = await uploadImage(file, "articles");
+      console.log('Image uploaded successfully:', url);
       setImageUrl(url);
-      toast.success("Image uploaded successfully");
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.error("Failed to upload image");
+      setSelectedFile(null);
     }
+  };
+
+  const removeImage = () => {
+    setImageUrl('');
+    setSelectedFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,9 +72,18 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
       date: new Date().toISOString(),
     };
 
-    createArticle(articleData);
-    onOpenChange(false);
-    resetForm();
+    console.log('Creating article with data:', articleData);
+    createArticle(articleData, {
+      onSuccess: () => {
+        toast.success('Article created successfully');
+        onOpenChange(false);
+        resetForm();
+      },
+      onError: (error) => {
+        console.error('Failed to create article:', error);
+        toast.error('Failed to create article');
+      }
+    });
   };
 
   const resetForm = () => {
@@ -78,25 +95,27 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
     setCategory('');
     setImageUrl('');
     setFeatured(false);
+    setSelectedFile(null);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Article</DialogTitle>
           <DialogDescription>
             Add a new article to your website.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="title">Title *</Label>
               <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter article title"
                 required
               />
             </div>
@@ -118,6 +137,7 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
               rows={3}
+              placeholder="Brief description of the article"
               required
             />
           </div>
@@ -129,23 +149,25 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={8}
+              placeholder="Write your article content here"
               required
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="author">Author *</Label>
               <Input
                 id="author"
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
+                placeholder="Author name"
                 required
               />
             </div>
             <div>
               <Label htmlFor="category">Category *</Label>
-              <Select value={category} onValueChange={setCategory}>
+              <Select value={category} onValueChange={setCategory} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -160,26 +182,57 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
 
           <div>
             <Label htmlFor="image">Featured Image</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="file"
-                id="image"
-                accept="image/*"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    handleImageUpload(e.target.files[0]);
-                  }
-                }}
-                className="hidden"
-              />
-              <Label htmlFor="image" className="cursor-pointer">
-                <Button type="button" variant="outline" disabled={uploading}>
-                  <Upload className="h-4 w-4 mr-2" />
-                  {uploading ? 'Uploading...' : 'Upload Image'}
-                </Button>
-              </Label>
-              {imageUrl && (
-                <span className="text-sm text-green-600">Image uploaded</span>
+            <div className="space-y-3">
+              {!imageUrl ? (
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="file"
+                    id="image"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        console.log('File selected:', file.name, file.type, file.size);
+                        handleImageUpload(file);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                  <Label htmlFor="image" className="cursor-pointer">
+                    <Button type="button" variant="outline" disabled={uploading} className="w-full">
+                      <Upload className="h-4 w-4 mr-2" />
+                      {uploading ? 'Uploading...' : 'Upload Image'}
+                    </Button>
+                  </Label>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <Upload className="h-6 w-6 text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-green-800">Image uploaded successfully</p>
+                        <p className="text-xs text-green-600">{selectedFile?.name || 'Image ready'}</p>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={removeImage}
+                      className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {imageUrl && (
+                    <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden">
+                      <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -193,11 +246,20 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
             <Label htmlFor="featured">Featured Article</Label>
           </div>
 
-          <div className="flex gap-2 pt-4">
-            <Button type="submit" className="flex-1">
-              Create Article
+          <div className="flex gap-3 pt-4">
+            <Button 
+              type="submit" 
+              className="flex-1" 
+              disabled={isPending || uploading}
+            >
+              {isPending ? 'Creating...' : 'Create Article'}
             </Button>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => onOpenChange(false)}
+              disabled={isPending}
+            >
               Cancel
             </Button>
           </div>
