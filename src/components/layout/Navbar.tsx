@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { useSettings } from '@/hooks/useSettings';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { settings } = useSettings();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -19,21 +21,29 @@ const Navbar = () => {
             <Link to="/" className="flex items-center group">
               {/* Professional Magazine Logo */}
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-insightRed to-red-700 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                  <div className="w-8 h-8 relative">
-                    {/* Magazine Icon */}
-                    <div className="absolute inset-0 bg-white rounded-sm opacity-90"></div>
-                    <div className="absolute top-1 left-1 right-1 h-1 bg-insightRed rounded-full"></div>
-                    <div className="absolute top-3 left-1 right-2 h-0.5 bg-gray-400 rounded-full"></div>
-                    <div className="absolute top-4.5 left-1 right-3 h-0.5 bg-gray-400 rounded-full"></div>
-                    <div className="absolute top-6 left-1 right-1.5 h-0.5 bg-gray-400 rounded-full"></div>
+                {settings.siteLogo ? (
+                  <img 
+                    src={settings.siteLogo} 
+                    alt={settings.companyName}
+                    className="w-12 h-12 rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gradient-to-br from-insightRed to-red-700 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                    <div className="w-8 h-8 relative">
+                      {/* Magazine Icon */}
+                      <div className="absolute inset-0 bg-white rounded-sm opacity-90"></div>
+                      <div className="absolute top-1 left-1 right-1 h-1 bg-insightRed rounded-full"></div>
+                      <div className="absolute top-3 left-1 right-2 h-0.5 bg-gray-400 rounded-full"></div>
+                      <div className="absolute top-4.5 left-1 right-3 h-0.5 bg-gray-400 rounded-full"></div>
+                      <div className="absolute top-6 left-1 right-1.5 h-0.5 bg-gray-400 rounded-full"></div>
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full border-2 border-white"></div>
               </div>
               <div className="ml-4">
                 <span className="text-2xl font-bold text-insightBlack group-hover:text-insightRed transition-colors duration-300">
-                  Insights
+                  {settings.companyName}
                 </span>
                 <div className="text-sm font-semibold text-gray-600 -mt-1">BUSINESS MAGAZINE</div>
               </div>

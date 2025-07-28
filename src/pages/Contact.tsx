@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -14,6 +13,7 @@ import {
   CheckCircle,
   ChevronDown
 } from 'lucide-react';
+import { useCompanyName } from '@/hooks/useDatabaseSettings';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -32,10 +32,12 @@ const Contact = () => {
     faq: false
   });
 
+  const companyName = useCompanyName();
+
   const faqs = [
     {
-      question: "What services does InsightsBW offer?",
-      answer: "InsightsBW provides business intelligence consulting, market research, data analytics, strategic advisory services, and thought leadership content through our magazine and research publications."
+      question: `What services does ${companyName} offer?`,
+      answer: `${companyName} provides business intelligence consulting, market research, data analytics, strategic advisory services, and thought leadership content through our magazine and research publications.`
     },
     {
       question: "How quickly can I expect a response to my inquiry?",
@@ -43,7 +45,7 @@ const Contact = () => {
     },
     {
       question: "Do you offer services internationally?",
-      answer: "Yes, InsightsBW works with clients globally. Our team has experience across various markets and can provide localized insights for different regions."
+      answer: `Yes, ${companyName} works with clients globally. Our team has experience across various markets and can provide localized insights for different regions.`
     },
     {
       question: "How can I subscribe to your magazine or newsletters?",
@@ -274,9 +276,13 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold text-insightBlack">Email</h3>
                     <p className="text-gray-600 mb-1">For general inquiries:</p>
-                    <a href="mailto:info@insightsbw.com" className="text-insightRed hover:underline">info@insightsbw.com</a>
+                    <a href={`mailto:info@${companyName.toLowerCase().replace(/\s+/g, '')}.com`} className="text-insightRed hover:underline">
+                      info@{companyName.toLowerCase().replace(/\s+/g, '')}.com
+                    </a>
                     <p className="text-gray-600 mt-2 mb-1">For media relations:</p>
-                    <a href="mailto:media@insightsbw.com" className="text-insightRed hover:underline">media@insightsbw.com</a>
+                    <a href={`mailto:media@${companyName.toLowerCase().replace(/\s+/g, '')}.com`} className="text-insightRed hover:underline">
+                      media@{companyName.toLowerCase().replace(/\s+/g, '')}.com
+                    </a>
                   </div>
                 </div>
                 

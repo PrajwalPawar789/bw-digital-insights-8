@@ -29,6 +29,8 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
   const [imageUrl, setImageUrl] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [twitterUrl, setTwitterUrl] = useState('');
+  const [areasOfExpertise, setAreasOfExpertise] = useState('');
+  const [industryImpact, setIndustryImpact] = useState('');
   const [featured, setFeatured] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -50,6 +52,21 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
     setSelectedFile(null);
   };
 
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      console.log('Leader image file selected:', file.name, file.type, file.size);
+      handleImageUpload(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    const fileInput = document.getElementById('leader-image-input') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -67,6 +84,8 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
       image_url: imageUrl,
       linkedin_url: linkedinUrl,
       twitter_url: twitterUrl,
+      areas_of_expertise: areasOfExpertise,
+      industry_impact: industryImpact,
       featured,
     };
 
@@ -93,6 +112,8 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
     setImageUrl('');
     setLinkedinUrl('');
     setTwitterUrl('');
+    setAreasOfExpertise('');
+    setIndustryImpact('');
     setFeatured(false);
     setSelectedFile(null);
   };
@@ -164,29 +185,49 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
           </div>
 
           <div>
+            <Label htmlFor="areas_of_expertise">Areas of Expertise</Label>
+            <Textarea
+              id="areas_of_expertise"
+              value={areasOfExpertise}
+              onChange={(e) => setAreasOfExpertise(e.target.value)}
+              rows={3}
+              placeholder="Key areas of expertise and specialization"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="industry_impact">Industry Impact</Label>
+            <Textarea
+              id="industry_impact"
+              value={industryImpact}
+              onChange={(e) => setIndustryImpact(e.target.value)}
+              rows={3}
+              placeholder="Impact and contributions to the industry"
+            />
+          </div>
+
+          <div>
             <Label htmlFor="image">Profile Image</Label>
             <div className="space-y-3">
               {!imageUrl ? (
                 <div className="flex items-center gap-3">
                   <Input
                     type="file"
-                    id="image"
+                    id="leader-image-input"
                     accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        console.log('Leader image file selected:', file.name, file.type, file.size);
-                        handleImageUpload(file);
-                      }
-                    }}
+                    onChange={handleFileInputChange}
                     className="hidden"
                   />
-                  <Label htmlFor="image" className="cursor-pointer">
-                    <Button type="button" variant="outline" disabled={uploading} className="w-full">
-                      <Upload className="h-4 w-4 mr-2" />
-                      {uploading ? 'Uploading...' : 'Upload Profile Image'}
-                    </Button>
-                  </Label>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    disabled={uploading} 
+                    className="w-full"
+                    onClick={triggerFileInput}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {uploading ? 'Uploading...' : 'Upload Profile Image'}
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-2">
