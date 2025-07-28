@@ -5,31 +5,101 @@ import { pressReleaseData, PressRelease } from '../data/pressReleaseData';
 import { ChevronLeft, Calendar, Share2, ArrowUpRight, Globe, FileText } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 const PressReleaseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [pressRelease, setPressRelease] = useState<PressRelease | undefined>(
-    pressReleaseData.find(pr => pr.slug === slug)
-  );
+  const [pressRelease, setPressRelease] = useState<PressRelease | undefined>();
   const [relatedPressReleases, setRelatedPressReleases] = useState<PressRelease[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (pressRelease) {
-      // Find related press releases from the same category
-      const related = pressReleaseData
-        .filter(pr => pr.id !== pressRelease.id && pr.category === pressRelease.category)
-        .slice(0, 2);
-      setRelatedPressReleases(related);
-    }
+    const fetchPressRelease = async () => {
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
 
-    // Simulate loading delay
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 700);
+      try {
+        // First try to fetch from Supabase
+        const { data: supabaseRelease, error } = await supabase
+          .from('press_releases')
+          .select('*')
+          .eq('slug', slug)
+          .single();
 
-    return () => clearTimeout(timer);
-  }, [pressRelease]);
+        if (supabaseRelease && !error) {
+          // Convert Supabase data to PressRelease format
+          const convertedRelease: PressRelease = {
+            id: supabaseRelease.id,
+            title: supabaseRelease.title,
+            excerpt: supabaseRelease.excerpt || '',
+            content: supabaseRelease.content,
+            date: supabaseRelease.date,
+            category: 'Press Release', // Default category
+            slug: supabaseRelease.slug,
+            image: supabaseRelease.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800',
+            author: supabaseRelease.author
+          };
+          setPressRelease(convertedRelease);
+
+          // Fetch related press releases from Supabase
+          const { data: relatedData } = await supabase
+            .from('press_releases')
+            .select('*')
+            .neq('id', supabaseRelease.id)
+            .limit(2);
+
+          if (relatedData) {
+            const convertedRelated = relatedData.map(item => ({
+              id: item.id,
+              title: item.title,
+              excerpt: item.excerpt || '',
+              content: item.content,
+              date: item.date,
+              category: 'Press Release',
+              slug: item.slug,
+              image: item.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800',
+              author: item.author
+            }));
+            setRelatedPressReleases(convertedRelated);
+          }
+        } else {
+          // Fallback to mock data
+          const mockRelease = pressReleaseData.find(pr => pr.slug === slug);
+          setPressRelease(mockRelease);
+          
+          if (mockRelease) {
+            const related = pressReleaseData
+              .filter(pr => pr.id !== mockRelease.id && pr.category === mockRelease.category)
+              .slice(0, 2);
+            setRelatedPressReleases(related);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching press release:', error);
+        // Fallback to mock data
+        const mockRelease = pressReleaseData.find(pr => pr.slug === slug);
+        setPressRelease(mockRelease);
+        
+        if (mockRelease) {
+          const related = pressReleaseData
+            .filter(pr => pr.id !== mockRelease.id && pr.category === mockRelease.category)
+            .slice(0, 2);
+          setRelatedPressReleases(related);
+        }
+      }
+
+      // Simulate loading delay
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 700);
+
+      return () => clearTimeout(timer);
+    };
+
+    fetchPressRelease();
+  }, [slug]);
 
   const handleShare = () => {
     if (navigator.share) {
