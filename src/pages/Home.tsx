@@ -1,419 +1,538 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronRight, BookOpen, TrendingUp, Users, Award, Globe, ArrowRight, Play, Quote, Calendar, Eye, Star } from "lucide-react";
+import { ChevronRight, ChevronLeft, BookOpen, TrendingUp } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import ClientLogos from "@/components/ClientLogos";
 import { useMagazines } from "@/hooks/useMagazines";
 import { useArticles } from "@/hooks/useArticles";
 import { useTestimonials } from "@/hooks/useTestimonials";
 import { useUpcomingEditions } from "@/hooks/useUpcomingEditions";
 
-// Enhanced utility functions with fallbacks
+// Defensive: fallback images and text for magazines
 function safeGetMagCover(magObj: any) {
   return magObj?.cover_image_url || magObj?.coverImage || magObj?.image_url || "/placeholder.svg";
 }
-
 function safeGetMagTitle(magObj: any) {
-  return magObj?.title || magObj?.name || "Untitled Edition";
+  return magObj?.title || magObj?.name || "Untitled";
 }
-
 function safeGetMagDesc(magObj: any) {
-  return magObj?.description || "Exclusive insights for digital leaders";
+  return magObj?.description || "";
 }
-
 function safeGetMagDate(magObj: any) {
-  return magObj?.publish_date || magObj?.publicationDate || new Date().toISOString();
+  return magObj?.publish_date || magObj?.publicationDate || "";
 }
-
-function formatDate(dateString: string) {
-  if (!dateString) return "Recent";
-  try {
-    return new Date(dateString).toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long' 
-    });
-  } catch {
-    return "Recent";
-  }
+function safeGetMagId(magObj: any) {
+  return magObj?.slug || magObj?.id || "";
 }
 
 const Home = () => {
-  const { data: magazines = [], isLoading: magazinesLoading } = useMagazines();
-  const { data: articles = [], isLoading: articlesLoading } = useArticles();
-  const { data: testimonials = [], isLoading: testimonialsLoading } = useTestimonials();
-  const { data: upcomingEditions = [], isLoading: upcomingLoading } = useUpcomingEditions();
-  
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  // Articles & Magazines
+  const { data: newsDataRaw } = useArticles();
+  const { data: magazineDataRaw } = useMagazines();
+  const { data: testimonialsDataRaw } = useTestimonials();
+  const { data: upcomingEditionsRaw } = useUpcomingEditions();
 
-  // Auto-rotate testimonials
-  useEffect(() => {
-    if (testimonials.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-      }, 6000);
-      return () => clearInterval(interval);
+  // Defensive fallback for all API data
+  const newsData = Array.isArray(newsDataRaw) ? newsDataRaw : [];
+  const magazineData = Array.isArray(magazineDataRaw) ? magazineDataRaw : [];
+  const testimonialsData = Array.isArray(testimonialsDataRaw) ? testimonialsDataRaw : [];
+  const upcomingEditions = Array.isArray(upcomingEditionsRaw) ? upcomingEditionsRaw : [];
+
+  // Pick featured news (cover story, editor's picks)
+  const featuredNewsArr = newsData.filter((n: any) => n?.featured);
+  const coverStory = featuredNewsArr.length > 0 ? featuredNewsArr[0] : null;
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  const latestMagazine = magazineData[0] || {};
+
+  // Categories for Tabs, dynamically inferred from articles
+  const categories = [
+    "Trending",
+    ...Array.from(
+      new Set(
+        newsData
+          .filter((n: any) => !n.featured && n.category && n.category !== "Trending")
+          .map((n: any) => n.category)
+      )
+    ).slice(0, 2),
+  ];
+
+  // Only non-featured articles by category for the Business Insights section
+  const getNewsByCategory = (category: string) => {
+    if (category === "Trending") {
+      // For Trending, show non-featured articles in Trending category (not already featured)
+      return newsData.filter((n: any) => n.category === "Trending" && !n.featured).slice(0, 6);
     }
-  }, [testimonials.length]);
+    return newsData.filter((n: any) => n.category === category && !n.featured).slice(0, 6);
+  };
 
-  // Get featured content
-  const featuredMagazine = magazines.find(mag => mag.featured) || magazines[0];
-  const latestArticles = articles.slice(0, 3);
-  const currentTestimonialData = testimonials[currentTestimonial];
+  // Carousel autoplay
+  useEffect(() => {
+    if (!featuredNewsArr.length) return;
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % featuredNewsArr.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [featuredNewsArr.length]);
+  useEffect(() => {
+    if (!testimonialsData.length) return;
+    const interval = setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % testimonialsData.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [testimonialsData.length]);
+
+
+  // Defensive: never try to access .slug, .title etc. if they're missing
+  const hasCoverStory = !!coverStory && typeof coverStory === "object" && (coverStory.title || coverStory.slug);
+  const hasFeaturedNews = Array.isArray(featuredNewsArr) && featuredNewsArr.length > 0;
+  const hasMagazines = Array.isArray(magazineData) && magazineData.length > 0;
+  const hasUpcoming = Array.isArray(upcomingEditions) && upcomingEditions.length > 0;
+  const hasTestimonials = Array.isArray(testimonialsData) && testimonialsData.length > 0;
+
+  // Debugging: log counts to identify bad data early
+  // console.log({
+  //   newsCount: newsData.length,
+  //   magazineCount: magazineData.length,
+  //   testimonialsCount: testimonialsData.length,
+  //   upcomingEditionsCount: upcomingEditions.length
+  // });
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section - Executive Leadership Focus */}
-      <section className="hero-executive relative overflow-hidden">
-        <div className="container-executive relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
-            <div className="space-y-8 animate-slide-up-elegant">
-              <div className="space-y-4">
-                <Badge className="bg-executive-crimson text-white px-4 py-2 text-sm font-medium">
-                  Executive Edition
-                </Badge>
-                <h1 className="text-editorial text-5xl lg:text-7xl font-bold text-white leading-tight">
-                  <span className="block">Digital</span>
-                  <span className="block text-executive-gold">Leadership</span>
-                  <span className="block">Redefined</span>
-                </h1>
-                <p className="text-xl text-white/90 font-executive max-w-lg leading-relaxed">
-                  Exclusive insights, strategic perspectives, and transformative ideas 
-                  for today's most influential technology executives.
-                </p>
-              </div>
-              
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white overflow-hidden min-h-screen flex items-center">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] opacity-10 bg-cover bg-center"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                <span className="block">Where Business</span>
+                <span className="block text-transparent bg-gradient-to-r from-red-500 to-yellow-500 bg-clip-text">
+                  Leaders Connect
+                </span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 leading-relaxed">
+                Exclusive insights, strategic analysis, and the stories that shape tomorrow's business landscape.
+              </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="btn-authority">
-                  <BookOpen className="mr-2 h-5 w-5" />
+                <Link to="/magazine" className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors flex items-center">
+                  <BookOpen className="mr-2 h-6 w-6" />
                   Explore Latest Issue
-                </Button>
-                <Button variant="outline" size="lg" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-                  <Play className="mr-2 h-4 w-4" />
-                  Watch Executive Briefing
-                </Button>
-              </div>
-
-              {/* Executive Stats */}
-              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/20">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-executive-gold">500K+</div>
-                  <div className="text-white/80 text-sm font-executive">Executive Readers</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-executive-gold">150+</div>
-                  <div className="text-white/80 text-sm font-executive">Fortune 500 Companies</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-executive-gold">25+</div>
-                  <div className="text-white/80 text-sm font-executive">Industry Awards</div>
-                </div>
+                </Link>
+                <Link to="/about" className="border border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-lg text-lg font-semibold transition-colors">
+                  Learn More
+                </Link>
               </div>
             </div>
-
-            {/* Featured Magazine Cover */}
-            <div className="flex justify-center lg:justify-end">
-              {featuredMagazine && (
-                <div className="magazine-cover-executive max-w-md animate-fade-in-scale">
+            {hasMagazines && (
+              <div className="relative flex justify-center">
+                <div className="relative transform rotate-6 hover:rotate-3 transition-transform duration-500">
                   <img
-                    src={safeGetMagCover(featuredMagazine)}
-                    alt={safeGetMagTitle(featuredMagazine)}
-                    className="w-full h-auto object-cover rounded-xl"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder.svg";
-                    }}
+                    src={safeGetMagCover(latestMagazine)}
+                    alt={safeGetMagTitle(latestMagazine)}
+                    className="w-80 h-auto rounded-xl shadow-2xl"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-xl" />
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <h3 className="text-xl font-editorial font-bold mb-2">
-                      {safeGetMagTitle(featuredMagazine)}
-                    </h3>
-                    <p className="text-sm text-white/90 mb-3">
-                      {formatDate(safeGetMagDate(featuredMagazine))}
-                    </p>
-                    <Button size="sm" className="btn-luxury">
-                      Read Now <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
+                  <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    Latest Issue
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Executive Insights Section */}
-      <section className="section-executive bg-executive-platinum">
-        <div className="container-executive">
-          <div className="text-center mb-16">
-            <h2 className="text-editorial text-4xl lg:text-5xl font-bold text-executive-navy mb-6">
-              Executive Insights & Analysis
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-executive">
-              Deep-dive analysis, strategic frameworks, and actionable intelligence 
-              from the world's most successful technology leaders.
-            </p>
-          </div>
-
-          <Tabs defaultValue="magazines" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-12 bg-white shadow-depth-1">
-              <TabsTrigger value="magazines" className="font-executive font-medium">
-                <BookOpen className="mr-2 h-4 w-4" />
-                Magazine Library
-              </TabsTrigger>
-              <TabsTrigger value="articles" className="font-executive font-medium">
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Trending Articles
-              </TabsTrigger>
-              <TabsTrigger value="upcoming" className="font-executive font-medium">
-                <Calendar className="mr-2 h-4 w-4" />
-                Upcoming Editions
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="magazines" className="space-y-8">
-              {magazinesLoading ? (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="card-executive p-6 loading-executive h-80" />
-                  ))}
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {magazines.slice(0, 6).map((magazine, index) => (
-                    <Card key={magazine.id} className="card-executive group overflow-hidden animate-fade-in-scale" style={{ animationDelay: `${index * 100}ms` }}>
-                      <div className="relative">
-                        <img
-                          src={safeGetMagCover(magazine)}
-                          alt={safeGetMagTitle(magazine)}
-                          className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "/placeholder.svg";
-                          }}
-                        />
-                        <div className="absolute top-4 right-4">
-                          <Badge className="bg-executive-crimson text-white">
-                            <Eye className="mr-1 h-3 w-3" />
-                            Premium
-                          </Badge>
-                        </div>
-                      </div>
-                      <CardContent className="p-6">
-                        <div className="space-y-4">
-                          <div>
-                            <h3 className="text-editorial text-xl font-bold text-executive-navy group-hover:text-executive-crimson transition-colors">
-                              {safeGetMagTitle(magazine)}
-                            </h3>
-                            <p className="text-muted-foreground text-sm font-executive mt-2">
-                              {formatDate(safeGetMagDate(magazine))}
-                            </p>
-                          </div>
-                          <p className="text-foreground/80 line-clamp-3 font-executive">
-                            {safeGetMagDesc(magazine)}
-                          </p>
-                          <Link
-                            to={`/magazine/${magazine.slug}`}
-                            className="inline-flex items-center text-executive-crimson hover:text-executive-navy font-semibold transition-colors group"
-                          >
-                            Read Full Issue
-                            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="articles" className="space-y-8">
-              {articlesLoading ? (
-                <div className="space-y-6">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="card-executive p-8 loading-executive h-32" />
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {latestArticles.map((article, index) => (
-                    <Card key={article.id} className="card-executive hover:shadow-authority transition-all duration-300 animate-slide-up-elegant" style={{ animationDelay: `${index * 150}ms` }}>
-                      <CardContent className="p-8">
-                        <div className="flex flex-col lg:flex-row gap-6 items-start">
-                          <div className="flex-1 space-y-4">
-                            <div className="flex items-center gap-4">
-                              <Badge variant="outline" className="border-executive-sapphire text-executive-sapphire">
-                                {article.category || "Executive Briefing"}
-                              </Badge>
-                              <span className="text-sm text-muted-foreground font-executive">
-                                {formatDate(article.created_at)}
-                              </span>
-                            </div>
-                            <h3 className="text-editorial text-2xl font-bold text-executive-navy hover:text-executive-crimson transition-colors">
-                              {article.title}
-                            </h3>
-                            <p className="text-foreground/80 font-executive leading-relaxed">
-                              {article.excerpt || article.content?.substring(0, 200) + "..."}
-                            </p>
-                            <Link
-                              to={`/article/${article.slug}`}
-                              className="inline-flex items-center text-executive-crimson hover:text-executive-navy font-semibold transition-colors group"
-                            >
-                              Continue Reading
-                              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                            </Link>
-                          </div>
-                          {article.image_url && (
-                            <div className="w-full lg:w-48 h-32 rounded-lg overflow-hidden">
-                              <img
-                                src={article.image_url}
-                                alt={article.title}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.src = "/placeholder.svg";
-                                }}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="upcoming" className="space-y-8">
-              {upcomingLoading ? (
-                <div className="grid md:grid-cols-2 gap-8">
-                  {[...Array(4)].map((_, i) => (
-                    <div key={i} className="card-executive p-6 loading-executive h-48" />
-                  ))}
-                </div>
-              ) : (
-                <div className="grid md:grid-cols-2 gap-8">
-                  {upcomingEditions.slice(0, 4).map((edition, index) => (
-                    <Card key={edition.id} className="card-luxury text-white overflow-hidden animate-authority-glow" style={{ animationDelay: `${index * 200}ms` }}>
-                      <CardContent className="p-8">
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <Badge className="bg-executive-gold text-executive-navy">
-                              Coming Soon
-                            </Badge>
-                            <Calendar className="h-5 w-5 text-executive-gold" />
-                          </div>
-                          <h3 className="text-editorial text-xl font-bold">
-                            {edition.title}
-                          </h3>
-                          <p className="text-white/90 font-executive">
-                            {edition.description}
-                          </p>
-                          <div className="flex items-center justify-between pt-4 border-t border-white/20">
-                            <span className="text-sm text-white/80 font-executive">
-                              {formatDate(edition.release_date)}
-                            </span>
-                            <Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white/20">
-                              Notify Me
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
-      </section>
-
-      {/* Executive Testimonials */}
-      {testimonials.length > 0 && currentTestimonialData && (
-        <section className="section-executive bg-executive-navy text-white">
-          <div className="container-executive">
-            <div className="text-center max-w-4xl mx-auto">
-              <Quote className="h-16 w-16 text-executive-gold mx-auto mb-8 opacity-60" />
-              <blockquote className="text-editorial text-2xl lg:text-3xl font-medium leading-relaxed mb-8 animate-fade-in-scale">
-                "{currentTestimonialData.quote}"
-              </blockquote>
-              <div className="flex items-center justify-center space-x-4 animate-slide-up-elegant">
-                {currentTestimonialData.avatar_url && (
-                  <img
-                    src={currentTestimonialData.avatar_url}
-                    alt={currentTestimonialData.name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-executive-gold"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder.svg";
-                    }}
-                  />
-                )}
-                <div className="text-left">
-                  <div className="font-executive font-semibold text-lg text-executive-gold">
-                    {currentTestimonialData.name}
-                  </div>
-                  <div className="text-white/80 font-executive">
-                    {currentTestimonialData.title} • {currentTestimonialData.company}
-                  </div>
+      {/* Cover Story */}
+      {hasCoverStory && (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="relative">
+                <img src={coverStory.image_url || "/placeholder.svg"} alt={coverStory.title} className="w-full h-[500px] object-cover rounded-xl shadow-lg" />
+                <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                  Cover Story
                 </div>
               </div>
-              
-              {/* Testimonial Navigation */}
-              <div className="flex justify-center space-x-2 mt-8">
-                {testimonials.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentTestimonial(index)}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      index === currentTestimonial ? 'bg-executive-gold' : 'bg-white/30'
-                    }`}
-                  />
-                ))}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <span className="bg-red-600 text-white px-3 py-1 text-sm font-bold rounded-md">{coverStory.category}</span>
+                  <span className="text-sm text-gray-500">{coverStory.date}</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">{coverStory.title}</h2>
+                <Link to={`/article/${coverStory.slug}`} className="inline-flex items-center bg-red-600 text-white hover:bg-red-700 px-6 py-3 rounded-lg font-semibold transition-colors">
+                  Read Full Story <ChevronRight className="ml-2 h-5 w-5" />
+                </Link>
               </div>
             </div>
           </div>
         </section>
       )}
 
-      {/* Client Logos Section */}
-      <section className="py-16 bg-white">
-        <div className="container-executive">
-          <div className="text-center mb-12">
-            <h2 className="text-editorial text-3xl font-bold text-executive-navy mb-4">
-              Trusted by Industry Leaders
-            </h2>
-            <p className="text-muted-foreground font-executive">
-              Executives from the world's most innovative companies rely on our insights
-            </p>
+      {/* Editor's Picks Carousel */}
+      {hasFeaturedNews && featuredNewsArr.length > 1 ? (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900">Editor's Picks</h2>
+              </div>
+            </div>
+            <div className="relative overflow-hidden rounded-lg shadow-lg">
+              <div className="relative h-[400px] md:h-[500px]">
+                {/* Show Editor's Picks starting from index 1 (skip Cover Story) */}
+                {featuredNewsArr.slice(1).map((news: any, index: number) => (
+                  <div
+                    key={news.id || index}
+                    className={`absolute inset-0 transition-opacity duration-500 ${
+                      index === activeSlide ? "opacity-100" : "opacity-0 pointer-events-none"
+                    }`}
+                  >
+                    <div className="relative h-full">
+                      <img src={news.image_url || "/placeholder.svg"} alt={news.title || "Editor's Pick"} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                      <div className="absolute bottom-0 left-0 p-8 text-white max-w-3xl">
+                        <div className="flex items-center gap-3 mb-4">
+                          <span className="bg-red-600 text-white px-3 py-1 text-sm font-bold rounded-md">{news.category}</span>
+                          <span className="text-sm text-gray-300">{news.date}</span>
+                        </div>
+                        <h3 className="text-3xl md:text-4xl font-bold mb-3">{news.title}</h3>
+                        <a
+                          href={`/article/${news.slug}`}
+                          className="inline-flex items-center text-white bg-red-600 hover:bg-red-700 px-6 py-3 rounded-md text-base font-medium transition-colors"
+                        >
+                          Read Full Article <ChevronRight className="ml-2 h-5 w-5" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => setActiveSlide((prev) => (prev - 1 + Math.max(featuredNewsArr.length - 1, 1)) % Math.max(featuredNewsArr.length - 1, 1))}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-3 text-white backdrop-blur-sm transition-colors"
+                aria-label="Previous slide"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button
+                onClick={() => setActiveSlide((prev) => (prev + 1) % Math.max(featuredNewsArr.length - 1, 1))}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 rounded-full p-3 text-white backdrop-blur-sm transition-colors"
+                aria-label="Next slide"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                {featuredNewsArr.slice(1).map((_: any, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveSlide(index)}
+                    className={`h-2 rounded-full transition-all ${
+                      index === activeSlide ? "bg-white w-8" : "bg-white/50 w-2"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  ></button>
+                ))}
+              </div>
+            </div>
           </div>
-          <ClientLogos />
+        </section>
+      ) : (
+        <section className="py-16 bg-white text-center">
+          <p className="text-gray-400">No Editor's Picks Available</p>
+        </section>
+      )}
+
+      {/* Publications */}
+      <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] opacity-5 bg-fixed"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex items-center justify-between mb-12">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center px-3 py-1 bg-red-600/10 text-red-600 rounded-full text-sm font-medium mb-4">
+                <BookOpen className="w-4 h-4 mr-2" /> Premium Business Publications
+              </div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4 relative">
+                Our Exclusive C-Suite Magazine Collection
+                <span className="absolute -bottom-2 left-0 w-24 h-1 bg-red-600"></span>
+              </h2>
+              <p className="text-gray-600 text-lg">
+                Discover in-depth interviews, strategic insights, and success stories from the world's most influential business leaders.
+              </p>
+            </div>
+          </div>
+          <Carousel opts={{ align: "center", loop: true, dragFree: true }} className="w-full">
+            <CarouselContent className="-ml-4">
+              {hasMagazines ? (
+                magazineData.map((magazine: any) => (
+                  <CarouselItem key={safeGetMagId(magazine)} className="pl-4 basis-[280px] md:basis-[320px] lg:basis-[400px] transition-all duration-300 data-[center=true]:scale-110">
+                    <Link to={`/magazine/${safeGetMagId(magazine)}`} className="block group perspective-1000">
+                      <div className="relative transform transition-all duration-500 group-hover:rotate-y-6 preserve-3d">
+                        <div className="overflow-hidden rounded-xl shadow-2xl bg-white">
+                          <div className="relative aspect-[3/4]">
+                            <img src={safeGetMagCover(magazine)} alt={safeGetMagTitle(magazine)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-white/20 to-transparent transform scale-y-[-1] opacity-0 group-hover:opacity-40 transition-opacity duration-500 blur-sm"></div>
+                            <div className="absolute top-0 right-0 m-4">
+                              <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-gray-900 text-sm font-semibold rounded-full">
+                                {safeGetMagDate(magazine)}
+                              </span>
+                            </div>
+                            <div className="absolute bottom-0 left-0 p-6 text-white transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                              <h3 className="text-xl font-bold mb-2">{safeGetMagTitle(magazine)}</h3>
+                              <p className="text-sm text-gray-200 line-clamp-2 mb-4">{safeGetMagDesc(magazine)}</p>
+                              <span className="inline-flex items-center text-sm font-medium text-white">
+                                Read Issue <ChevronRight className="ml-1 h-4 w-4" />
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                ))
+              ) : (
+                <div className="w-full text-center text-gray-400 py-10">No magazines available.</div>
+              )}
+            </CarouselContent>
+            <div className="flex justify-center mt-12 space-x-4">
+              <CarouselPrevious className="relative static bg-white hover:bg-gray-50 text-gray-900 border-red-600 shadow-lg hover:shadow-xl transition-all hover:scale-105" />
+              <CarouselNext className="relative static bg-white hover:bg-gray-50 text-gray-900 border-red-600 shadow-lg hover:shadow-xl transition-all hover:scale-105" />
+            </div>
+          </Carousel>
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="section-executive bg-gradient-authority text-white">
-        <div className="container-executive text-center">
-          <div className="max-w-3xl mx-auto space-y-8">
-            <h2 className="text-editorial text-4xl lg:text-5xl font-bold">
-              Join the Executive Circle
-            </h2>
-            <p className="text-xl font-executive leading-relaxed text-white/90">
-              Get exclusive access to executive briefings, strategic insights, and 
-              transformative ideas that drive the future of technology leadership.
+      {/* Upcoming Editions */}
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center px-3 py-1 bg-red-600/10 text-red-600 rounded-full text-sm font-medium mb-4">
+              <BookOpen className="w-4 h-4 mr-2" /> Coming Soon
+            </div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Upcoming Editions</h2>
+            <p className="text-lg text-gray-600">
+              A sneak peek at our future editions currently in development
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="btn-luxury">
-                <Star className="mr-2 h-5 w-5" />
-                Start Free Executive Trial
-              </Button>
-              <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/20">
-                <Users className="mr-2 h-5 w-5" />
-                Request Executive Demo
-              </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {hasUpcoming
+              ? upcomingEditions.map((edition: any, index: number) => (
+                  <div
+                    key={edition.id || index}
+                    className="group relative overflow-hidden rounded-xl shadow-lg transform transition-all duration-500 hover:-translate-y-2"
+                    style={{ animationDelay: `${index * 150}ms` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 z-10 group-hover:from-black/80"></div>
+                    <img
+                      src={edition.image_url || "/placeholder.svg"}
+                      alt={edition.title || "Upcoming Edition"}
+                      className="w-full h-80 object-cover filter blur-[8px] scale-110 group-hover:scale-125 group-hover:blur-[12px] transition-all duration-1000"
+                    />
+                    <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 text-white">
+                      <div className="inline-flex items-center gap-3 mb-4">
+                        <span className="bg-red-600 text-white px-3 py-1 bg-white/20 backdrop-blur-sm text-sm font-medium rounded-full">
+                          {edition.release_date || "Coming Soon"}
+                        </span>
+                      </div>
+                      <h3 className="text-2xl font-bold mb-3 tracking-tight group-hover:text-red-600 transition-colors">
+                        {edition.title || "Upcoming Edition"}
+                      </h3>
+                      <p className="text-gray-200 mb-5 line-clamp-3 group-hover:line-clamp-none transition-all duration-500">
+                        {edition.description || ""}
+                      </p>
+                      <div className="flex items-center text-sm font-medium border-t border-white/20 pt-3">
+                        <span className="pb-0.5">{edition.status || "Planned"}</span>
+                      </div>
+                    </div>
+                    <div className="absolute top-4 right-4 z-30">
+                      <span className="inline-flex items-center px-3 py-1 bg-red-600/90 backdrop-blur-sm text-white text-sm font-bold rounded-full animate-pulse">
+                        {edition.status || "Planned"}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              : (
+                <div className="w-full col-span-3 text-center text-gray-400 py-10">
+                  No upcoming editions available.
+                </div>
+              )}
+          </div>
+        </div>
+      </section>
+      {/* Business Insights (Tabs) */}
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center px-3 py-1 bg-red-600/10 text-red-600 rounded-full text-sm font-medium mb-4">
+              <TrendingUp className="w-4 h-4 mr-2" /> Executive Intelligence
+            </div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Business Insights from Top Leaders</h2>
+            <p className="text-lg text-gray-600">
+              Expert analysis, market trends, and strategic perspectives from C-suite executives shaping the future of business.
+            </p>
+          </div>
+          <Tabs defaultValue={categories[0]} className="w-full">
+            <TabsList className="mb-8 flex justify-center bg-white/50 backdrop-blur-sm p-1 rounded-lg border border-gray-200 shadow-sm">
+              {categories.map((category) => (
+                <TabsTrigger
+                  key={category}
+                  value={category}
+                  className="px-8 py-3 data-[state=active]:bg-white data-[state=active]:shadow-md rounded-md data-[state=active]:text-red-600 transition-all"
+                >
+                  {category}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {categories.map((category) => (
+              <TabsContent key={category} value={category}>
+                {(getNewsByCategory(category) || []).length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {getNewsByCategory(category).map((news: any) => (
+                      <Card key={news.id || news.slug || Math.random()} className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
+                        <div className="relative overflow-hidden aspect-video">
+                          <img
+                            src={news.image_url}
+                            alt={news.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          <div className="absolute top-0 right-0 m-4">
+                            <span className="inline-flex items-center px-3 py-1.5 bg-white/90 backdrop-blur-sm text-gray-900 text-sm font-semibold rounded-full">
+                              {news.category}
+                            </span>
+                          </div>
+                        </div>
+                        <CardContent className="p-6">
+                          <h3 className="text-xl font-bold mb-3 group-hover:text-red-600 transition-colors line-clamp-2">
+                            {news.title}
+                          </h3>
+                          <p className="text-gray-600 mb-4 line-clamp-2">{news.excerpt}</p>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-500">{news.date}</span>
+                            <a href={`/article/${news.slug}`} className="inline-flex items-center text-red-600 hover:text-gray-900 text-sm font-medium transition-colors">
+                              Read Full Article <ChevronRight className="ml-1 h-4 w-4" />
+                            </a>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center p-8 text-gray-400">No articles available for this category.</div>
+                )}
+                <div className="flex justify-center mt-12">
+                  <a
+                    href={`/category/${category.toLowerCase()}`}
+                    className="inline-flex items-center px-8 py-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg font-medium transition-all hover:shadow-lg group"
+                  >
+                    View All {category} Articles <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      </section>
+      {/* Client Logos */}
+      <ClientLogos />
+      {/* Executive Spotlight (for demo, reuse Testimonials as placeholder if no real "executive" API) */}
+      {/* Testimonials */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <div className="inline-flex items-center px-3 py-1 bg-gray-200 rounded-full text-sm font-medium mb-2">
+              <TrendingUp className="w-4 h-4 mr-2" /> Reader Insights
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900">What Industry Leaders Say</h2>
+            <p className="text-gray-600 mt-2">Feedback from our community of business professionals</p>
+          </div>
+          <div className="relative px-8 md:px-16">
+            <div className="relative overflow-hidden min-h-[300px]">
+              {hasTestimonials ? (
+                testimonialsData.map((testimonial: any, index: number) => (
+                  <div
+                    key={testimonial.id || index}
+                    className={`absolute inset-0 transition-opacity duration-500 ${index === activeTestimonial ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-24 h-24 mb-6 rounded-full overflow-hidden border-2 border-red-600">
+                        <img
+                          src={testimonial.avatar_url || "/placeholder.svg"}
+                          alt={testimonial.name || "Avatar"}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <blockquote className="max-w-2xl mb-6 text-xl font-medium text-gray-700 italic">
+                        "{testimonial.quote || "No testimonial provided."}"
+                      </blockquote>
+                      <div>
+                        <cite className="font-semibold text-gray-900 text-lg not-italic">{testimonial.name || "Anonymous"}</cite>
+                        <p className="text-red-600 font-medium">
+                          {(testimonial.title || "") + (testimonial.company ? `, ${testimonial.company}` : "")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="w-full text-center py-10 text-gray-400">No testimonials available.</div>
+              )}
+            </div>
+            {hasTestimonials && testimonialsData.length > 1 && (
+              <div className="flex justify-center space-x-2 mt-8">
+                {testimonialsData.map((_: any, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveTestimonial(index)}
+                    className={`h-3 rounded-full transition-all ${index === activeTestimonial ? "bg-red-600 w-8" : "bg-gray-300 w-3"}`}
+                    aria-label={`Go to testimonial ${index + 1}`}
+                  ></button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+      {/* Call to Action */}
+      <section className="py-16 bg-red-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <h2 className="text-3xl font-bold mb-4">Subscribe to Our Magazine</h2>
+              <p className="text-lg opacity-90 mb-6">
+                Join thousands of C-level executives receiving our monthly magazine. Get exclusive insights, industry analysis, and leadership strategies delivered directly to your inbox.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  to="/magazine"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-white text-red-600 hover:bg-gray-100 rounded-md font-medium transition-colors"
+                >
+                  Explore Latest Issue
+                </Link>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center px-6 py-3 border border-white bg-transparent hover:bg-white/10 text-white rounded-md font-medium transition-colors"
+                >
+                  Subscribe Now
+                </Link>
+              </div>
+            </div>
+            <div className="hidden lg:block">
+              <img
+                src={safeGetMagCover(latestMagazine)}
+                alt="Latest Magazine"
+                className="w-full max-w-md mx-auto rounded-lg shadow-2xl transform -rotate-6"
+              />
             </div>
           </div>
         </div>
