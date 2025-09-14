@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { pressReleaseData, PressRelease } from '../data/pressReleaseData';
 import { ChevronLeft, Calendar, Share2, ArrowUpRight, Globe, FileText } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 
 const PressReleaseDetail = () => {

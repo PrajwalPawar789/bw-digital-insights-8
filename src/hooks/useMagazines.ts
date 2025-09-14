@@ -43,7 +43,7 @@ export const useMagazineBySlug = (slug: string, options?: { enabled?: boolean })
         .from("magazines")
         .select("*")
         .eq("slug", slug)
-        .maybeSingle();
+        .single();
       
       if (error) throw error;
       return data;
