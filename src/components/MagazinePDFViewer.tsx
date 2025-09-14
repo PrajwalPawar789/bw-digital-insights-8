@@ -142,7 +142,7 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
             </div>
           </div>
         ) : (
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+          <Worker workerUrl="/pdf.worker.min.js">
             <div
               className="flex flex-col bg-white"
               style={{

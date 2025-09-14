@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { useDatabaseSettings } from './useDatabaseSettings';
 
 interface HomepageSettings {
   featuredArticles: boolean;
@@ -37,10 +38,11 @@ const DEFAULT_SETTINGS: SiteSettings = {
 export const useSettings = () => {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(false);
+  const { data: dbSettings } = useDatabaseSettings();
 
   useEffect(() => {
     loadSettings();
-  }, []);
+  }, [dbSettings]);
 
   const loadSettings = () => {
     try {
@@ -52,6 +54,14 @@ export const useSettings = () => {
         localSettings = { ...DEFAULT_SETTINGS, ...parsed };
       }
       
+      // Override with database settings
+      if (dbSettings) {
+        localSettings = {
+          ...localSettings,
+          companyName: dbSettings.company_name || localSettings.companyName,
+          siteTitle: dbSettings.company_name || localSettings.siteTitle,
+        };
+      }
       
       setSettings(localSettings);
     } catch (error) {

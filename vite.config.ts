@@ -32,4 +32,8 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
+  define: {
+    'process.env.VITE_SUPABASE_URL': JSON.stringify('https://xafgvakclkwjivgfzljq.supabase.co'),
+    'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhZmd2YWtjbGt3aml2Z2Z6bGpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzOTIyNzYsImV4cCI6MjA2Mzk2ODI3Nn0.XS1BZvSgW63kc2t5G5lOVHiWJEzw1VYxa68XihpeCwg'),
+  },
 }));
