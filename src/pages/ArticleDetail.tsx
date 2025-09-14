@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useArticleBySlug, useArticles } from '@/hooks/useArticles';
 import { ChevronLeft, Calendar, User, Clock, Share2, Bookmark, MessageSquare, Tag } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from 'date-fns';
 
 const ArticleDetail = () => {

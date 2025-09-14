@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useMagazineBySlug } from '@/hooks/useMagazines';
 import { useMagazineArticles } from '@/hooks/useMagazineArticles';
 import { ChevronLeft, Loader2, BookOpen, ArrowRight } from 'lucide-react';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import MagazinePDFViewer from '@/components/MagazinePDFViewer';
