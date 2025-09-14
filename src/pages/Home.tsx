@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronRight, ChevronLeft, BookOpen, TrendingUp } from "lucide-react";
+import { ChevronRight, ChevronLeft, BookOpen, Star, Award, TrendingUp } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
