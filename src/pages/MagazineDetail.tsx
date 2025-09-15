@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useMagazineBySlug } from '@/hooks/useMagazines';
@@ -14,6 +13,7 @@ const MagazineDetail = () => {
   const { data: magazine, isLoading, error } = useMagazineBySlug(slug || '');
   const { data: magazineArticles = [], isLoading: articlesLoading } = useMagazineArticles(magazine?.id || '');
   const [fullScreen, setFullScreen] = useState<boolean>(false);
+  const [initialPage, setInitialPage] = useState<number | undefined>(undefined);
 
   // Add console logs for debugging
   useEffect(() => {
