@@ -70,6 +70,17 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
     return () => window.removeEventListener('keydown', onKey);
   }, [jumpToNextPage, jumpToPreviousPage, onFullScreen]);
 
+  // respond to initialPage prop changes after load
+  React.useEffect(() => {
+    if (!loading && typeof initialPage === 'number' && typeof jumpToPage === 'function') {
+      try {
+        jumpToPage(Math.max(0, initialPage - 1));
+      } catch (err) {
+        console.warn('Failed to jump to page on prop change', err);
+      }
+    }
+  }, [initialPage, loading, jumpToPage]);
+
   const retryLoad = () => {
     setLoading(true);
     setPdfError(null);
