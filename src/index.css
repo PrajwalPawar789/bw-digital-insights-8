@@ -277,8 +277,15 @@
   display: none; /* Safari and Chrome */
 }
 
-/* Scroller item sizing and scaling */
+/* Scroller container */
+.scroller-strip {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 8px;
+}
+
 .mag-scroller-item {
+  scroll-snap-align: center;
   transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 .mag-scroller-item > div:first-child {
