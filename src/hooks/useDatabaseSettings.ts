@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -20,18 +19,23 @@ export const useDatabaseSettings = () => {
         .select('*');
       
       if (error) {
-        console.error('Error fetching settings:', error);
-        throw error;
+        // Log a readable error and rethrow a standard Error so callers get a useful message
+        try {
+          console.error('Error fetching settings:', JSON.stringify(error));
+        } catch (e) {
+          console.error('Error fetching settings:', error);
+        }
+        throw new Error(error?.message || JSON.stringify(error) || 'Unknown error fetching settings');
       }
-      
+
       // Convert array to object for easier access
       const settingsObject: Record<string, string> = {};
       data?.forEach((setting: DatabaseSetting) => {
-        if (setting.value) {
-          settingsObject[setting.key] = setting.value;
+        if (setting && typeof setting.key === 'string') {
+          settingsObject[setting.key] = setting.value ?? '';
         }
       });
-      
+
       return settingsObject;
     },
   });
