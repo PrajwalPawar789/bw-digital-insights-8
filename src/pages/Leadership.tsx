@@ -13,14 +13,6 @@ const Leadership = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewLeader, setPreviewLeader] = useState<any | null>(null);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
-      </div>
-    );
-  }
-
   const allLeaders = Array.isArray(leaders) ? leaders : [];
 
   const industries = useMemo(() => {
@@ -40,6 +32,14 @@ const Leadership = () => {
 
   const featured = filtered.filter((l:any) => l.featured).slice(0,5);
   const regular = filtered.filter((l:any) => !l.featured);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
+      </div>
+    );
+  }
 
   const openPreview = (leader:any) => { setPreviewLeader(leader); setPreviewOpen(true); };
   const closePreview = () => { setPreviewOpen(false); setPreviewLeader(null); };
