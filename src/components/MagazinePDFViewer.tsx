@@ -20,12 +20,13 @@ interface MagazinePDFViewerProps {
   initialPage?: number; // 1-based page index
 }
 
-const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({ 
-  fileUrl, 
-  title, 
-  onDownload, 
+const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
+  fileUrl,
+  title,
+  onDownload,
   onFullScreen,
-  fullScreen = false 
+  fullScreen = false,
+  initialPage,
 }) => {
   const [pdfError, setPdfError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
