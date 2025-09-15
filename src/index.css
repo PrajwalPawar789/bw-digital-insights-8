@@ -268,6 +268,23 @@
   transform: rotateY(10deg) scale(1.05);
 }
 
+/* Hide scrollbar utility */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+/* Scroller item sizing and scaling */
+.mag-scroller-item {
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+.mag-scroller-item > div:first-child {
+  transition: transform 0.35s ease;
+}
+
 /* Premium buttons */
 .btn-premium {
   background: var(--gradient-premium);
