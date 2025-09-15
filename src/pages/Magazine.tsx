@@ -80,17 +80,27 @@ const Magazine = () => {
     const rect = el.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const maxDist = rect.width / 2;
-    children.forEach((child) => {
+
+    children.forEach((child, idx) => {
       const childRect = child.getBoundingClientRect();
       const childCenter = childRect.left + childRect.width / 2;
-      const dist = Math.abs(centerX - childCenter);
-      const t = Math.max(0, Math.min(1, 1 - dist / maxDist));
-      const scale = 0.85 + t * 0.35; // between 0.85 and 1.2
-      const translateY = -6 * t; // lift center
+      const offset = (childCenter - centerX) / maxDist; // -1..1
+      const t = Math.max(0, 1 - Math.abs(offset)); // 0..1
+      const scale = 0.75 + t * 0.7; // 0.75 .. 1.45
+      const translateY = -18 * t; // lift center
+      const rotateY = offset * -14; // tilt sides
+      const z = Math.round(t * 100);
+
       const imgWrapper = child.querySelector('div');
       if (imgWrapper) {
         (imgWrapper as HTMLElement).style.transform = `translateY(${translateY}px) scale(${scale})`;
+        (imgWrapper as HTMLElement).style.transition = 'transform 0.28s cubic-bezier(.2,.9,.2,1)';
       }
+
+      (child as HTMLElement).style.zIndex = String(200 + z);
+      (child as HTMLElement).style.transform = `perspective(900px) rotateY(${rotateY}deg)`;
+      (child as HTMLElement).style.transition = 'transform 0.28s cubic-bezier(.2,.9,.2,1), filter 0.28s ease';
+      (child as HTMLElement).style.filter = t > 0.25 ? 'none' : 'grayscale(40%) brightness(0.8)';
     });
   };
 
@@ -98,7 +108,8 @@ const Magazine = () => {
   React.useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
-    updateScales();
+    // small delay to allow layout
+    setTimeout(() => updateScales(), 30);
     const handleResize = () => updateScales();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -232,7 +243,7 @@ const Magazine = () => {
 
             <div className="w-full lg:w-1/2">
               <div className="relative overflow-hidden rounded-xl shadow-lg">
-                <div ref={scrollerRef} onMouseMove={onScrollerMouseMove} onMouseLeave={onScrollerLeave} onScroll={() => updateScales()} className="flex gap-3 overflow-x-auto py-6 px-4 no-scrollbar">
+                <div ref={scrollerRef} onMouseMove={onScrollerMouseMove} onMouseLeave={onScrollerLeave} onScroll={() => updateScales()} className="scroller-strip flex gap-4 overflow-x-auto py-6 px-6 no-scrollbar">
                   {(featuredMagazines.length ? featuredMagazines : allMagazines.slice(0,6)).map((m: any, idx:number) => (
                     <Link key={m.id} to={`/magazine/${m.slug}`} className="mag-scroller-item min-w-[180px] w-[180px] shrink-0 group rounded-lg overflow-hidden bg-black">
                       <div className="aspect-[3/4] bg-black flex items-center justify-center transform transition-transform duration-500 will-change-transform">
