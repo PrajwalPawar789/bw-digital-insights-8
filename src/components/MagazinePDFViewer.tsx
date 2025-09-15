@@ -47,14 +47,28 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
 
     // If an initial page prop was provided, navigate to it (viewer pages are 0-based)
     try {
-      // @ts-ignore - jumpToPage may exist on plugin
-      if (typeof ("" as any) !== 'undefined') {
-        // noop to satisfy linter
+      if (typeof initialPage === 'number' && initialPage >= 1 && typeof jumpToPage === 'function') {
+        jumpToPage(Math.max(0, initialPage - 1));
       }
     } catch (e) {
-      // ignore
+      console.warn('Failed to jump to initial page', e);
     }
   };
+
+  // Keyboard navigation for reading experience
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') {
+        try { jumpToNextPage(); } catch (_) {}
+      } else if (e.key === 'ArrowLeft') {
+        try { jumpToPreviousPage(); } catch (_) {}
+      } else if (e.key === 'f' || e.key === 'F') {
+        if (onFullScreen) onFullScreen();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [jumpToNextPage, jumpToPreviousPage, onFullScreen]);
 
   const retryLoad = () => {
     setLoading(true);
