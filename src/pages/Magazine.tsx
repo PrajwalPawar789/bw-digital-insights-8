@@ -86,21 +86,22 @@ const Magazine = () => {
       const childCenter = childRect.left + childRect.width / 2;
       const offset = (childCenter - centerX) / maxDist; // -1..1
       const t = Math.max(0, 1 - Math.abs(offset)); // 0..1
-      const scale = 0.75 + t * 0.7; // 0.75 .. 1.45
-      const translateY = -18 * t; // lift center
-      const rotateY = offset * -14; // tilt sides
-      const z = Math.round(t * 100);
+    const scale = 0.7 + t * 0.9; // 0.7 .. 1.6
+    const translateY = -22 * t; // lift center more
+    const rotateY = offset * -12; // tilt sides
+    const z = Math.round(t * 100);
 
-      const imgWrapper = child.querySelector('div');
-      if (imgWrapper) {
-        (imgWrapper as HTMLElement).style.transform = `translateY(${translateY}px) scale(${scale})`;
-        (imgWrapper as HTMLElement).style.transition = 'transform 0.28s cubic-bezier(.2,.9,.2,1)';
-      }
+    const imgWrapper = child.querySelector('div');
+    if (imgWrapper) {
+      (imgWrapper as HTMLElement).style.transform = `translateY(${translateY}px) scale(${scale})`;
+      (imgWrapper as HTMLElement).style.transition = 'transform 0.26s cubic-bezier(.2,.9,.2,1)';
+      (imgWrapper as HTMLElement).style.willChange = 'transform';
+    }
 
-      (child as HTMLElement).style.zIndex = String(200 + z);
-      (child as HTMLElement).style.transform = `perspective(900px) rotateY(${rotateY}deg)`;
-      (child as HTMLElement).style.transition = 'transform 0.28s cubic-bezier(.2,.9,.2,1), filter 0.28s ease';
-      (child as HTMLElement).style.filter = t > 0.25 ? 'none' : 'grayscale(40%) brightness(0.8)';
+    (child as HTMLElement).style.zIndex = String(300 + z);
+    (child as HTMLElement).style.transform = `perspective(1000px) rotateY(${rotateY}deg)`;
+    (child as HTMLElement).style.transition = 'transform 0.26s cubic-bezier(.2,.9,.2,1), filter 0.26s ease';
+    (child as HTMLElement).style.filter = t > 0.2 ? 'none' : 'grayscale(50%) brightness(0.78)';
     });
   };
 
@@ -109,7 +110,18 @@ const Magazine = () => {
     const el = scrollerRef.current;
     if (!el) return;
     // small delay to allow layout
-    setTimeout(() => updateScales(), 30);
+    setTimeout(() => {
+      updateScales();
+      // center the middle item initially
+      const children = Array.from(el.children) as HTMLElement[];
+      if (children.length) {
+        const mid = Math.floor(children.length / 2);
+        const child = children[mid];
+        const left = Math.max(0, child.offsetLeft + child.offsetWidth / 2 - el.clientWidth / 2);
+        el.scrollLeft = left;
+        updateScales();
+      }
+    }, 80);
     const handleResize = () => updateScales();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -245,9 +257,9 @@ const Magazine = () => {
               <div className="relative overflow-visible rounded-xl shadow-lg">
                 <div ref={scrollerRef} onMouseMove={onScrollerMouseMove} onMouseLeave={onScrollerLeave} onScroll={() => updateScales()} className="scroller-strip flex gap-6 overflow-x-auto py-6 px-6 no-scrollbar">
                   {(featuredMagazines.length ? featuredMagazines : allMagazines.slice(0,6)).map((m: any, idx:number) => (
-                    <Link key={m.id} to={`/magazine/${m.slug}`} className="mag-scroller-item relative min-w-[160px] w-[160px] shrink-0 group rounded-lg overflow-visible bg-transparent">
+                    <Link key={m.id} to={`/magazine/${m.slug}`} className="mag-scroller-item relative min-w-[220px] w-[220px] shrink-0 group rounded-lg overflow-visible bg-transparent">
                       <div className="aspect-[3/4] cover-wrapper bg-transparent flex items-center justify-center transform transition-transform duration-500 will-change-transform overflow-visible">
-                        <img src={m.cover_image_url || '/placeholder.svg'} alt={m.title} className="w-full h-full object-contain p-3 bg-transparent" />
+                        <img src={m.cover_image_url || '/placeholder.svg'} alt={m.title} className="w-full h-full object-contain p-2 rounded-lg bg-transparent drop-shadow-lg" />
                         <div className="absolute inset-0 pointer-events-none" />
                       </div>
                       <div className="absolute left-1/2 -translate-x-1/2 bottom-0 translate-y-6 bg-black/60 text-white text-xs rounded-md px-3 py-1 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
