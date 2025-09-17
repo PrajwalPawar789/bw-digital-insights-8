@@ -30,10 +30,6 @@ const PressReleases = () => {
     <div className="min-h-screen">
       <section className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex items-center gap-3 mb-6">
-            <Megaphone className="h-8 w-8 text-insightRed" />
-            <h1 className="text-3xl md:text-4xl font-bold text-insightBlack">Press Releases</h1>
-          </div>
           <div className="flex flex-col md:flex-row md:items-center gap-4 mb-8">
             <div className="relative flex-1 max-w-xl">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -44,19 +40,6 @@ const PressReleases = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedCategory(category)}
-                  className={selectedCategory === category ? "bg-insightRed hover:bg-red-700" : ""}
-                >
-                  {category}
-                </Button>
-              ))}
             </div>
           </div>
 
