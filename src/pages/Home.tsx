@@ -157,7 +157,7 @@ const Home = () => {
 
           <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4 snap-x snap-mandatory no-scrollbar">
             {(featured && featured.length ? featured : latestGrid).map((a:any,i:number)=>(
-              <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[260px] max-w-[320px] bg-white rounded-lg shadow group overflow-hidden">
+              <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[300px] max-w-[300px] bg-white rounded-lg shadow group overflow-hidden">
                 <div className="aspect-[16/10] bg-black flex items-center justify-center">
                   <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
                 </div>
