@@ -278,8 +278,8 @@ const Magazine = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-3">
+        <div>
+          <div>
             {/* Controls */}
             <Card className="p-4 mb-6">
               <div className="flex flex-col md:flex-row gap-4">
@@ -394,35 +394,6 @@ const Magazine = () => {
 
           </div>
 
-          {/* Sidebar */}
-          <aside className="hidden lg:block">
-            <div className="sticky top-24 space-y-6">
-              <Card className="p-4">
-                <h4 className="text-sm font-semibold mb-2">Magazine Stats</h4>
-                <div className="text-sm text-gray-600 space-y-1">
-                  <div>Total issues: <span className="font-medium text-insightBlack">{magazineStats.total}</span></div>
-                  <div>Featured: <span className="font-medium text-insightBlack">{magazineStats.featured}</span></div>
-                  <div>Categories: <span className="font-medium text-insightBlack">{magazineStats.categories}</span></div>
-                  <div>Avg read: <span className="font-medium text-insightBlack">{magazineStats.avgReadTime}</span></div>
-                </div>
-              </Card>
-
-              <Card className="p-4">
-                <h4 className="text-sm font-semibold mb-2">Subscribe</h4>
-                <p className="text-sm text-gray-600 mb-4">Get the latest issues delivered to your inbox and access premium archives.</p>
-                <Button className="w-full bg-insightRed text-white">Subscribe Now</Button>
-              </Card>
-
-              <Card className="p-4">
-                <h4 className="text-sm font-semibold mb-2">Trending Topics</h4>
-                <div className="flex flex-col gap-2 text-sm text-gray-600">
-                  {categories.slice(1,6).map((c:any)=> (
-                    <Link key={c} to={`/category/${encodeURIComponent(c)}`} className="text-sm hover:text-insightRed">{c.charAt(0).toUpperCase()+c.slice(1)}</Link>
-                  ))}
-                </div>
-              </Card>
-            </div>
-          </aside>
         </div>
       </div>
     </div>
