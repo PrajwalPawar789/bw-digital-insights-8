@@ -13,35 +13,6 @@ const pressReleases = pressReleaseData.map(pr => ({
 }));
 const categoriesFromData = Array.from(new Set(pressReleases.map(r => r.category)));
 const allCategories = ["All", ...categoriesFromData];
-[
-  {
-    id: "1",
-    title: "Company Announces Strategic Partnership with Global Tech Leader",
-    excerpt: "This partnership will accelerate our digital transformation initiatives and expand our market reach across new territories.",
-    date: "2024-01-15",
-    category: "Partnership",
-    slug: "strategic-partnership-announcement",
-    urgent: true
-  },
-  {
-    id: "2", 
-    title: "Q4 Financial Results Exceed Expectations",
-    excerpt: "Record-breaking quarter demonstrates the strength of our strategic initiatives and market positioning.",
-    date: "2024-01-10",
-    category: "Financial",
-    slug: "q4-financial-results",
-    urgent: false
-  },
-  {
-    id: "3",
-    title: "New Sustainability Initiative Launched",
-    excerpt: "Comprehensive program aims to achieve carbon neutrality by 2030 through innovative technology solutions.",
-    date: "2024-01-05",
-    category: "Sustainability",
-    slug: "sustainability-initiative-launch",
-    urgent: false
-  }
-];
 
 const PressReleases = () => {
   const [searchTerm, setSearchTerm] = useState("");
