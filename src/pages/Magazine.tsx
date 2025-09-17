@@ -334,7 +334,6 @@ const Magazine = () => {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold line-clamp-2 text-insightBlack">{magazine.title}</h3>
-                        <p className="text-sm text-gray-500 mt-2 line-clamp-3">{magazine.description}</p>
                       </div>
                       <div className="text-right">
                         <div className="text-xs text-gray-400">{magazine.publish_date ? new Date(magazine.publish_date).toLocaleDateString() : ''}</div>
@@ -342,12 +341,6 @@ const Magazine = () => {
                       </div>
                     </div>
 
-                    <div className="mt-4 flex gap-2">
-                      <Link to={`/magazine/${magazine.slug}`} className="flex-1">
-                        <Button className="w-full bg-insightBlack text-white hover:bg-black/90">Read Issue</Button>
-                      </Link>
-                      <Button variant="outline" className="w-12"><Download className="w-4 h-4" /></Button>
-                    </div>
                   </CardContent>
                 </Card>
               )) : (
