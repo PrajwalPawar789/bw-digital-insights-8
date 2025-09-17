@@ -278,8 +278,8 @@ const Magazine = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-3">
+        <div>
+          <div>
             {/* Controls */}
             <Card className="p-4 mb-6">
               <div className="flex flex-col md:flex-row gap-4">
@@ -327,14 +327,13 @@ const Magazine = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {currentMagazines.length > 0 ? currentMagazines.map((magazine:any)=> (
                 <Card key={magazine.id} className="group relative overflow-hidden rounded-xl hover:shadow-xl transition">
-                  <div className="aspect-[3/4] bg-black overflow-hidden">
-                    <img src={magazine.cover_image_url || '/placeholder.svg'} alt={magazine.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                  <div className="aspect-[3/4] bg-white overflow-hidden flex items-center justify-center">
+                    <img src={magazine.cover_image_url || '/placeholder.svg'} alt={magazine.title} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                   </div>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold line-clamp-2 text-insightBlack">{magazine.title}</h3>
-                        <p className="text-sm text-gray-500 mt-2 line-clamp-3">{magazine.description}</p>
                       </div>
                       <div className="text-right">
                         <div className="text-xs text-gray-400">{magazine.publish_date ? new Date(magazine.publish_date).toLocaleDateString() : ''}</div>
@@ -342,12 +341,6 @@ const Magazine = () => {
                       </div>
                     </div>
 
-                    <div className="mt-4 flex gap-2">
-                      <Link to={`/magazine/${magazine.slug}`} className="flex-1">
-                        <Button className="w-full bg-insightBlack text-white hover:bg-black/90">Read Issue</Button>
-                      </Link>
-                      <Button variant="outline" className="w-12"><Download className="w-4 h-4" /></Button>
-                    </div>
                   </CardContent>
                 </Card>
               )) : (
@@ -394,35 +387,6 @@ const Magazine = () => {
 
           </div>
 
-          {/* Sidebar */}
-          <aside className="hidden lg:block">
-            <div className="sticky top-24 space-y-6">
-              <Card className="p-4">
-                <h4 className="text-sm font-semibold mb-2">Magazine Stats</h4>
-                <div className="text-sm text-gray-600 space-y-1">
-                  <div>Total issues: <span className="font-medium text-insightBlack">{magazineStats.total}</span></div>
-                  <div>Featured: <span className="font-medium text-insightBlack">{magazineStats.featured}</span></div>
-                  <div>Categories: <span className="font-medium text-insightBlack">{magazineStats.categories}</span></div>
-                  <div>Avg read: <span className="font-medium text-insightBlack">{magazineStats.avgReadTime}</span></div>
-                </div>
-              </Card>
-
-              <Card className="p-4">
-                <h4 className="text-sm font-semibold mb-2">Subscribe</h4>
-                <p className="text-sm text-gray-600 mb-4">Get the latest issues delivered to your inbox and access premium archives.</p>
-                <Button className="w-full bg-insightRed text-white">Subscribe Now</Button>
-              </Card>
-
-              <Card className="p-4">
-                <h4 className="text-sm font-semibold mb-2">Trending Topics</h4>
-                <div className="flex flex-col gap-2 text-sm text-gray-600">
-                  {categories.slice(1,6).map((c:any)=> (
-                    <Link key={c} to={`/category/${encodeURIComponent(c)}`} className="text-sm hover:text-insightRed">{c.charAt(0).toUpperCase()+c.slice(1)}</Link>
-                  ))}
-                </div>
-              </Card>
-            </div>
-          </aside>
         </div>
       </div>
     </div>
