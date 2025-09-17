@@ -104,7 +104,7 @@ const Leadership = () => {
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
             <div className="md:col-span-1">
-              <img src={previewLeader?.image_url || '/placeholder.svg'} alt={previewLeader?.name} className="w-full h-auto rounded-lg object-contain" />
+              <img src={previewLeader?.image_url || '/placeholder.svg'} alt={previewLeader?.name} className="w-full h-auto rounded-lg object-cover" />
               <div className="mt-4 flex gap-3">
                 {previewLeader?.linkedin_url && <a href={previewLeader.linkedin_url} target="_blank" rel="noreferrer" className="text-gray-600 hover:text-blue-600"><Linkedin className="h-5 w-5"/></a>}
                 {previewLeader?.twitter_url && <a href={previewLeader.twitter_url} target="_blank" rel="noreferrer" className="text-gray-600 hover:text-blue-400"><Twitter className="h-5 w-5"/></a>}

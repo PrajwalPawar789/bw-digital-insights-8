@@ -72,12 +72,12 @@ const Home = () => {
           <aside className="lg:col-span-3 space-y-4">
             <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-200 font-semibold uppercase tracking-wide text-sm text-insightBlack">Most Read</div>
-              <ul className="divide-y divide-gray-200">
+              <ul className="divide-y divide-gray-200 max-h-[560px] overflow-auto">
                 {mostRead.map((a: any, i: number) => (
                   <li key={slugOf(a) + i} className="p-4 hover:bg-white transition">
-                    <Link to={`/article/${slugOf(a)}`} className="flex gap-3 group">
-                      <img src={imgOf(a)} alt={titleOf(a)} className="w-16 h-16 rounded object-cover flex-shrink-0" />
-                      <div>
+                    <Link to={`/article/${slugOf(a)}`} className="flex gap-3 group items-start">
+                      <img src={imgOf(a)} alt={titleOf(a)} className="w-18 h-18 min-w-[72px] min-h-[72px] rounded object-cover flex-shrink-0" />
+                      <div className="leading-snug">
                         <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
                         <h4 className="font-semibold group-hover:text-insightRed line-clamp-2">{titleOf(a)}</h4>
                         <div className="text-xs text-gray-500 mt-1">{dateOf(a)}</div>
@@ -95,7 +95,7 @@ const Home = () => {
               <article className="space-y-4">
                 <Link to={`/article/${slugOf(main)}`} className="block group rounded-2xl overflow-hidden shadow-lg bg-black">
                   <div className="w-full aspect-[16/9] bg-black flex items-center justify-center">
-                    <img src={imgOf(main)} alt={titleOf(main)} className="w-full h-full object-contain" />
+                    <img src={imgOf(main)} alt={titleOf(main)} className="w-full h-full object-cover" />
                   </div>
                 </Link>
 
@@ -132,30 +132,16 @@ const Home = () => {
           <aside className="lg:col-span-3 space-y-6">
             {secondary.map((a: any, i: number) => (
               <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="block group rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition">
-                <div className="relative aspect-video">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain bg-black" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  <div className="absolute bottom-0 p-4 text-white">
-                    <div className="inline-flex px-2 py-0.5 rounded bg-insightRed text-white text-[10px] font-bold mb-2">{categoryOf(a)}</div>
-                    <h3 className="text-lg font-bold leading-snug line-clamp-2">{titleOf(a)}</h3>
-                  </div>
+                <div className="aspect-video bg-black">
+                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
                 </div>
               </Link>
             ))}
 
             <Card className="overflow-hidden">
-              <div className="relative">
-                <div className="aspect-[3/4] overflow-hidden">
-                  <img src={latestMagazine?.cover_image_url || "/placeholder.svg"} alt={latestMagazine?.title || "Latest Magazine"} className="w-full h-full object-contain bg-black"/>
-                </div>
-                <Badge className="absolute top-3 left-3 bg-insightRed text-white">Latest Issue</Badge>
+              <div className="aspect-[3/4] bg-black">
+                <img src={latestMagazine?.cover_image_url || "/placeholder.svg"} alt={latestMagazine?.title || "Latest Magazine"} className="w-full h-full object-cover"/>
               </div>
-              <CardContent className="p-4">
-                <h4 className="font-semibold mb-1">{latestMagazine?.title || "Read our latest issue"}</h4>
-                <Link to={latestMagazine?.slug ? `/magazine/${latestMagazine.slug}` : "/magazine"} className="inline-flex items-center text-insightRed hover:text-insightBlack text-sm font-medium">
-                  Read Now <ChevronRight className="ml-1 h-4 w-4"/>
-                </Link>
-              </CardContent>
             </Card>
           </aside>
         </div>
@@ -173,7 +159,7 @@ const Home = () => {
             {(featured && featured.length ? featured : latestGrid).map((a:any,i:number)=>(
               <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[260px] max-w-[320px] bg-white rounded-lg shadow group overflow-hidden">
                 <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain" />
+                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-3">
                   <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
@@ -219,7 +205,7 @@ const Home = () => {
               {articles.slice(0,10).map((a:any,i:number)=> (
                 <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[220px] bg-white rounded-md shadow-sm overflow-hidden group">
                   <div className="flex items-center gap-3 p-3">
-                    <img src={imgOf(a)} alt={titleOf(a)} className="w-20 h-14 object-contain bg-black rounded"/>
+                    <img src={imgOf(a)} alt={titleOf(a)} className="w-20 h-14 object-cover bg-black rounded"/>
                     <div>
                       <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h4>
                       <div className="text-xs text-gray-400 mt-1">{dateOf(a)}</div>
@@ -278,7 +264,7 @@ const Home = () => {
               <Card key={l.id} className="overflow-hidden hover:shadow-lg">
                 <div className="flex items-stretch gap-0 md:gap-0">
                   <div className="w-1/3 hidden md:block bg-black">
-                    <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="w-full h-full object-contain"/>
+                    <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="w-full h-full object-cover"/>
                   </div>
                   <div className="p-4 flex-1">
                     <div className="text-insightRed font-semibold text-sm">{l.title}</div>
@@ -302,7 +288,7 @@ const Home = () => {
           <div className="space-y-4">
             {(press || []).slice(0,4).map((p:any)=> (
               <Link key={p.id} to={`/press-releases/${p.slug}`} className="flex items-start gap-4 group rounded-lg p-4 border border-gray-100 hover:shadow-md bg-white">
-                <img src={p.image_url||'/placeholder.svg'} alt={p.title} className="w-28 h-20 object-contain bg-black rounded"/>
+                <img src={p.image_url||'/placeholder.svg'} alt={p.title} className="w-28 h-20 object-cover bg-black rounded"/>
                 <div>
                   <div className="text-xs font-bold text-insightRed uppercase tracking-wide mb-1">{p.category||'Update'}</div>
                   <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{p.title}</h3>
