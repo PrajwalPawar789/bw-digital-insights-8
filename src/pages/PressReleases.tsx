@@ -46,6 +46,7 @@ const PressReleases = () => {
           <EditorialList
             articles={filteredReleases}
             basePath="/press-releases"
+            layout="grid"
           />
         </div>
       </section>
