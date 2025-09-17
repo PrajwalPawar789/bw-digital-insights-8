@@ -158,7 +158,7 @@ const Home = () => {
           <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4 snap-x snap-mandatory no-scrollbar">
             {(featured && featured.length ? featured : latestGrid).map((a:any,i:number)=>(
               <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[300px] max-w-[300px] bg-white rounded-lg shadow group overflow-hidden">
-                <div className="aspect-[16/10] bg-black flex items-center justify-center">
+                <div className="aspect-[16/9] bg-gray-100 overflow-hidden flex items-center justify-center rounded-t-lg">
                   <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-3">
@@ -186,7 +186,7 @@ const Home = () => {
               const top = sorted.slice(0,6);
               return top.map((a:any,i:number)=> (
                 <Card key={slugOf(a)+i} className="overflow-hidden group hover:shadow-lg transition">
-                  <div className="aspect-[16/10] bg-black flex items-center justify-center">
+                  <div className="aspect-[16/9] bg-gray-100 overflow-hidden flex items-center justify-center rounded-t-lg">
                     <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain"/>
                   </div>
                   <CardContent>
