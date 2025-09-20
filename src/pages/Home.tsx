@@ -66,7 +66,7 @@ const Home = () => {
       </div>
 
       {/* HERO split */}
-      <section className="py-10">
+      <section className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left rail: Most Read */}
           <aside className="lg:col-span-3 space-y-4">
@@ -76,7 +76,8 @@ const Home = () => {
                 {mostRead.map((a: any, i: number) => (
                   <li key={slugOf(a) + i} className="p-4 hover:bg-white transition">
                     <Link to={`/article/${slugOf(a)}`} className="flex gap-3 group items-start">
-                      <img src={imgOf(a)} alt={titleOf(a)} className="w-18 h-18 min-w-[72px] min-h-[72px] rounded object-cover flex-shrink-0" />
+                      <span className="mt-1 inline-block w-6 h-6 rounded-full bg-insightRed/10 text-insightRed text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                      <img src={imgOf(a)} alt={titleOf(a)} className="w-20 h-14 rounded object-cover flex-shrink-0" />
                       <div className="leading-snug">
                         <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
                         <h4 className="font-semibold group-hover:text-insightRed line-clamp-2">{titleOf(a)}</h4>
@@ -92,19 +93,18 @@ const Home = () => {
           {/* Center: Main Feature */}
           <div className="lg:col-span-6 space-y-6">
             {main && (
-              <article className="space-y-4">
-                <Link to={`/article/${slugOf(main)}`} className="block group rounded-2xl overflow-hidden shadow-lg bg-black">
-                  <div className="w-full aspect-[16/9] bg-black flex items-center justify-center">
-                    <img src={imgOf(main)} alt={titleOf(main)} className="w-full h-full object-cover" />
+              <article>
+                <Link to={`/article/${slugOf(main)}`} className="block group overflow-hidden rounded-2xl shadow-lg">
+                  <div className="relative aspect-[16/9]">
+                    <img src={imgOf(main)} alt={titleOf(main)} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 p-6 text-white">
+                      <div className="inline-flex px-3 py-1 rounded bg-insightRed text-white text-xs font-bold mb-3">{categoryOf(main)}</div>
+                      <h1 className="text-3xl md:text-4xl font-bold leading-tight">{titleOf(main)}</h1>
+                      <p className="text-white/80 mt-2 line-clamp-2 md:line-clamp-3">{excerptOf(main)}</p>
+                    </div>
                   </div>
                 </Link>
-
-                <div className="p-4 bg-white rounded-md">
-                  <div className="inline-flex px-3 py-1 rounded bg-insightRed text-white text-xs font-bold mb-3">{categoryOf(main)}</div>
-                  <h1 className="text-3xl md:text-4xl font-bold leading-tight text-insightBlack">{titleOf(main)}</h1>
-                  <p className="text-gray-700 mt-2 line-clamp-2 md:line-clamp-3">{excerptOf(main)}</p>
-                  <Link to={`/article/${slugOf(main)}`} className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium mt-3">Read full story <ChevronRight className="ml-1 h-4 w-4"/></Link>
-                </div>
               </article>
             )}
 
@@ -263,8 +263,8 @@ const Home = () => {
             {(leadership || []).slice(0,3).map((l:any)=> (
               <Card key={l.id} className="overflow-hidden hover:shadow-lg">
                 <div className="flex items-stretch gap-0 md:gap-0">
-                  <div className="w-1/3 hidden md:block bg-black">
-                    <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="w-full h-full object-cover"/>
+                  <div className="w-1/3 hidden md:flex items-center justify-center bg-gray-100 md:min-h-[140px]">
+                    <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="max-h-40 w-auto object-contain"/>
                   </div>
                   <div className="p-4 flex-1">
                     <div className="text-insightRed font-semibold text-sm">{l.title}</div>
