@@ -30,7 +30,7 @@ const Navbar = () => {
             <a href="#" className="opacity-80 hover:opacity-100 transition"><Facebook size={16} /></a>
             <a href="#" className="opacity-80 hover:opacity-100 transition"><Twitter size={16} /></a>
             <a href="#" className="opacity-80 hover:opacity-100 transition"><Instagram size={16} /></a>
-            <a href="#" className="opacity-80 hover:opacity-100 transition"><Linkedin size={16} /></a>
+            <a href="https://www.linkedin.com/company/theciovision" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Linkedin size={16} /></a>
             <Link to="/magazine" className="ml-4 inline-flex items-center px-3 py-1 rounded-full bg-insightRed hover:bg-insightRed/90 text-white font-medium">Subscribe</Link>
           </div>
         </div>

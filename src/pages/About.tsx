@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react';
-import { teamData } from '../data/teamData';
-import { 
-  Users, 
-  Target, 
-  Award, 
-  TrendingUp, 
-  Globe, 
-  Briefcase, 
-  Calendar, 
-  Mail 
+import {
+  Target,
+  Award,
+  TrendingUp,
+  Globe
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -187,58 +182,6 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team Section with Interactivity */}
-      <section id="team" className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center mb-4">
-              <Users className="h-8 w-8 text-insightRed mr-2" />
-              <h2 className="text-3xl font-bold text-insightBlack">Our Leadership Team</h2>
-            </div>
-            <p className="max-w-3xl mx-auto text-gray-600">
-              Meet the experts driving our vision and innovation.
-            </p>
-          </div>
-          
-          <div className={`grid grid-cols-1 md:grid-cols-3 gap-8 ${isVisible.team ? 'animate-fade-in' : 'opacity-0'}`} style={{transitionDelay: '800ms'}}>
-            {teamData.map((member) => (
-              <div 
-                key={member.id} 
-                className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 ${activeTeamMember === member.id ? 'ring-2 ring-insightRed' : ''}`}
-                onMouseEnter={() => setActiveTeamMember(member.id)}
-                onMouseLeave={() => setActiveTeamMember(null)}
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className={`w-full h-full object-cover object-center transition-transform duration-500 ${activeTeamMember === member.id ? 'scale-110' : ''}`}
-                  />
-                  {activeTeamMember === member.id && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-insightBlack to-transparent opacity-70 flex items-end p-4">
-                      <div className="text-white space-y-1">
-                        <div className="flex items-center">
-                          <Briefcase className="h-4 w-4 mr-1" />
-                          <p className="text-sm">10+ years experience</p>
-                        </div>
-                        <div className="flex items-center">
-                          <Mail className="h-4 w-4 mr-1" />
-                          <p className="text-sm">{member.name.toLowerCase().replace(' ', '.')}@ciovision.com</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="p-6 text-center">
-                  <h3 className="text-xl font-bold text-insightBlack mb-1">{member.name}</h3>
-                  <p className="text-insightRed font-medium mb-3">{member.title}</p>
-                  <p className="text-gray-600 text-sm">{member.bio}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Call to Action */}
       <section className="py-16 bg-insightBlack text-white">

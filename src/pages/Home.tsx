@@ -37,7 +37,7 @@ const Home = () => {
     const main = featuredFirst[0];
     const secondary = featuredFirst.slice(1, 3);
     const headlines = featuredFirst.slice(3, 11);
-    const mostRead = byDate.slice(0, 6);
+    const mostRead = byDate.slice(0, 5);
     const latestGrid = byDate.slice(11, 15);
     const latestMagazine = magazines[0] || null;
     return { main, secondary, headlines, mostRead, latestGrid, latestMagazine };
@@ -66,17 +66,18 @@ const Home = () => {
       </div>
 
       {/* HERO split */}
-      <section className="py-10">
+      <section className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left rail: Most Read */}
           <aside className="lg:col-span-3 space-y-4">
             <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-200 font-semibold uppercase tracking-wide text-sm text-insightBlack">Most Read</div>
-              <ul className="divide-y divide-gray-200 max-h-[560px] overflow-auto">
+              <ul className="divide-y divide-gray-200">
                 {mostRead.map((a: any, i: number) => (
                   <li key={slugOf(a) + i} className="p-4 hover:bg-white transition">
                     <Link to={`/article/${slugOf(a)}`} className="flex gap-3 group items-start">
-                      <img src={imgOf(a)} alt={titleOf(a)} className="w-18 h-18 min-w-[72px] min-h-[72px] rounded object-cover flex-shrink-0" />
+                      <span className="mt-1 inline-block w-6 h-6 rounded-full bg-insightRed/10 text-insightRed text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                      <img src={imgOf(a)} alt={titleOf(a)} className="w-20 h-14 rounded object-contain bg-gray-100 flex-shrink-0" />
                       <div className="leading-snug">
                         <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
                         <h4 className="font-semibold group-hover:text-insightRed line-clamp-2">{titleOf(a)}</h4>
@@ -93,9 +94,9 @@ const Home = () => {
           <div className="lg:col-span-6 space-y-6">
             {main && (
               <article className="space-y-4">
-                <Link to={`/article/${slugOf(main)}`} className="block group rounded-2xl overflow-hidden shadow-lg bg-black">
-                  <div className="w-full aspect-[16/9] bg-black flex items-center justify-center">
-                    <img src={imgOf(main)} alt={titleOf(main)} className="w-full h-full object-cover" />
+                <Link to={`/article/${slugOf(main)}`} className="block group rounded-2xl overflow-hidden shadow-lg bg-white">
+                  <div className="w-full aspect-[16/9] bg-gray-100 flex items-center justify-center">
+                    <img src={imgOf(main)} alt={titleOf(main)} className="max-h-full max-w-full object-contain" />
                   </div>
                 </Link>
 
@@ -108,39 +109,21 @@ const Home = () => {
               </article>
             )}
 
-            {/* Headlines list under hero */}
-            <div className="bg-gray-50 rounded-xl border border-gray-200">
-              <div className="px-5 py-3 border-b border-gray-200 font-semibold uppercase tracking-wide text-sm text-insightBlack">Latest Headlines</div>
-              <ul className="divide-y divide-gray-200">
-                {headlines.map((a: any, i: number) => (
-                  <li key={slugOf(a) + i} className="p-4 hover:bg-white transition">
-                    <Link to={`/article/${slugOf(a)}`} className="flex items-start gap-4 group">
-                      <span className="mt-1 inline-block w-6 h-6 rounded-full bg-insightRed/10 text-insightRed text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                      <div className="flex-1">
-                        <h4 className="font-semibold group-hover:text-insightRed line-clamp-2">{titleOf(a)}</h4>
-                        <div className="text-xs text-gray-500 mt-1">{dateOf(a)}</div>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-gray-300 group-hover:text-insightRed"/>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
 
           {/* Right: Secondary cards + Magazine promo */}
           <aside className="lg:col-span-3 space-y-6">
             {secondary.map((a: any, i: number) => (
               <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="block group rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition">
-                <div className="aspect-video bg-black">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
+                <div className="aspect-video bg-gray-100 flex items-center justify-center">
+                  <img src={imgOf(a)} alt={titleOf(a)} className="max-h-full max-w-full object-contain" />
                 </div>
               </Link>
             ))}
 
             <Card className="overflow-hidden">
-              <div className="aspect-[3/4] bg-black">
-                <img src={latestMagazine?.cover_image_url || "/placeholder.svg"} alt={latestMagazine?.title || "Latest Magazine"} className="w-full h-full object-cover"/>
+              <div className="aspect-video bg-gray-100 flex items-center justify-center">
+                <img src={latestMagazine?.cover_image_url || "/placeholder.svg"} alt={latestMagazine?.title || "Latest Magazine"} className="max-h-full max-w-full object-contain"/>
               </div>
             </Card>
           </aside>
@@ -262,15 +245,13 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {(leadership || []).slice(0,3).map((l:any)=> (
               <Card key={l.id} className="overflow-hidden hover:shadow-lg">
-                <div className="flex items-stretch gap-0 md:gap-0">
-                  <div className="w-1/3 hidden md:block bg-black">
-                    <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="w-full h-full object-cover"/>
-                  </div>
-                  <div className="p-4 flex-1">
-                    <div className="text-insightRed font-semibold text-sm">{l.title}</div>
-                    <h3 className="font-semibold text-lg group-hover:text-insightRed">{l.name}</h3>
-                    {l.company && <div className="text-sm text-gray-500">{l.company}</div>}
-                  </div>
+                <div className="h-48 bg-gray-100 flex items-center justify-center">
+                  <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="max-h-full max-w-full object-contain" />
+                </div>
+                <div className="p-4 text-center">
+                  <div className="text-insightRed font-semibold text-sm">{l.title}</div>
+                  <h3 className="font-semibold text-lg">{l.name}</h3>
+                  {l.company && <div className="text-sm text-gray-500">{l.company}</div>}
                 </div>
               </Card>
             ))}
