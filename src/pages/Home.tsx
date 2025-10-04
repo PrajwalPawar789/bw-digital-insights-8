@@ -21,12 +21,20 @@ function categoryOf(a: any) { return a?.category || "Business"; }
 function excerptOf(a: any) { return a?.excerpt || ""; }
 
 const Home = () => {
-  const { data: rawArticles = [] } = useArticles();
-  const { data: rawMagazines = [] } = useMagazines();
+  const { data: rawArticles = [], isLoading: articlesLoading, error: articlesError } = useArticles();
+  const { data: rawMagazines = [], isLoading: magazinesLoading } = useMagazines();
   const { data: featured = [] } = useFeaturedArticles();
   const { settings } = useSettings();
   const { data: leadership = [] } = useLeadershipProfiles();
   const { data: press = [] } = usePressReleases();
+
+  // Debug logging
+  console.log('Home component rendering', { 
+    articlesCount: rawArticles?.length, 
+    magazinesCount: rawMagazines?.length,
+    articlesLoading,
+    articlesError 
+  });
 
   const articles = Array.isArray(rawArticles) ? rawArticles : [];
   const magazines = Array.isArray(rawMagazines) ? rawMagazines : [];
@@ -42,6 +50,17 @@ const Home = () => {
     const latestMagazine = magazines[0] || null;
     return { main, secondary, headlines, mostRead, latestGrid, latestMagazine };
   }, [articles, magazines]);
+
+  if (articlesLoading || magazinesLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-insightRed mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading content...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
