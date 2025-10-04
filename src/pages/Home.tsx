@@ -1,55 +1,37 @@
-import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useArticles, useFeaturedArticles } from "@/hooks/useArticles";
+import { useArticles } from "@/hooks/useArticles";
 import { useMagazines } from "@/hooks/useMagazines";
 import { useLeadershipProfiles } from "@/hooks/useLeadership";
 import { usePressReleases } from "@/hooks/usePressReleases";
 import { useSettings } from "@/hooks/useSettings";
-import { Calendar, ChevronRight, Newspaper, BookOpen } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useTestimonials } from "@/hooks/useTestimonials";
+import { Quote, Award, TrendingUp, Users, Shield, ArrowRight, Play } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-function imgOf(a: any) { return a?.image_url || "/placeholder.svg"; }
-function titleOf(a: any) { return a?.title || "Untitled"; }
-function slugOf(a: any) { return a?.slug || ""; }
-function dateOf(a: any) {
-  const d = a?.date ? new Date(a.date) : null;
-  return d ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "";
-}
-function categoryOf(a: any) { return a?.category || "Business"; }
-function excerptOf(a: any) { return a?.excerpt || ""; }
-
 const Home = () => {
-  const { data: rawArticles = [], isLoading: articlesLoading, error: articlesError } = useArticles();
-  const { data: rawMagazines = [], isLoading: magazinesLoading } = useMagazines();
-  const { data: featured = [] } = useFeaturedArticles();
+  const { data: articles = [], isLoading: articlesLoading } = useArticles();
+  const { data: magazines = [], isLoading: magazinesLoading } = useMagazines();
   const { settings } = useSettings();
   const { data: leadership = [] } = useLeadershipProfiles();
   const { data: press = [] } = usePressReleases();
+  const { data: testimonials = [] } = useTestimonials();
 
-  // Debug logging
-  console.log('Home component rendering', { 
-    articlesCount: rawArticles?.length, 
-    magazinesCount: rawMagazines?.length,
-    articlesLoading,
-    articlesError 
-  });
+  const featuredBrands = [
+    { name: "Brand 1", logo: "/placeholder.svg" },
+    { name: "Brand 2", logo: "/placeholder.svg" },
+    { name: "Brand 3", logo: "/placeholder.svg" },
+    { name: "Brand 4", logo: "/placeholder.svg" },
+    { name: "Brand 5", logo: "/placeholder.svg" },
+    { name: "Brand 6", logo: "/placeholder.svg" },
+  ];
 
-  const articles = Array.isArray(rawArticles) ? rawArticles : [];
-  const magazines = Array.isArray(rawMagazines) ? rawMagazines : [];
-
-  const { main, secondary, headlines, mostRead, latestGrid, latestMagazine } = useMemo(() => {
-    const byDate = [...articles].filter(Boolean).sort((a, b) => new Date(b?.date || 0).getTime() - new Date(a?.date || 0).getTime());
-    const featuredFirst = [...byDate].sort((a, b) => (b?.featured ? 1 : 0) - (a?.featured ? 1 : 0));
-    const main = featuredFirst[0];
-    const secondary = featuredFirst.slice(1, 3);
-    const headlines = featuredFirst.slice(3, 11);
-    const mostRead = byDate.slice(0, 5);
-    const latestGrid = byDate.slice(11, 15);
-    const latestMagazine = magazines[0] || null;
-    return { main, secondary, headlines, mostRead, latestGrid, latestMagazine };
-  }, [articles, magazines]);
+  const features = [
+    { icon: Award, title: "Expert Insights", description: "Industry-leading analysis and perspectives" },
+    { icon: TrendingUp, title: "Marketing Metrics", description: "Data-driven strategies for growth" },
+    { icon: Users, title: "Community Network", description: "Connect with business leaders" },
+    { icon: Shield, title: "Sustainable Impact", description: "Building responsible businesses" },
+  ];
 
   if (articlesLoading || magazinesLoading) {
     return (
@@ -64,213 +46,235 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Headline ticker */}
-      <div className="bg-insightBlack text-white overflow-hidden">
+      {/* Hero Section - Testimonial Quote */}
+      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <Quote className="w-16 h-16 text-insightRed opacity-80" />
+              <blockquote className="text-3xl md:text-4xl font-light leading-relaxed">
+                "Discovering ideas that will inspire your reality for
+                <span className="text-insightRed font-semibold"> tomorrow </span>
+                and scale it to achieve
+                <span className="text-insightRed font-semibold"> success</span>."
+              </blockquote>
+              <div className="pt-4">
+                <p className="text-xl font-semibold">Michelle Oquma</p>
+                <p className="text-gray-400">CEO & Founder</p>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="relative w-full max-w-md mx-auto">
+                <div className="absolute inset-0 bg-gradient-to-br from-insightRed to-red-900 rounded-2xl transform rotate-3"></div>
+                <img 
+                  src="/placeholder.svg" 
+                  alt="Michelle Oquma" 
+                  className="relative rounded-2xl shadow-2xl w-full h-auto"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Magazines */}
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 py-2">
-            <span className="inline-flex items-center px-3 py-1 rounded-full bg-insightRed text-white text-xs font-bold uppercase tracking-wide">
-              <Newspaper className="w-3 h-3 mr-1" /> Latest
-            </span>
-            <div className="relative flex-1 overflow-hidden">
-              <div className="whitespace-nowrap animate-marquee">
-                {[...(headlines.length ? headlines : articles.slice(0, 8))].map((a: any, i: number) => (
-                  <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="inline-flex items-center text-sm text-white/90 hover:text-white mx-6">
-                    {titleOf(a)}
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-insightBlack">LATEST MAGAZINES</h2>
+            <Link to="/magazine" className="text-insightRed hover:text-insightRed/80 font-semibold flex items-center gap-2">
+              View All <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {magazines.slice(0, 4).map((mag: any) => (
+              <Link key={mag.id} to={`/magazine/${mag.slug}`} className="group">
+                <div className="relative overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                  <img 
+                    src={mag.cover_image_url || "/placeholder.svg"} 
+                    alt={mag.title}
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </div>
+                <div className="mt-3 text-center">
+                  <p className="font-semibold text-sm uppercase tracking-wide">{mag.title}</p>
+                  <p className="text-xs text-gray-500 mt-1">{new Date(mag.publication_date).toLocaleDateString()}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Brands */}
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-center text-sm font-bold text-gray-500 uppercase tracking-widest mb-8">FEATURED BRANDS</h3>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-8 items-center">
+            {featuredBrands.map((brand, idx) => (
+              <div key={idx} className="flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+                <img src={brand.logo} alt={brand.name} className="h-12 w-auto object-contain" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Cover Story */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center text-insightBlack mb-12">COVER STORY</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {leadership.slice(0, 6).map((leader: any) => (
+              <Link key={leader.id} to={`/leadership/${leader.slug}`} className="group">
+                <Card className="overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-900 transition-all duration-300 transform hover:-translate-y-1">
+                  <div className="aspect-[4/5] relative overflow-hidden">
+                    <img 
+                      src={leader.image_url || "/placeholder.svg"} 
+                      alt={leader.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <h3 className="text-2xl font-bold mb-1">{leader.name}</h3>
+                      <p className="text-sm text-gray-300">{leader.title}</p>
+                      {leader.company && <p className="text-xs text-gray-400 mt-1">{leader.company}</p>}
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Business Minds Media Stands Out */}
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center text-insightBlack mb-4">
+            {settings.companyName} STANDS OUT
+          </h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            Discover what makes us the leading platform for business insights and leadership excellence
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, idx) => {
+              const Icon = feature.icon;
+              return (
+                <div key={idx} className="text-center group">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-insightRed to-red-700 text-white mb-4 group-hover:scale-110 transition-transform duration-300">
+                    <Icon className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-lg font-bold text-insightBlack mb-2">{feature.title}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Business News & Press Releases Grid */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Business News - 2/3 width */}
+            <div className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-3xl font-bold text-insightBlack">BUSINESS NEWS</h2>
+                <Link to="/articles" className="text-insightRed hover:text-insightRed/80 font-semibold flex items-center gap-2">
+                  View All <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {articles.slice(0, 4).map((article: any) => (
+                  <Link key={article.id} to={`/article/${article.slug}`} className="group">
+                    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300">
+                      <div className="aspect-video overflow-hidden bg-gray-900">
+                        <img 
+                          src={article.image_url || "/placeholder.svg"} 
+                          alt={article.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <p className="text-xs text-insightRed font-semibold uppercase tracking-wide mb-2">
+                          {article.category}
+                        </p>
+                        <h3 className="font-bold text-lg line-clamp-2 group-hover:text-insightRed transition-colors">
+                          {article.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-2">
+                          {new Date(article.date).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Press Releases - 1/3 width */}
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-bold text-insightBlack">PRESS RELEASES</h2>
+              </div>
+              
+              <div className="space-y-4">
+                {press.slice(0, 5).map((item: any) => (
+                  <Link 
+                    key={item.id} 
+                    to={`/press-releases/${item.slug}`}
+                    className="block p-4 border-l-4 border-insightRed hover:bg-gray-50 transition-colors"
+                  >
+                    <p className="text-xs text-insightRed font-semibold uppercase mb-1">{item.category}</p>
+                    <h4 className="font-semibold text-sm line-clamp-2 mb-1">{item.title}</h4>
+                    <p className="text-xs text-gray-500">
+                      {new Date(item.date).toLocaleDateString()}
+                    </p>
                   </Link>
                 ))}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* HERO split */}
-      <section className="py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left rail: Most Read */}
-          <aside className="lg:col-span-3 space-y-4">
-            <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
-              <div className="px-5 py-3 border-b border-gray-200 font-semibold uppercase tracking-wide text-sm text-insightBlack">Most Read</div>
-              <ul className="divide-y divide-gray-200">
-                {mostRead.map((a: any, i: number) => (
-                  <li key={slugOf(a) + i} className="p-4 hover:bg-white transition">
-                    <Link to={`/article/${slugOf(a)}`} className="flex gap-3 group items-start">
-                      <span className="mt-1 inline-block w-6 h-6 rounded-full bg-insightRed/10 text-insightRed text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                      <img src={imgOf(a)} alt={titleOf(a)} className="w-20 h-14 rounded object-contain bg-gray-100 flex-shrink-0" />
-                      <div className="leading-snug">
-                        <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
-                        <h4 className="font-semibold group-hover:text-insightRed line-clamp-2">{titleOf(a)}</h4>
-                        <div className="text-xs text-gray-500 mt-1">{dateOf(a)}</div>
-                      </div>
+      {/* Blogs */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-insightBlack">BLOGS</h2>
+            <Link to="/articles" className="text-insightRed hover:text-insightRed/80 font-semibold flex items-center gap-2">
+              View All <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {articles.slice(4, 7).map((article: any) => (
+              <Card key={article.id} className="overflow-hidden group hover:shadow-xl transition-all duration-300">
+                <div className="aspect-video overflow-hidden bg-gradient-to-br from-slate-900 to-slate-700 relative">
+                  <img 
+                    src={article.image_url || "/placeholder.svg"} 
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <Link to={`/article/${article.slug}`}>
+                      <h3 className="text-white font-bold text-lg line-clamp-2 group-hover:text-insightRed transition-colors">
+                        {article.title}
+                      </h3>
                     </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </aside>
-
-          {/* Center: Main Feature */}
-          <div className="lg:col-span-6 space-y-6">
-            {main && (
-              <article className="space-y-4">
-                <Link to={`/article/${slugOf(main)}`} className="block group rounded-2xl overflow-hidden shadow-lg bg-white">
-                  <div className="w-full aspect-[16/9] bg-gray-100 flex items-center justify-center">
-                    <img src={imgOf(main)} alt={titleOf(main)} className="max-h-full max-w-full object-contain" />
                   </div>
-                </Link>
-
-                <div className="p-4 bg-white rounded-md">
-                  <div className="inline-flex px-3 py-1 rounded bg-insightRed text-white text-xs font-bold mb-3">{categoryOf(main)}</div>
-                  <h1 className="text-3xl md:text-4xl font-bold leading-tight text-insightBlack">{titleOf(main)}</h1>
-                  <p className="text-gray-700 mt-2 line-clamp-2 md:line-clamp-3">{excerptOf(main)}</p>
-                  <Link to={`/article/${slugOf(main)}`} className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium mt-3">Read full story <ChevronRight className="ml-1 h-4 w-4"/></Link>
-                </div>
-              </article>
-            )}
-
-          </div>
-
-          {/* Right: Secondary cards + Magazine promo */}
-          <aside className="lg:col-span-3 space-y-6">
-            {secondary.map((a: any, i: number) => (
-              <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="block group rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition">
-                <div className="aspect-video bg-gray-100 flex items-center justify-center">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="max-h-full max-w-full object-contain" />
-                </div>
-              </Link>
-            ))}
-
-            <Card className="overflow-hidden">
-              <div className="aspect-video bg-gray-100 flex items-center justify-center">
-                <img src={latestMagazine?.cover_image_url || "/placeholder.svg"} alt={latestMagazine?.title || "Latest Magazine"} className="max-h-full max-w-full object-contain"/>
-              </div>
-            </Card>
-          </aside>
-        </div>
-      </section>
-
-      {/* Redesigned Editor's Picks - horizontal scroller */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Editor's Picks</h2>
-            <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
-          </div>
-
-          <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4">
-            {(featured && featured.length ? featured : latestGrid).map((a:any,i:number)=>(
-              <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[260px] max-w-[320px] bg-white rounded-lg shadow group overflow-hidden">
-                <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
-                </div>
-                <div className="p-3">
-                  <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
-                  <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                  <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Top Stories grid & Trending */}
-      <section className="py-10 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Top Stories</h2>
-            <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">See all</Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(() => {
-              const sorted = [...articles].filter(Boolean).sort((a:any,b:any)=>new Date(b?.date||0).getTime()-new Date(a?.date||0).getTime());
-              const top = sorted.slice(0,6);
-              return top.map((a:any,i:number)=> (
-                <Card key={slugOf(a)+i} className="overflow-hidden group hover:shadow-lg transition">
-                  <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                    <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain"/>
-                  </div>
-                  <CardContent>
-                    <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
-                    <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                    <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                  </CardContent>
-                </Card>
-              ))
-            })()}
-          </div>
-
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-3 text-insightBlack">Trending</h3>
-            <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4">
-              {articles.slice(0,10).map((a:any,i:number)=> (
-                <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[220px] bg-white rounded-md shadow-sm overflow-hidden group">
-                  <div className="flex items-center gap-3 p-3">
-                    <img src={imgOf(a)} alt={titleOf(a)} className="w-20 h-14 object-cover bg-black rounded"/>
-                    <div>
-                      <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h4>
-                      <div className="text-xs text-gray-400 mt-1">{dateOf(a)}</div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Category sections (3) */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(() => {
-              const sorted = [...articles].filter(Boolean).sort((a:any,b:any)=>new Date(b?.date||0).getTime()-new Date(a?.date||0).getTime());
-              const cats = Array.from(new Set(sorted.map(s=>s.category).filter(Boolean))).slice(0,3);
-              return cats.map((cat:string, idx:number)=> {
-                const items = sorted.filter(s=>s.category===cat).slice(0,4);
-                return (
-                  <div key={cat} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-semibold text-lg">{cat}</h4>
-                      <Link to={`/category/${encodeURIComponent(cat)}`} className="text-sm text-insightRed">View all</Link>
-                    </div>
-                    <div className="space-y-3">
-                      {items.map((it:any,i:number)=> (
-                        <Link key={slugOf(it)+i} to={`/article/${slugOf(it)}`} className="flex items-center gap-3 group">
-                          <img src={imgOf(it)} alt={titleOf(it)} className="w-20 h-14 object-contain bg-black rounded"/>
-                          <div>
-                            <h5 className="font-medium line-clamp-2 group-hover:text-insightRed">{titleOf(it)}</h5>
-                            <div className="text-xs text-gray-400">{dateOf(it)}</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })
-            })()}
-          </div>
-        </div>
-      </section>
-
-      {/* Leadership Spotlight */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Leadership Spotlight</h2>
-            <Link to="/leadership" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(leadership || []).slice(0,3).map((l:any)=> (
-              <Card key={l.id} className="overflow-hidden hover:shadow-lg">
-                <div className="h-48 bg-gray-100 flex items-center justify-center">
-                  <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="max-h-full max-w-full object-contain" />
-                </div>
-                <div className="p-4 text-center">
-                  <div className="text-insightRed font-semibold text-sm">{l.title}</div>
-                  <h3 className="font-semibold text-lg">{l.name}</h3>
-                  {l.company && <div className="text-sm text-gray-500">{l.company}</div>}
                 </div>
               </Card>
             ))}
@@ -278,43 +282,81 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Press Releases */}
-      <section className="py-12 bg-white">
+      {/* Client Testimonials */}
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Press Releases</h2>
-            <Link to="/press-releases" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
-          </div>
-          <div className="space-y-4">
-            {(press || []).slice(0,4).map((p:any)=> (
-              <Link key={p.id} to={`/press-releases/${p.slug}`} className="flex items-start gap-4 group rounded-lg p-4 border border-gray-100 hover:shadow-md bg-white">
-                <img src={p.image_url||'/placeholder.svg'} alt={p.title} className="w-28 h-20 object-cover bg-black rounded"/>
-                <div>
-                  <div className="text-xs font-bold text-insightRed uppercase tracking-wide mb-1">{p.category||'Update'}</div>
-                  <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{p.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1 line-clamp-2">{p.excerpt}</p>
-                  <div className="text-xs text-gray-400 mt-2">{dateOf(p)}</div>
+          <h2 className="text-3xl font-bold text-center text-insightBlack mb-12">CLIENT TESTIMONIALS</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.slice(0, 3).map((testimonial: any) => (
+              <div key={testimonial.id} className="text-center">
+                <div className="relative inline-block mb-4">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-insightRed shadow-lg mx-auto">
+                    <img 
+                      src={testimonial.image_url || "/placeholder.svg"} 
+                      alt={testimonial.author}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
-              </Link>
+                <h4 className="font-bold text-lg text-insightBlack mb-1">{testimonial.author}</h4>
+                <p className="text-sm text-gray-500 mb-4">{testimonial.role}</p>
+                <p className="text-gray-700 italic leading-relaxed">"{testimonial.content}"</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 bg-insightRed text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <div>
-            <h3 className="text-3xl font-bold mb-3">Subscribe to {settings.companyName}</h3>
-            <p className="text-white/90 mb-5">Monthly strategies and interviews for leaders. No noise, just signal.</p>
-            <Link to="/magazine">
-              <Button size="lg" className="bg-white text-insightRed hover:bg-gray-100">
-                <BookOpen className="mr-2 h-5 w-5"/> Explore Issues
-              </Button>
-            </Link>
+      {/* Video Testimonial */}
+      <section className="py-16 bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold text-center mb-12">VIDEO TESTIMONIAL</h2>
+          
+          <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl group cursor-pointer">
+            <img 
+              src="/placeholder.svg" 
+              alt="Video Thumbnail" 
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-insightRed flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Play className="w-10 h-10 text-white ml-1" fill="currentColor" />
+              </div>
+            </div>
           </div>
-          <div className="hidden lg:block justify-self-end">
-            <img src={latestMagazine?.cover_image_url || "/placeholder.svg"} alt="Latest" className="w-64 rounded-lg shadow-2xl -rotate-6"/>
+        </div>
+      </section>
+
+      {/* Subscribe CTA */}
+      <section className="py-20 bg-gradient-to-br from-red-900 via-insightRed to-red-800 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAgNHYyaDJ2LTJoLTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">Subscribe Now</h2>
+              <p className="text-xl text-white/90 mb-8">
+                Get the latest insights delivered to your inbox monthly
+              </p>
+              <Link to="/magazine">
+                <Button size="lg" className="bg-white text-insightRed hover:bg-gray-100 font-bold px-8 py-6 text-lg">
+                  Subscribe Today <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              {magazines.slice(0, 3).map((mag: any) => (
+                <div key={mag.id} className="transform hover:-translate-y-2 transition-transform duration-300">
+                  <img 
+                    src={mag.cover_image_url || "/placeholder.svg"} 
+                    alt={mag.title}
+                    className="w-full h-auto rounded-lg shadow-2xl"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
