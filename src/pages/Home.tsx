@@ -103,7 +103,7 @@ const Home = () => {
                 </div>
                 <div className="mt-3 text-center">
                   <p className="font-semibold text-sm uppercase tracking-wide">{mag.title}</p>
-                  <p className="text-xs text-gray-500 mt-1">{new Date(mag.publication_date).toLocaleDateString()}</p>
+                  <p className="text-xs text-gray-500 mt-1">{new Date(mag.publish_date).toLocaleDateString()}</p>
                 </div>
               </Link>
             ))}
@@ -235,7 +235,7 @@ const Home = () => {
                     to={`/press-releases/${item.slug}`}
                     className="block p-4 border-l-4 border-insightRed hover:bg-gray-50 transition-colors"
                   >
-                    <p className="text-xs text-insightRed font-semibold uppercase mb-1">{item.category}</p>
+                    <p className="text-xs text-insightRed font-semibold uppercase mb-1">{item.category || "Press Release"}</p>
                     <h4 className="font-semibold text-sm line-clamp-2 mb-1">{item.title}</h4>
                     <p className="text-xs text-gray-500">
                       {new Date(item.date).toLocaleDateString()}
