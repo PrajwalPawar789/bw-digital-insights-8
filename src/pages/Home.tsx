@@ -293,15 +293,15 @@ const Home = () => {
                 <div className="relative inline-block mb-4">
                   <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-insightRed shadow-lg mx-auto">
                     <img 
-                      src={testimonial.image_url || "/placeholder.svg"} 
-                      alt={testimonial.author}
+                      src={testimonial.avatar_url || "/placeholder.svg"} 
+                      alt={testimonial.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
                 </div>
-                <h4 className="font-bold text-lg text-insightBlack mb-1">{testimonial.author}</h4>
-                <p className="text-sm text-gray-500 mb-4">{testimonial.role}</p>
-                <p className="text-gray-700 italic leading-relaxed">"{testimonial.content}"</p>
+                <h4 className="font-bold text-lg text-insightBlack mb-1">{testimonial.name}</h4>
+                <p className="text-sm text-gray-500 mb-4">{testimonial.title}</p>
+                <p className="text-gray-700 italic leading-relaxed">"{testimonial.quote}"</p>
               </div>
             ))}
           </div>
