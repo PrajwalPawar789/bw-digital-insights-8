@@ -222,36 +222,40 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Category sections (3) */}
-      <section className="py-12 bg-white">
+      {/* Insights grid */}
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(() => {
-              const sorted = [...articles].filter(Boolean).sort((a:any,b:any)=>new Date(b?.date||0).getTime()-new Date(a?.date||0).getTime());
-              const cats = Array.from(new Set(sorted.map(s=>s.category).filter(Boolean))).slice(0,3);
-              return cats.map((cat:string, idx:number)=> {
-                const items = sorted.filter(s=>s.category===cat).slice(0,4);
-                return (
-                  <div key={cat} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-semibold text-lg">{cat}</h4>
-                      <Link to={`/category/${encodeURIComponent(cat)}`} className="text-sm text-insightRed">View all</Link>
-                    </div>
-                    <div className="space-y-3">
-                      {items.map((it:any,i:number)=> (
-                        <Link key={slugOf(it)+i} to={`/article/${slugOf(it)}`} className="flex items-center gap-3 group">
-                          <img src={imgOf(it)} alt={titleOf(it)} className="w-20 h-14 object-contain bg-black rounded"/>
-                          <div>
-                            <h5 className="font-medium line-clamp-2 group-hover:text-insightRed">{titleOf(it)}</h5>
-                            <div className="text-xs text-gray-400">{dateOf(it)}</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
+            <div>
+              <h2 className="text-3xl font-bold text-insightBlack">Insights engineered for action</h2>
+              <p className="text-gray-600 mt-2 max-w-2xl">
+                These articles break down the systems, metrics, and cultural shifts that keep operators moving. Explore frameworks that convert ambition into measurable progress.
+              </p>
+            </div>
+            <Link to="/articles" className="inline-flex items-center text-insightRed font-semibold">
+              View all insights
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {insightStories.map((story: any) => (
+              <Card key={slugOf(story)} className="h-full flex flex-col">
+                <div className="aspect-[16/10] bg-gray-100 flex items-center justify-center overflow-hidden">
+                  <img src={imgOf(story)} alt={titleOf(story)} className="h-full w-full object-cover" />
+                </div>
+                <CardContent className="p-5 flex flex-col gap-3 flex-1">
+                  <div className="text-xs uppercase tracking-wide text-insightRed font-semibold">
+                    {categoryOf(story)}
                   </div>
-                )
-              })
-            })()}
+                  <h3 className="text-lg font-semibold text-insightBlack line-clamp-2">{titleOf(story)}</h3>
+                  <p className="text-sm text-gray-600 line-clamp-3 flex-1">{excerptOf(story)}</p>
+                  <div className="text-xs text-gray-400 flex items-center gap-2">
+                    <Calendar className="h-3 w-3" />
+                    {dateOf(story)}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
