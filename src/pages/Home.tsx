@@ -50,6 +50,60 @@ const Home = () => {
     return { main, secondary, headlines, mostRead, latestGrid, latestMagazine };
   }, [articles, magazines]);
 
+  const { supportingStories, insightStories, leadershipSpotlight, pressHighlights } = useMemo(() => {
+    const sorted = [...articles]
+      .filter(Boolean)
+      .sort((a: any, b: any) => new Date(b?.date || 0).getTime() - new Date(a?.date || 0).getTime());
+
+    const supportingStories = sorted.slice(1, 4);
+    const insightStories = (featured && featured.length ? featured : sorted.slice(4, 10)).slice(0, 6);
+    const leadershipSpotlight = (leadership || []).slice(0, 3);
+    const pressHighlights = (press || []).slice(0, 3);
+
+    return { supportingStories, insightStories, leadershipSpotlight, pressHighlights };
+  }, [articles, featured, leadership, press]);
+
+  const growthPillars = [
+    {
+      title: "People",
+      description: "Build cultures where experts feel seen, heard, and empowered to challenge the status quo.",
+      icon: Users,
+    },
+    {
+      title: "Culture",
+      description: "Translate purpose into everyday rituals that keep innovation grounded in shared values.",
+      icon: Briefcase,
+    },
+    {
+      title: "Process",
+      description: "Engineer repeatable momentum with systems that scale from pilot programs to global rollouts.",
+      icon: Layers,
+    },
+    {
+      title: "Accountability",
+      description: "Measure what matters, celebrate responsible risk-taking, and close every learning loop.",
+      icon: Shield,
+    },
+  ];
+
+  const flywheelSignals = [
+    {
+      icon: TrendingUp,
+      title: "Where growth comes from",
+      description: "Growth is earned when the stories of current customers become the playbook for the next wave of relationships.",
+    },
+    {
+      icon: Handshake,
+      title: "New customers follow actions",
+      description: "Your next loyal reader, subscriber, or partner arrives because a past customer shared a proof point that felt personal and actionable.",
+    },
+    {
+      icon: Target,
+      title: "Design the follow-through",
+      description: "Map the journeys, automate the nudges, and deliver experiences that transform curiosity into unwavering trust.",
+    },
+  ];
+
   if (articlesLoading || magazinesLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
