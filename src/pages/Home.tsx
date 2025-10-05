@@ -21,20 +21,12 @@ function categoryOf(a: any) { return a?.category || "Business"; }
 function excerptOf(a: any) { return a?.excerpt || ""; }
 
 const Home = () => {
-  const { data: rawArticles = [], isLoading: articlesLoading, error: articlesError } = useArticles();
+  const { data: rawArticles = [], isLoading: articlesLoading } = useArticles();
   const { data: rawMagazines = [], isLoading: magazinesLoading } = useMagazines();
   const { data: featured = [] } = useFeaturedArticles();
   const { settings } = useSettings();
   const { data: leadership = [] } = useLeadershipProfiles();
   const { data: press = [] } = usePressReleases();
-
-  // Debug logging
-  console.log('Home component rendering', { 
-    articlesCount: rawArticles?.length, 
-    magazinesCount: rawMagazines?.length,
-    articlesLoading,
-    articlesError 
-  });
 
   const articles = Array.isArray(rawArticles) ? rawArticles : [];
   const magazines = Array.isArray(rawMagazines) ? rawMagazines : [];
@@ -93,7 +85,7 @@ const Home = () => {
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            {/* Main Featured Story - Takes Center Stage */}
+            {/* Main Featured Story */}
             <div className="lg:col-span-8 space-y-6">
               {main ? (
                 <article className="group">
@@ -170,7 +162,7 @@ const Home = () => {
 
             {/* Right Sidebar - Magazine & Trending */}
             <aside className="lg:col-span-4 space-y-6">
-              {latestMagazine ? (
+              {latestMagazine && (
                 <div className="bg-gradient-to-br from-insightBlack to-gray-900 rounded-2xl p-6 text-white shadow-2xl">
                   <div className="flex items-center gap-2 mb-4">
                     <BookOpen className="h-5 w-5 text-insightRed" />
@@ -195,7 +187,7 @@ const Home = () => {
                     </Button>
                   </Link>
                 </div>
-              ) : null}
+              )}
 
               <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-lg">
                 <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
@@ -232,9 +224,9 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Redesigned Editor's Picks - horizontal scroller */}
+      {/* Editor's Picks */}
       <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-insightBlack">Editor's Picks</h2>
             <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
@@ -257,9 +249,9 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Top Stories grid & Trending */}
+      {/* Top Stories */}
       <section className="py-10 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-insightBlack">Top Stories</h2>
             <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">See all</Link>
@@ -285,34 +277,17 @@ const Home = () => {
               ))
             })()}
           </div>
-
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-3 text-insightBlack">Trending</h3>
-            <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4">
-              {articles.slice(0,10).map((a:any,i:number)=> (
-                <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[220px] bg-white rounded-md shadow-sm overflow-hidden group">
-                  <div className="flex items-center gap-3 p-3">
-                    <img src={imgOf(a)} alt={titleOf(a)} className="w-20 h-14 object-cover bg-black rounded"/>
-                    <div>
-                      <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h4>
-                      <div className="text-xs text-gray-400 mt-1">{dateOf(a)}</div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Category sections (3) */}
+      {/* Category sections */}
       <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {(() => {
               const sorted = [...articles].filter(Boolean).sort((a:any,b:any)=>new Date(b?.date||0).getTime()-new Date(a?.date||0).getTime());
               const cats = Array.from(new Set(sorted.map(s=>s.category).filter(Boolean))).slice(0,3);
-              return cats.map((cat:string, idx:number)=> {
+              return cats.map((cat:string)=> {
                 const items = sorted.filter(s=>s.category===cat).slice(0,4);
                 return (
                   <div key={cat} className="bg-gray-50 rounded-lg p-4">
@@ -341,7 +316,7 @@ const Home = () => {
 
       {/* Leadership Spotlight */}
       <section className="py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-insightBlack">Leadership Spotlight</h2>
             <Link to="/leadership" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
@@ -365,7 +340,7 @@ const Home = () => {
 
       {/* Press Releases */}
       <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-insightBlack">Press Releases</h2>
             <Link to="/press-releases" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
@@ -388,7 +363,7 @@ const Home = () => {
 
       {/* CTA */}
       <section className="py-16 bg-insightRed text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div>
             <h3 className="text-3xl font-bold mb-3">Subscribe to {settings.companyName}</h3>
             <p className="text-white/90 mb-5">Monthly strategies and interviews for leaders. No noise, just signal.</p>
