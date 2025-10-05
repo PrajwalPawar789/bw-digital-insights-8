@@ -149,26 +149,22 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Redesigned Editor's Picks - horizontal scroller */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Editor's Picks</h2>
-            <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
-          </div>
-
-          <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4">
-            {(featured && featured.length ? featured : latestGrid).map((a:any,i:number)=>(
-              <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[260px] max-w-[320px] bg-white rounded-lg shadow group overflow-hidden">
-                <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
-                </div>
-                <div className="p-3">
-                  <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
-                  <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                  <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                </div>
-              </Link>
+      {/* Disciplines behind enduring growth */}
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <h2 className="text-3xl font-bold text-insightBlack">The disciplines behind enduring growth</h2>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Every issue dissects how modern enterprises link people, culture, process, and accountability to deliver meaningful progress. These pillars frame every story we publish.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-6">
+            {growthPillars.map(({ title, description, icon: Icon }) => (
+              <div key={title} className="h-full rounded-2xl border border-gray-200 bg-gray-50 p-6 text-left shadow-sm">
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-insightRed/10 text-insightRed">
+                  <Icon className="h-6 w-6" />
+                </span>
+                <h3 className="mt-4 text-xl font-semibold text-insightBlack">{title}</h3>
+                <p className="mt-2 text-sm text-gray-600">{description}</p>
+              </div>
             ))}
           </div>
         </div>
