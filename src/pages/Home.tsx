@@ -260,24 +260,39 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Leadership Spotlight */}
-      <section className="py-12 bg-gray-50">
+      {/* Voices of leadership */}
+      <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Leadership Spotlight</h2>
-            <Link to="/leadership" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-12">
+            <div>
+              <h2 className="text-3xl font-bold text-insightBlack">Voices of leadership</h2>
+              <p className="text-gray-600 mt-2 max-w-2xl">
+                Leaders share how they architect culture, invest in people, and operationalize accountability. Their lessons inform every issue of the magazine.
+              </p>
+            </div>
+            <Link to="/leadership" className="inline-flex items-center text-insightRed font-semibold">
+              Meet the leaders
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(leadership || []).slice(0,3).map((l:any)=> (
-              <Card key={l.id} className="overflow-hidden hover:shadow-lg">
-                <div className="h-48 bg-gray-100 flex items-center justify-center">
-                  <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="max-h-full max-w-full object-contain" />
+            {leadershipSpotlight.map((leader: any) => (
+              <Card key={leader.id} className="group overflow-hidden border border-gray-200">
+                <div className="h-56 bg-gray-100 flex items-center justify-center">
+                  <img
+                    src={leader.image_url || "/placeholder.svg"}
+                    alt={leader.name}
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
-                <div className="p-4 text-center">
-                  <div className="text-insightRed font-semibold text-sm">{l.title}</div>
-                  <h3 className="font-semibold text-lg">{l.name}</h3>
-                  {l.company && <div className="text-sm text-gray-500">{l.company}</div>}
-                </div>
+                <CardContent className="p-6 space-y-3">
+                  <div className="text-xs uppercase tracking-wide text-insightRed font-semibold">Leadership</div>
+                  <h3 className="text-xl font-semibold text-insightBlack group-hover:text-insightRed transition">
+                    {leader.name}
+                  </h3>
+                  <p className="text-sm text-gray-600">{leader.title}</p>
+                  {leader.company && <p className="text-xs text-gray-500">{leader.company}</p>}
+                </CardContent>
               </Card>
             ))}
           </div>
