@@ -170,50 +170,54 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Top Stories grid & Trending */}
-      <section className="py-10 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Top Stories</h2>
-            <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">See all</Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(() => {
-              const sorted = [...articles].filter(Boolean).sort((a:any,b:any)=>new Date(b?.date||0).getTime()-new Date(a?.date||0).getTime());
-              const top = sorted.slice(0,6);
-              return top.map((a:any,i:number)=> (
-                <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`}>
-                  <Card className="overflow-hidden group hover:shadow-lg transition">
-                    <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                      <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain"/>
-                    </div>
-                    <CardContent className="pt-4">
-                      <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
-                      <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                      <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))
-            })()}
-          </div>
-
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-3 text-insightBlack">Trending</h3>
-            <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4">
-              {articles.slice(0,10).map((a:any,i:number)=> (
-                <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[220px] bg-white rounded-md shadow-sm overflow-hidden group">
-                  <div className="flex items-center gap-3 p-3">
-                    <img src={imgOf(a)} alt={titleOf(a)} className="w-20 h-14 object-cover bg-black rounded"/>
+      {/* Growth flywheel + supporting stories */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          <div className="lg:col-span-5 space-y-6">
+            <h2 className="text-3xl font-bold text-insightBlack">Where does growth come from?</h2>
+            <p className="text-gray-600 text-lg">
+              Sustainable growth arrives when past customer actions fuel the playbook for new audiences. We translate those actions into repeatable rituals so teams can move with confidence.
+            </p>
+            <div className="space-y-4">
+              {flywheelSignals.map(({ icon: Icon, title, description }) => (
+                <div key={title} className="rounded-xl bg-white p-5 border border-gray-200 shadow-sm">
+                  <div className="flex items-start gap-4">
+                    <span className="mt-1 inline-flex h-10 w-10 items-center justify-center rounded-full bg-insightRed/10 text-insightRed">
+                      <Icon className="h-5 w-5" />
+                    </span>
                     <div>
-                      <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h4>
-                      <div className="text-xs text-gray-400 mt-1">{dateOf(a)}</div>
+                      <h3 className="text-lg font-semibold text-insightBlack">{title}</h3>
+                      <p className="text-sm text-gray-600 mt-1">{description}</p>
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
+          </div>
+          <div className="lg:col-span-7 space-y-5">
+            {supportingStories.map((story: any) => (
+              <Link
+                key={slugOf(story)}
+                to={`/article/${slugOf(story)}`}
+                className="flex flex-col sm:flex-row gap-5 rounded-2xl bg-white p-5 border border-gray-200 hover:border-insightRed/60 hover:shadow-lg transition"
+              >
+                <div className="sm:w-48 flex-shrink-0">
+                  <div className="aspect-[4/3] rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src={imgOf(story)} alt={titleOf(story)} className="h-full w-full object-cover" />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-3 text-xs uppercase tracking-wide text-insightRed font-semibold">
+                    <span>{categoryOf(story)}</span>
+                    <span className="text-gray-400">{dateOf(story)}</span>
+                  </div>
+                  <h3 className="mt-2 text-xl font-semibold text-insightBlack group-hover:text-insightRed transition">
+                    {titleOf(story)}
+                  </h3>
+                  <p className="mt-2 text-sm text-gray-600 line-clamp-3">{excerptOf(story)}</p>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
