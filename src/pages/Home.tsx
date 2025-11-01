@@ -176,21 +176,21 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Premium News Ticker */}
+    <div className="min-h-screen bg-white text-insightBlack">
+      {/* Executive Wire */}
       <div className="bg-insightBlack text-white overflow-hidden border-b border-white/10">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
           <div className="flex items-center gap-4 py-3">
-            <Badge className="bg-insightRed text-white hover:bg-insightRed/90 font-semibold uppercase tracking-wider">
-              <Newspaper className="w-3.5 h-3.5 mr-1.5" /> Breaking News
+            <Badge className="bg-insightRed text-white hover:bg-insightRed/90 font-semibold uppercase tracking-[0.35em]">
+              <Newspaper className="w-3.5 h-3.5 mr-1.5" /> Executive Wire
             </Badge>
             <div className="relative flex-1 overflow-hidden">
               <div className="whitespace-nowrap animate-marquee">
                 {[...(headlines.length ? headlines : articles.slice(0, 8))].map((a: any, i: number) => (
-                  <Link 
-                    key={slugOf(a) + i} 
-                    to={`/article/${slugOf(a)}`} 
-                    className="inline-flex items-center text-sm text-white/90 hover:text-white transition-colors mx-8 font-medium"
+                  <Link
+                    key={slugOf(a) + i}
+                    to={`/article/${slugOf(a)}`}
+                    className="inline-flex items-center text-sm text-white/80 hover:text-white transition-colors mx-8 font-medium"
                   >
                     {titleOf(a)}
                   </Link>
@@ -201,384 +201,422 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Hero Section - Premium Content Focus */}
-      <section className="bg-gradient-to-b from-gray-50 to-white py-12">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Main Featured Story */}
-            <div className="lg:col-span-8 space-y-6">
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 py-16">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(220,38,38,0.08),transparent_55%)]" aria-hidden="true" />
+        <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
+            <div className="lg:col-span-7">
               {main ? (
-                <article className="group">
-                  <Link to={`/article/${slugOf(main)}`} className="block">
-                    <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-insightBlack">
-                      <div className="aspect-[16/9] bg-gradient-to-br from-gray-900 to-insightBlack flex items-center justify-center">
-                        <img 
-                          src={imgOf(main)} 
-                          alt={titleOf(main)} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                <article className="h-full flex flex-col">
+                  <Link to={`/article/${slugOf(main)}`} className="group relative block overflow-hidden rounded-3xl shadow-2xl">
+                    <div className="relative">
+                      <div className="aspect-[16/9] bg-insightBlack flex items-center justify-center overflow-hidden">
+                        <img
+                          src={imgOf(main)}
+                          alt={titleOf(main)}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-insightBlack/90 via-insightBlack/40 to-transparent" />
-                      
-                      <div className="absolute bottom-0 left-0 right-0 p-8">
-                        <Badge className="bg-insightRed text-white mb-4 font-bold uppercase tracking-wider">
+                      <div className="absolute inset-0 bg-gradient-to-t from-insightBlack/95 via-insightBlack/40 to-transparent" />
+                      <div className="absolute inset-x-0 bottom-0 p-8 sm:p-10 space-y-5">
+                        <Badge className="bg-insightRed text-white font-bold uppercase tracking-[0.3em]">
                           {categoryOf(main)}
                         </Badge>
-                        <h1 className="text-3xl md:text-5xl font-bold leading-tight text-white mb-4 group-hover:text-insightRed/90 transition-colors">
+                        <h1 className="text-3xl md:text-5xl font-bold leading-tight text-white group-hover:text-insightRed/90 transition-colors">
                           {titleOf(main)}
                         </h1>
-                        <p className="text-white/90 text-lg mb-4 line-clamp-2 max-w-3xl">
+                        <p className="text-white/90 text-lg max-w-3xl line-clamp-3">
                           {excerptOf(main)}
                         </p>
-                        <div className="flex items-center gap-4 text-white/70 text-sm">
+                        <div className="flex flex-wrap items-center gap-4 text-white/70 text-sm">
                           <span className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
                             {dateOf(main)}
                           </span>
-                          <span>•</span>
+                          <span className="hidden sm:inline-block">•</span>
                           <span>{main?.author || "Editorial Team"}</span>
                         </div>
                       </div>
                     </div>
                   </Link>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                    {secondary.map((a: any, i: number) => (
-                      <Link 
-                        key={slugOf(a) + i} 
-                        to={`/article/${slugOf(a)}`} 
-                        className="group block bg-white rounded-xl overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300"
-                      >
-                        <div className="aspect-[16/10] bg-gradient-to-br from-gray-100 to-gray-50 flex items-center justify-center overflow-hidden">
-                          <img 
-                            src={imgOf(a)} 
-                            alt={titleOf(a)} 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                          />
-                        </div>
-                        <div className="p-5">
-                          <Badge variant="outline" className="mb-2 text-xs">
-                            {categoryOf(a)}
-                          </Badge>
-                          <h3 className="font-bold text-lg line-clamp-2 group-hover:text-insightRed transition-colors mb-2">
-                            {titleOf(a)}
-                          </h3>
-                          <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                            {excerptOf(a)}
-                          </p>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <Calendar className="h-3 w-3" />
-                            {dateOf(a)}
+                  {secondary.length > 0 && (
+                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {secondary.slice(0, 2).map((a: any, i: number) => (
+                        <Link
+                          key={slugOf(a) + i}
+                          to={`/article/${slugOf(a)}`}
+                          className="group bg-white rounded-2xl border border-gray-200 overflow-hidden hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+                        >
+                          <div className="aspect-[16/10] bg-gray-100 flex items-center justify-center overflow-hidden">
+                            <img
+                              src={imgOf(a)}
+                              alt={titleOf(a)}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
                           </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+                          <div className="p-6 space-y-3">
+                            <Badge variant="outline" className="text-xs">
+                              {categoryOf(a)}
+                            </Badge>
+                            <h3 className="font-bold text-lg line-clamp-2 group-hover:text-insightRed transition-colors">
+                              {titleOf(a)}
+                            </h3>
+                            <p className="text-sm text-gray-600 line-clamp-3">
+                              {excerptOf(a)}
+                            </p>
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                              <Calendar className="h-3 w-3" />
+                              {dateOf(a)}
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </article>
               ) : (
-                <div className="text-center py-12 text-gray-500">No featured articles available</div>
+                <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-gray-200 bg-white p-12 text-center text-gray-500">
+                  Featured stories will appear here once published.
+                </div>
               )}
             </div>
 
-            {/* Right Sidebar - Magazine & Trending */}
-            <aside className="lg:col-span-4 space-y-6">
-              {latestMagazine && (
-                <div className="bg-gradient-to-br from-insightBlack to-gray-900 rounded-2xl p-6 text-white shadow-2xl">
-                  <div className="flex items-center gap-2 mb-4">
-                    <BookOpen className="h-5 w-5 text-insightRed" />
-                    <h3 className="font-bold text-lg uppercase tracking-wider">Latest Issue</h3>
+            <div className="lg:col-span-5 flex flex-col gap-8">
+              <div className="bg-white/80 backdrop-blur rounded-3xl border border-gray-200 shadow-xl p-6 sm:p-8">
+                <div className="flex items-start justify-between gap-4 mb-6">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.35em] text-insightRed">Inside the magazine</p>
+                    <h3 className="text-2xl font-bold mt-2">Momentum in the boardroom</h3>
                   </div>
-                  <Link to="/magazine" className="block group">
-                    <div className="relative rounded-xl overflow-hidden mb-4 shadow-2xl">
-                      <img 
-                        src={latestMagazine.cover_image_url || "/placeholder.svg"} 
-                        alt={latestMagazine.title || "Latest Magazine"} 
-                        className="w-full aspect-[3/4] object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+                  <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-full bg-insightRed/10 text-insightRed">
+                    <BookOpen className="h-6 w-6" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {impactHighlights.map((highlight) => (
+                    <div key={highlight.title} className="rounded-2xl border border-gray-200 p-4">
+                      <div className="text-3xl font-bold text-insightRed">{highlight.stat}</div>
+                      <h4 className="mt-2 text-sm font-semibold uppercase tracking-wide text-gray-500">{highlight.title}</h4>
+                      <p className="mt-2 text-sm text-gray-600">{highlight.description}</p>
                     </div>
-                    <h4 className="font-bold text-xl mb-2 group-hover:text-insightRed transition-colors">
-                      {latestMagazine.title}
-                    </h4>
-                    <p className="text-white/70 text-sm mb-4 line-clamp-2">
-                      {latestMagazine.description}
-                    </p>
-                    <Button className="w-full bg-insightRed hover:bg-insightRed/90 text-white font-semibold">
-                      Read Magazine <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
+                  ))}
+                </div>
+              </div>
+
+              {supportingStories.length > 0 && (
+                <div className="bg-insightBlack text-white rounded-3xl overflow-hidden shadow-2xl">
+                  <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.35em] text-insightRed">Boardroom Briefings</p>
+                      <h4 className="text-lg font-semibold mt-1">Success stories on the move</h4>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-white/50" />
+                  </div>
+                  <ul className="divide-y divide-white/10">
+                    {supportingStories.slice(0, 3).map((story: any, i: number) => (
+                      <li key={slugOf(story) + i}>
+                        <Link
+                          to={`/article/${slugOf(story)}`}
+                          className="group flex items-start gap-4 px-6 py-5 transition hover:bg-white/5"
+                        >
+                          <div className="mt-1 h-10 w-10 flex-shrink-0 rounded-full bg-white/10 text-white flex items-center justify-center font-semibold">
+                            {i + 1}
+                          </div>
+                          <div className="flex-1 space-y-2">
+                            <h5 className="font-semibold leading-snug group-hover:text-insightRed">
+                              {titleOf(story)}
+                            </h5>
+                            <p className="text-sm text-white/70 line-clamp-2">{excerptOf(story)}</p>
+                            <div className="flex items-center gap-2 text-xs text-white/60">
+                              <Calendar className="h-3 w-3" />
+                              {dateOf(story)}
+                            </div>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      </section>
 
-              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-lg">
-                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                  <h3 className="font-bold uppercase tracking-wider text-sm text-insightBlack">
-                    Most Read Today
-                  </h3>
+      {/* Boardroom Spotlight */}
+      <section className="py-16 bg-white">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+            <div className="max-w-2xl space-y-3">
+              <Badge variant="outline" className="w-fit uppercase tracking-[0.3em]">Boardroom Spotlight</Badge>
+              <h2 className="text-3xl font-bold">Meet the architects of enterprise reinvention</h2>
+              <p className="text-gray-600 text-lg">
+                C-level, VP, and director-level leaders share how they build momentum, align teams, and deliver at scale.
+              </p>
+            </div>
+            <Link to="/leadership" className="inline-flex items-center text-insightRed font-semibold">
+              View the full roster <ChevronRight className="ml-2 h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {leadershipSpotlight.length > 0 ? leadershipSpotlight.map((leader: any) => (
+              <Card key={leader.id} className="group overflow-hidden rounded-3xl border border-gray-200 shadow-lg">
+                <div className="h-60 bg-gradient-to-br from-gray-900 to-insightBlack flex items-center justify-center overflow-hidden">
+                  <img
+                    src={leader.image_url || "/placeholder.svg"}
+                    alt={leader.name}
+                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
                 </div>
-                <ul className="divide-y divide-gray-100">
-                  {mostRead.slice(0, 5).map((a: any, i: number) => (
-                    <li key={slugOf(a) + i} className="hover:bg-gray-50 transition-colors">
-                      <Link to={`/article/${slugOf(a)}`} className="flex gap-4 p-4 group">
-                        <span className="flex-shrink-0 w-8 h-8 rounded-full bg-insightRed/10 text-insightRed font-bold flex items-center justify-center text-sm">
-                          {i + 1}
-                        </span>
-                        <div className="flex-1 min-w-0">
-                          <Badge variant="outline" className="mb-1.5 text-xs">
-                            {categoryOf(a)}
-                          </Badge>
-                          <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-insightRed transition-colors mb-1">
-                            {titleOf(a)}
-                          </h4>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <Calendar className="h-3 w-3" />
-                            {dateOf(a)}
+                <CardContent className="p-6 space-y-3">
+                  <div className="text-xs uppercase tracking-[0.3em] text-insightRed font-semibold">Leadership</div>
+                  <h3 className="text-xl font-semibold group-hover:text-insightRed transition">{leader.name}</h3>
+                  {leader.title && <p className="text-sm text-gray-600">{leader.title}</p>}
+                  {leader.company && <p className="text-xs text-gray-500 uppercase tracking-wide">{leader.company}</p>}
+                </CardContent>
+              </Card>
+            )) : (
+              <div className="md:col-span-3 rounded-3xl border border-dashed border-gray-200 p-12 text-center text-gray-500">
+                Leadership spotlights appear once profiles are published.
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Executive Briefings */}
+      <section className="py-16 bg-gray-50 border-y border-gray-200">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+            <div className="max-w-2xl space-y-3">
+              <Badge className="w-fit bg-insightRed text-white uppercase tracking-[0.3em]">Executive Briefings</Badge>
+              <h2 className="text-3xl font-bold">The playbooks your peers are using</h2>
+              <p className="text-gray-600 text-lg">
+                Curated briefings tailored for C-suite, VP, director, and founder audiences navigating growth-critical decisions.
+              </p>
+            </div>
+            <Link to="/articles" className="inline-flex items-center text-insightRed font-semibold">
+              Explore all insights <ChevronRight className="ml-2 h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {tieredTracks.length > 0 ? tieredTracks.map((track) => (
+              <div key={track.title} className="h-full bg-white rounded-3xl border border-gray-200 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.35em] text-insightRed/80">{track.title}</p>
+                    <h3 className="mt-2 text-xl font-semibold text-insightBlack">{track.description}</h3>
+                  </div>
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-insightRed/10 text-insightRed">
+                    <track.icon className="h-6 w-6" />
+                  </span>
+                </div>
+                <ul className="space-y-5">
+                  {track.stories.map((story: any, index: number) => (
+                    <li key={slugOf(story) + index} className="group">
+                      <Link to={`/article/${slugOf(story)}`} className="flex items-start gap-4 rounded-2xl border border-transparent px-4 py-3 transition hover:border-insightRed/20 hover:bg-insightRed/5">
+                        <div className="mt-1 text-sm font-semibold text-insightRed">{(index + 1).toString().padStart(2, "0")}</div>
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-center gap-3 text-xs text-gray-500 uppercase tracking-wide">
+                            <span>{categoryOf(story)}</span>
+                            <span className="hidden sm:inline-block">•</span>
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {dateOf(story)}
+                            </span>
                           </div>
+                          <h4 className="font-semibold text-lg leading-snug group-hover:text-insightRed transition">
+                            {titleOf(story)}
+                          </h4>
+                          <p className="text-sm text-gray-600 line-clamp-2">{excerptOf(story)}</p>
                         </div>
+                        <ChevronRight className="mt-1 h-5 w-5 text-gray-400 group-hover:text-insightRed transition" />
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      {/* Editor's Picks */}
-      <section className="py-12 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Editor's Picks</h2>
-            <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
-          </div>
-
-          <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4">
-            {(featured && featured.length ? featured : latestGrid).map((a:any,i:number)=>(
-              <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[260px] max-w-[320px] bg-white rounded-lg shadow group overflow-hidden">
-                <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
-                </div>
-                <div className="p-3">
-                  <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
-                  <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                  <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Top Stories */}
-      <section className="py-10 bg-gray-50">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Top Stories</h2>
-            <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">See all</Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(() => {
-              const sorted = [...articles].filter(Boolean).sort((a:any,b:any)=>new Date(b?.date||0).getTime()-new Date(a?.date||0).getTime());
-              const top = sorted.slice(0,6);
-              return top.map((a:any,i:number)=> (
-                <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`}>
-                  <Card className="overflow-hidden group hover:shadow-lg transition">
-                    <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                      <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain"/>
-                    </div>
-                    <CardContent className="pt-4">
-                      <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
-                      <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                      <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))
-            })()}
-          </div>
-        </div>
-      </section>
-
-      {/* Category sections */}
-      <section className="py-12 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(() => {
-              const sorted = [...articles].filter(Boolean).sort((a:any,b:any)=>new Date(b?.date||0).getTime()-new Date(a?.date||0).getTime());
-              const cats = Array.from(new Set(sorted.map(s=>s.category).filter(Boolean))).slice(0,3);
-              return cats.map((cat:string)=> {
-                const items = sorted.filter(s=>s.category===cat).slice(0,4);
-                return (
-                  <div key={cat} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-semibold text-lg">{cat}</h4>
-                      <Link to={`/category/${encodeURIComponent(cat)}`} className="text-sm text-insightRed">View all</Link>
-                    </div>
-                    <div className="space-y-3">
-                      {items.map((it:any,i:number)=> (
-                        <Link key={slugOf(it)+i} to={`/article/${slugOf(it)}`} className="flex items-center gap-3 group">
-                          <img src={imgOf(it)} alt={titleOf(it)} className="w-20 h-14 object-contain bg-black rounded"/>
-                          <div>
-                            <h5 className="font-medium line-clamp-2 group-hover:text-insightRed">{titleOf(it)}</h5>
-                            <div className="text-xs text-gray-400">{dateOf(it)}</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                );
-              });
-            })()}
-          </div>
-        </div>
-      </section>
-
-      {/* Leadership Spotlight */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Leadership Spotlight</h2>
-            <Link to="/leadership" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {leadershipSpotlight.map((leader: any) => (
-              <Card key={leader.id} className="group overflow-hidden border border-gray-200">
-                <div className="h-56 bg-gray-100 flex items-center justify-center">
-                  <img
-                    src={leader.image_url || "/placeholder.svg"}
-                    alt={leader.name}
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-                <CardContent className="p-6 space-y-3">
-                  <div className="text-xs uppercase tracking-wide text-insightRed font-semibold">Leadership</div>
-                  <h3 className="text-xl font-semibold text-insightBlack group-hover:text-insightRed transition">
-                    {leader.name}
-                  </h3>
-                  <p className="text-sm text-gray-600">{leader.title}</p>
-                  {leader.company && <p className="text-xs text-gray-500">{leader.company}</p>}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Press Releases */}
-      <section className="py-12 bg-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Press Releases</h2>
-            <Link to="/press-releases" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
-          </div>
-          <div className="lg:col-span-7">
-            <div className="rounded-3xl border border-gray-200 bg-gray-50 p-6 flex flex-col md:flex-row gap-6 items-center">
-              <div className="md:w-72 w-full">
-                <div className="aspect-[3/4] rounded-2xl bg-white shadow-lg flex items-center justify-center overflow-hidden">
-                  <img
-                    src={latestMagazine?.cover_image_url || "/placeholder.svg"}
-                    alt={latestMagazine?.title || "Latest magazine"}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
+            )) : (
+              <div className="rounded-3xl border border-dashed border-gray-200 p-12 text-center text-gray-500">
+                Articles will appear here as soon as they are published.
               </div>
-              <div className="flex-1 space-y-4 text-center md:text-left">
-                <h3 className="text-2xl font-semibold text-insightBlack">
-                  {latestMagazine?.title || "Our premium magazine experience"}
-                </h3>
-                <p className="text-gray-600">
-                  {latestMagazine?.description || "Dive into strategic narratives, leadership dialogues, and architecture diagrams that show how bold ideas become disciplined execution."}
-                </p>
-                <div className="text-xs uppercase tracking-wide text-gray-500">
-                  {latestMagazine?.release_date ? `Published ${dateOf(latestMagazine)}` : "Digital + interactive formats"}
-                </div>
-                <Link to={latestMagazine ? `/magazine/${latestMagazine.slug}` : "/magazine"} className="inline-flex items-center text-insightRed font-semibold">
-                  Open the latest issue
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Strategy Desk */}
+      <section className="py-16 bg-white">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+            <div className="space-y-3 max-w-2xl">
+              <Badge variant="outline" className="w-fit uppercase tracking-[0.3em]">Strategy Desk</Badge>
+              <h2 className="text-3xl font-bold">Field-tested insights from executives in motion</h2>
+              <p className="text-gray-600 text-lg">
+                Stories that deconstruct the wins, pivots, and frameworks fueling high-velocity leadership teams.
+              </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-16 bg-insightRed text-white">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <div>
-            <h3 className="text-3xl font-bold mb-3">Subscribe to {settings.companyName}</h3>
-            <p className="text-white/90 mb-5">Monthly strategies and interviews for leaders. No noise, just signal.</p>
-            <Link to="/magazine">
-              <Button size="lg" className="bg-white text-insightRed hover:bg-gray-100">
-                <BookOpen className="mr-2 h-5 w-5"/> Explore Issues
-              </Button>
+            <Link to="/articles" className="inline-flex items-center text-insightRed font-semibold">
+              View latest coverage <ChevronRight className="ml-2 h-4 w-4" />
             </Link>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {insightStories.slice(0, 6).map((story: any, index: number) => (
+              <Link
+                key={slugOf(story) + index}
+                to={`/article/${slugOf(story)}`}
+                className="group relative overflow-hidden rounded-3xl border border-gray-200 bg-gradient-to-br from-white via-gray-50 to-gray-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-insightRed">
+                  <span>{categoryOf(story)}</span>
+                  <span className="hidden sm:inline-block">•</span>
+                  <span className="flex items-center gap-1 tracking-normal normal-case text-gray-500">
+                    <Calendar className="h-3 w-3" />
+                    {dateOf(story)}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-xl font-semibold text-insightBlack group-hover:text-insightRed transition">
+                  {titleOf(story)}
+                </h3>
+                <p className="mt-3 text-sm text-gray-600 line-clamp-3">{excerptOf(story)}</p>
+                <div className="mt-6 flex items-center justify-between text-sm font-medium text-insightRed">
+                  <span>Read success blueprint</span>
+                  <ChevronRight className="h-4 w-4" />
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Dark CTA */}
-      <section className="py-20 bg-insightBlack text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold">Stay accountable to the future you are building</h2>
-            <p className="text-white/80 text-lg">
-              Subscribe to The CIO Vision and get the weekly Field Notes briefing—strategies tested by operators, distilled for leaders who demand momentum.
-            </p>
-            <ul className="space-y-3 text-sm text-white/80">
-              <li className="flex items-start gap-3">
-                <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
-                  <Users className="h-4 w-4" />
-                </span>
-                Stories that elevate people-first transformation.
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
-                  <Layers className="h-4 w-4" />
-                </span>
-                Process maps and accountability scorecards you can deploy immediately.
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/10">
-                  <TrendingUp className="h-4 w-4" />
-                </span>
-                Growth signals sourced from the actions of past customers.
-              </li>
-            </ul>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/magazine">
-                <Button size="lg" className="bg-insightRed text-white hover:bg-insightRed/90">
-                  Subscribe now
-                </Button>
-              </Link>
-              <Link to="/contact" className="inline-flex items-center text-white font-semibold">
-                Partner with our newsroom
-                <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
+      {/* Momentum Framework */}
+      <section className="py-16 bg-insightBlack text-white">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="grid gap-12 lg:grid-cols-3">
+            <div className="space-y-6">
+              <Badge className="bg-white/10 text-white uppercase tracking-[0.3em] w-fit">Momentum Framework</Badge>
+              <h2 className="text-3xl font-bold">Architect the next era of growth</h2>
+              <p className="text-white/80 text-lg">
+                Use these pillars and signals to align executive priorities, operational cadence, and customer proof points.
+              </p>
+            </div>
+            <div className="lg:col-span-2 space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {growthPillars.map((pillar) => (
+                  <div key={pillar.title} className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-insightRed/20 text-insightRed mb-4">
+                      <pillar.icon className="h-6 w-6" />
+                    </span>
+                    <h3 className="text-xl font-semibold">{pillar.title}</h3>
+                    <p className="text-white/70 mt-3 text-sm">{pillar.description}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {flywheelSignals.map((signal) => (
+                  <div key={signal.title} className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white mb-3">
+                      <signal.icon className="h-5 w-5" />
+                    </span>
+                    <h4 className="text-lg font-semibold">{signal.title}</h4>
+                    <p className="text-white/70 mt-3 text-sm">{signal.description}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-8 space-y-6">
-            <h3 className="text-2xl font-semibold">Inside this week's Field Notes</h3>
-            <div className="space-y-4 text-sm text-white/80">
-              <div className="border-l-4 border-insightRed pl-4">
-                <p className="font-semibold text-white">Culture as an engineering discipline</p>
-                <p className="text-white/70 mt-1">
-                  Three operating cadences high-growth teams use to turn values into measurable behaviors.
-                </p>
+        </div>
+      </section>
+
+      {/* Press Room */}
+      <section className="py-16 bg-white">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+            <div className="space-y-3 max-w-2xl">
+              <Badge variant="outline" className="w-fit uppercase tracking-[0.3em]">Press Room</Badge>
+              <h2 className="text-3xl font-bold">Partnerships and recognition from the field</h2>
+              <p className="text-gray-600 text-lg">
+                Milestones, announcements, and collaborations that show how leaders are shaping the market together.
+              </p>
+            </div>
+            <Link to="/press-releases" className="inline-flex items-center text-insightRed font-semibold">
+              View press archive <ChevronRight className="ml-2 h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {pressHighlights.length > 0 ? pressHighlights.map((item: any, index: number) => (
+              <Link
+                key={slugOf(item) + index}
+                to={`/press-releases/${slugOf(item)}`}
+                className="group rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-insightRed">
+                  <span>Announcement</span>
+                  <span className="hidden sm:inline-block">•</span>
+                  <span className="flex items-center gap-1 tracking-normal normal-case text-gray-500">
+                    <Calendar className="h-3 w-3" />
+                    {dateOf(item)}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-xl font-semibold group-hover:text-insightRed transition">
+                  {titleOf(item)}
+                </h3>
+                <p className="mt-3 text-sm text-gray-600 line-clamp-3">{excerptOf(item)}</p>
+                <div className="mt-6 inline-flex items-center text-sm font-semibold text-insightRed">
+                  Read the press note <ChevronRight className="ml-2 h-4 w-4" />
+                </div>
+              </Link>
+            )) : (
+              <div className="md:col-span-3 rounded-3xl border border-dashed border-gray-200 p-12 text-center text-gray-500">
+                Press highlights will populate as announcements go live.
               </div>
-              <div className="border-l-4 border-insightRed pl-4">
-                <p className="font-semibold text-white">Customer co-creation rituals</p>
-                <p className="text-white/70 mt-1">
-                  Workshops and retrospectives that convert feedback into product roadmaps your teams can rally behind.
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Subscription CTA */}
+      <section className="relative py-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-insightRed via-insightRed/90 to-insightBlack" aria-hidden="true" />
+        <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div className="rounded-3xl bg-white/5 backdrop-blur p-10 sm:p-14 text-white shadow-2xl border border-white/10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-center">
+              <div className="md:col-span-2 space-y-5">
+                <Badge className="bg-white/15 text-white uppercase tracking-[0.3em] w-fit">Subscribe</Badge>
+                <h2 className="text-3xl md:text-4xl font-bold leading-tight">
+                  Stay accountable to the future you are building
+                </h2>
+                <p className="text-white/80 text-lg">
+                  Receive weekly strategies, interviews, and operating cadences from leaders who ship measurable outcomes.
                 </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link to="/magazine">
+                    <Button size="lg" className="bg-white text-insightRed hover:bg-gray-100">
+                      Explore premium issues
+                    </Button>
+                  </Link>
+                  <Link to="/contact" className="inline-flex items-center font-semibold text-white">
+                    Partner with our newsroom <ChevronRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </div>
               </div>
-              <div className="border-l-4 border-insightRed pl-4">
-                <p className="font-semibold text-white">Accountability scorecard blueprint</p>
-                <p className="text-white/70 mt-1">
-                  A step-by-step template for tracking commitments across marketing, sales, and delivery squads.
-                </p>
+              <div className="space-y-4 text-sm text-white/80">
+                <div className="rounded-3xl border border-white/15 bg-white/5 p-5">
+                  <p className="font-semibold text-white">What you get</p>
+                  <ul className="mt-3 space-y-2 text-white/70">
+                    <li>• Executive debriefs across C-suite, VP, and director levels.</li>
+                    <li>• Playbooks for orchestrating cross-functional growth.</li>
+                    <li>• Benchmarks, frameworks, and accountability rituals.</li>
+                  </ul>
+                </div>
+                <div className="rounded-3xl border border-white/15 bg-white/5 p-5">
+                  <p className="font-semibold text-white">Next print drop</p>
+                  <p className="mt-2 text-white/70">
+                    {latestMagazine?.title || "The CIO Vision"} — shipping soon to premium subscribers.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
