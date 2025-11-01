@@ -370,9 +370,9 @@ const Home = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-white/10 border border-white/30 text-white placeholder:text-white/60 rounded-lg focus:border-yellow-400 transition-all"
+              className="bg-white/10 border border-white/30 text-white placeholder:text-white/60 rounded-lg focus:border-insightGold transition-all"
             />
-            <Button type="submit" className="bg-yellow-400 text-insightBlack hover:bg-yellow-500 font-bold px-6">
+            <Button type="submit" className="bg-insightGold text-insightBlack hover:bg-insightGold/90 font-bold px-6">
               <Mail className="h-4 w-4" />
             </Button>
           </form>
