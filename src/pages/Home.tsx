@@ -111,7 +111,7 @@ const Home = () => {
                           {categoryOf(article)}
                         </Badge>
                       </div>
-                      <h3 className="text-xl font-black text-white leading-tight group-hover:text-yellow-300 transition-colors">
+                      <h3 className="text-xl font-black text-white leading-tight group-hover:text-insightGold transition-colors">
                         {titleOf(article)}
                       </h3>
                     </div>
