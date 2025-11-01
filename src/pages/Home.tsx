@@ -68,7 +68,6 @@ const Home = () => {
         actionLabel: item.action_label,
         actionUrl: item.action_url,
         featured: item.featured,
-        accentColor: (article && article.color) || undefined,
       };
     },
     [articleMap]
