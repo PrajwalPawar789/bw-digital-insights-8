@@ -59,6 +59,42 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          order_index: number
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          order_index?: number
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          order_index?: number
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       client_logos: {
         Row: {
           created_at: string | null
