@@ -189,6 +189,10 @@ const Home = () => {
     return breakdown;
   }, [articles]);
 
+  const curatedFeatureSections = useMemo(() => {
+    return curatedSections.filter((section) => section.layout_type !== "hero");
+  }, [curatedSections]);
+
   return (
     <div className="min-h-screen bg-white text-insightBlack">
       {/* Premium Header Banner */}
