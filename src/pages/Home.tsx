@@ -108,7 +108,7 @@ const Home = () => {
         actionLabel: undefined,
         actionUrl: undefined,
         featured: false,
-        accentColor,
+        accentColor: accentColor || "#ef4444",
       };
     },
     [categoryColorMap]
