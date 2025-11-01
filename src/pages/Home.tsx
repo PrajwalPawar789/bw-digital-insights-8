@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useArticles, useFeaturedArticles } from "@/hooks/useArticles";
 import { useMagazines } from "@/hooks/useMagazines";
@@ -6,7 +6,8 @@ import { useLeadershipProfiles } from "@/hooks/useLeadership";
 import { usePressReleases } from "@/hooks/usePressReleases";
 import { useSettings } from "@/hooks/useSettings";
 import { useCategories } from "@/hooks/useCategories";
-import { Calendar, ChevronRight, Search, Newspaper, BookOpen, TrendingUp, X } from "lucide-react";
+import { useHomeSections } from "@/hooks/useHomeSections";
+import { Calendar, ChevronRight, Search, Newspaper, BookOpen, TrendingUp, X, ArrowUpRight, Sparkles, Flame } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
