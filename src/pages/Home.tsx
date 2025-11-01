@@ -72,7 +72,7 @@ const Home = () => {
                   </div>
                   <div className="absolute inset-0 flex flex-col justify-end p-10 z-10">
                     <div className="space-y-4">
-                      <h2 className="text-4xl md:text-5xl font-black text-white leading-tight group-hover:text-yellow-300 transition-colors">
+                      <h2 className="text-4xl md:text-5xl font-black text-white leading-tight group-hover:text-insightGold transition-colors">
                         {titleOf(heroPrimary)}
                       </h2>
                       {excerptOf(heroPrimary) && (
