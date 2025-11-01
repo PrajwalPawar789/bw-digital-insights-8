@@ -6,7 +6,7 @@ import { useLeadershipProfiles } from "@/hooks/useLeadership";
 import { usePressReleases } from "@/hooks/usePressReleases";
 import { useSettings } from "@/hooks/useSettings";
 import { useCategories } from "@/hooks/useCategories";
-import { useHomeSections } from "@/hooks/useHomeSections";
+import { useHomeSections, HomeSection, HomeSectionItem } from "@/hooks/useHomeSections";
 import { Calendar, ChevronRight, Search, Newspaper, BookOpen, TrendingUp, X, ArrowUpRight, Sparkles, Flame } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
