@@ -270,53 +270,134 @@ const Home = () => {
           {/* Main Column */}
           <div className="lg:col-span-2 space-y-12">
             {/* Featured Article with Premium Styling */}
-            {mainStory && (
-              <section>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="h-1 w-8 bg-insightRed rounded-full" />
-                  <h2 className="text-3xl font-black tracking-tight">Featured Story</h2>
+            {heroPrimary && (
+              <section className="space-y-8">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-1 w-8 bg-insightRed rounded-full" />
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.4em] text-insightRed font-semibold">
+                        {heroDisplay?.meta?.kicker || "Spotlight"}
+                      </p>
+                      <h2 className="text-3xl font-black tracking-tight">
+                        {heroDisplay?.meta?.title || "Feature of the Day"}
+                      </h2>
+                    </div>
+                  </div>
+                  {heroDisplay?.meta?.subtitle && (
+                    <p className="text-sm text-gray-600 max-w-2xl leading-relaxed">
+                      {heroDisplay.meta.subtitle}
+                    </p>
+                  )}
                 </div>
 
-                <Link to={`/article/${slugOf(mainStory)}`} className="group block">
-                  <article className="relative overflow-hidden rounded-3xl shadow-2xl">
-                    <div className="aspect-[16/9] flex items-center justify-center overflow-hidden bg-black">
-                      <img
-                        src={imgOf(mainStory)}
-                        alt={titleOf(mainStory)}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      />
-                    </div>
-                    
-                    {/* Golden Frame Effect */}
-                    <div className="absolute inset-12 rounded-2xl border-2 border-amber-400/50 pointer-events-none hidden md:block" />
-                    
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent" />
-                    
-                    {/* Content */}
-                    <div className="absolute inset-x-0 bottom-0 p-10 md:p-12 space-y-6">
-                      <Badge className="bg-insightRed text-white text-xs font-bold uppercase tracking-widest px-3 py-1 w-fit">
-                        {categoryOf(mainStory)}
-                      </Badge>
-                      <div className="space-y-4">
-                        <h3 className="text-4xl md:text-5xl font-black text-white leading-tight group-hover:text-amber-300 transition-colors duration-300">
-                          {titleOf(mainStory)}
-                        </h3>
-                        <p className="text-lg text-white/90 line-clamp-2 leading-relaxed">
-                          {excerptOf(mainStory)}
-                        </p>
+                <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
+                  <Link to={`/article/${heroPrimary.slug}`} className="group block">
+                    <article className="relative overflow-hidden rounded-3xl shadow-2xl min-h-[420px] bg-black">
+                      <div className="absolute inset-0">
+                        <img
+                          src={heroPrimary.image}
+                          alt={heroPrimary.title}
+                          className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
                       </div>
-                      <div className="flex items-center gap-6 text-white/70 text-sm pt-4">
-                        <span className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span className="font-medium">{dateOf(mainStory)}</span>
-                        </span>
-                        <span>•</span>
-                        <span className="font-medium">{mainStory.author || "Editorial Team"}</span>
+
+                      <div className="relative z-10 flex h-full flex-col justify-end p-10 space-y-5">
+                        <div className="flex items-center gap-3">
+                          <Badge
+                            className="border-0 text-xs font-bold uppercase tracking-widest px-3 py-1 w-fit text-white"
+                            style={{ backgroundColor: heroPrimary.accentColor }}
+                          >
+                            {heroPrimary.badge}
+                          </Badge>
+                          <span className="hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-white/70">
+                            <Sparkles className="h-4 w-4 text-amber-300" />
+                            {heroDisplay?.meta?.kicker || "Featured"}
+                          </span>
+                        </div>
+                        <div className="space-y-4">
+                          <h3 className="text-3xl md:text-4xl font-black text-white leading-tight text-balance max-w-3xl group-hover:text-amber-300 transition-colors duration-300">
+                            {heroPrimary.title}
+                          </h3>
+                          {heroPrimary.summary && (
+                            <p className="text-base text-white/85 max-w-2xl leading-relaxed line-clamp-3">
+                              {heroPrimary.summary}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-6 text-white/70 text-sm pt-2">
+                          {heroPrimary.date && (
+                            <span className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4" />
+                              <span className="font-medium">{heroPrimary.date}</span>
+                            </span>
+                          )}
+                          <span className="hidden sm:block">•</span>
+                          <span className="font-medium">{heroPrimary.author}</span>
+                        </div>
+                        {heroPrimary.actionLabel && heroPrimary.actionUrl && (
+                          <div>
+                            <Button
+                              variant="secondary"
+                              className="bg-white/10 backdrop-blur hover:bg-white/20 text-white font-bold uppercase tracking-wider"
+                              asChild
+                            >
+                              <Link to={heroPrimary.actionUrl}>
+                                {heroPrimary.actionLabel} <ArrowUpRight className="ml-2 h-4 w-4" />
+                              </Link>
+                            </Button>
+                          </div>
+                        )}
                       </div>
+                    </article>
+                  </Link>
+
+                  {heroSecondary.length > 0 && (
+                    <div className="flex flex-col gap-4">
+                      {heroSecondary.map((story, index) => (
+                        <Link key={`${story.slug}-${index}`} to={`/article/${story.slug}`} className="group">
+                          <article className="flex gap-4 rounded-2xl border border-gray-200 bg-white/95 p-5 shadow-sm hover:shadow-xl transition-all duration-300">
+                            <div className="relative w-28 h-24 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                              <img
+                                src={story.image}
+                                alt={story.title}
+                                className="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
+                              />
+                            </div>
+                            <div className="flex-1 space-y-3">
+                              <Badge
+                                variant="outline"
+                                className="border-none text-xs font-semibold uppercase tracking-wide"
+                                style={{ color: story.accentColor, backgroundColor: `${story.accentColor}1a` }}
+                              >
+                                {story.badge}
+                              </Badge>
+                              <h4 className="text-lg font-bold leading-snug line-clamp-2 group-hover:text-insightRed transition-colors">
+                                {story.title}
+                              </h4>
+                              {story.summary && (
+                                <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                                  {story.summary}
+                                </p>
+                              )}
+                              <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 font-medium">
+                                {story.date && (
+                                  <span className="flex items-center gap-1.5">
+                                    <Calendar className="h-3.5 w-3.5" />
+                                    {story.date}
+                                  </span>
+                                )}
+                                <span className="w-1 h-1 rounded-full bg-gray-300" />
+                                {story.author}
+                              </div>
+                            </div>
+                          </article>
+                        </Link>
+                      ))}
                     </div>
-                  </article>
-                </Link>
+                  )}
+                </div>
               </section>
             )}
 
