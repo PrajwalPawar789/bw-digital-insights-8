@@ -85,7 +85,7 @@ const Home = () => {
         actionLabel: item.action_label,
         actionUrl: item.action_url,
         featured: item.featured,
-        accentColor,
+        accentColor: accentColor || "#ef4444",
       };
     },
     [articleMap, categoryColorMap]
