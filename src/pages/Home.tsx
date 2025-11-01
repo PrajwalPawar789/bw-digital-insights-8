@@ -145,6 +145,40 @@ const Home = () => {
     return { mainStory, secondaryStories, trendingArticles, latestMagazine };
   }, [articles, magazines]);
 
+  const heroSection = useMemo(() => {
+    return curatedSections.find((section: HomeSection) => section.layout_type === "hero");
+  }, [curatedSections]);
+
+  const heroDisplay = useMemo(() => {
+    if (!heroSection) return null;
+    const items = heroSection.home_section_items || [];
+    if (!items.length) return null;
+
+    const sortedItems = [...items].sort((a, b) => a.order_index - b.order_index);
+    const primaryItem = sortedItems.find((item) => item.featured) || sortedItems[0];
+    const primary = mapSectionItemToDisplay(primaryItem);
+    const secondary = sortedItems
+      .filter((item) => item.id !== (primaryItem?.id || ""))
+      .map(mapSectionItemToDisplay)
+      .filter((item): item is NonNullable<typeof item> => Boolean(item));
+
+    if (!primary) return null;
+
+    return {
+      primary,
+      secondary,
+      meta: heroSection,
+    };
+  }, [heroSection, mapSectionItemToDisplay]);
+
+  const heroPrimary = heroDisplay?.primary || mapArticleToDisplay(mainStory);
+  const heroSecondary = heroDisplay?.secondary?.length
+    ? heroDisplay.secondary
+    : secondaryStories
+        .slice(0, 3)
+        .map(mapArticleToDisplay)
+        .filter((item): item is NonNullable<typeof item> => Boolean(item));
+
   const categoryBreakdown = useMemo(() => {
     const breakdown: { [key: string]: any[] } = {};
     articles.forEach(article => {
