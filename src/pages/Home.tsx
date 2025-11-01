@@ -47,6 +47,20 @@ const Home = () => {
     return map;
   }, [articles]);
 
+  const categoryColorMap = useMemo(() => {
+    const map = new Map<string, string>();
+    categories.forEach((cat: any) => {
+      if (!cat) return;
+      if (cat.slug) {
+        map.set(cat.slug, cat.color || "#ef4444");
+      }
+      if (cat.name) {
+        map.set(cat.name, cat.color || "#ef4444");
+      }
+    });
+    return map;
+  }, [categories]);
+
   const mapSectionItemToDisplay = useCallback(
     (item?: HomeSectionItem | null) => {
       if (!item) return null;
