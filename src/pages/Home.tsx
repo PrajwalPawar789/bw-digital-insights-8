@@ -32,16 +32,14 @@ const Home = () => {
   const articles = Array.isArray(rawArticles) ? rawArticles : [];
   const magazines = Array.isArray(rawMagazines) ? rawMagazines : [];
 
-  const { main, secondary, headlines, mostRead, latestGrid, latestMagazine } = useMemo(() => {
+  const { main, secondary, headlines, latestMagazine } = useMemo(() => {
     const byDate = [...articles].filter(Boolean).sort((a, b) => new Date(b?.date || 0).getTime() - new Date(a?.date || 0).getTime());
     const featuredFirst = [...byDate].sort((a, b) => (b?.featured ? 1 : 0) - (a?.featured ? 1 : 0));
     const main = featuredFirst[0];
     const secondary = featuredFirst.slice(1, 3);
     const headlines = featuredFirst.slice(3, 11);
-    const mostRead = byDate.slice(0, 5);
-    const latestGrid = byDate.slice(11, 15);
     const latestMagazine = magazines[0] || null;
-    return { main, secondary, headlines, mostRead, latestGrid, latestMagazine };
+    return { main, secondary, headlines, latestMagazine };
   }, [articles, magazines]);
 
   const { supportingStories, insightStories, leadershipSpotlight, pressHighlights } = useMemo(() => {
