@@ -91,6 +91,29 @@ const Home = () => {
     [articleMap, categoryColorMap]
   );
 
+  const mapArticleToDisplay = useCallback(
+    (article: any) => {
+      if (!article) return null;
+      const badgeLabel = categoryOf(article);
+      const accentColor = badgeLabel ? categoryColorMap.get(badgeLabel) : undefined;
+
+      return {
+        slug: slugOf(article),
+        title: titleOf(article),
+        summary: excerptOf(article),
+        image: imgOf(article),
+        badge: badgeLabel,
+        date: dateOf(article),
+        author: article?.author || "Editorial Team",
+        actionLabel: undefined,
+        actionUrl: undefined,
+        featured: false,
+        accentColor,
+      };
+    },
+    [categoryColorMap]
+  );
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
