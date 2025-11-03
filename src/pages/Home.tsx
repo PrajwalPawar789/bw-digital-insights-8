@@ -34,10 +34,11 @@ const Home = () => {
   const { main, secondary, headlines, mostRead, latestGrid, latestMagazine } = useMemo(() => {
     const byDate = [...articles].filter(Boolean).sort((a, b) => new Date(b?.date || 0).getTime() - new Date(a?.date || 0).getTime());
     const featuredFirst = [...byDate].sort((a, b) => (b?.featured ? 1 : 0) - (a?.featured ? 1 : 0));
-    const main = featuredFirst[0];
-    const secondary = featuredFirst.slice(1, 3);
+  const main = featuredFirst[0];
+  // show up to 3 secondary teasers in the right column
+  const secondary = featuredFirst.slice(1, 4);
     const headlines = featuredFirst.slice(3, 11);
-    const mostRead = byDate.slice(0, 5);
+    const mostRead = byDate.slice(0, 4);
     const latestGrid = byDate.slice(11, 15);
     const latestMagazine = magazines[0] || null;
     return { main, secondary, headlines, mostRead, latestGrid, latestMagazine };
@@ -101,8 +102,8 @@ const Home = () => {
                 </Link>
 
                 <div className="p-4 bg-white rounded-md">
-                  <div className="inline-flex px-3 py-1 rounded bg-insightRed text-white text-xs font-bold mb-3">{categoryOf(main)}</div>
-                  <h1 className="text-3xl md:text-4xl font-bold leading-tight text-insightBlack">{titleOf(main)}</h1>
+                  {/* category tag removed as requested */}
+                  <h1 style={{ fontSize: '27px' }} className="font-bold leading-tight text-insightBlack">{titleOf(main)}</h1>
                   <p className="text-gray-700 mt-2 line-clamp-2 md:line-clamp-3">{excerptOf(main)}</p>
                   <Link to={`/article/${slugOf(main)}`} className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium mt-3">Read full story <ChevronRight className="ml-1 h-4 w-4"/></Link>
                 </div>
@@ -116,16 +117,12 @@ const Home = () => {
             {secondary.map((a: any, i: number) => (
               <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="block group rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition">
                 <div className="aspect-video bg-gray-100 flex items-center justify-center">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="max-h-full max-w-full object-contain" />
+                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
                 </div>
               </Link>
             ))}
 
-            <Card className="overflow-hidden">
-              <div className="aspect-video bg-gray-100 flex items-center justify-center">
-                <img src={latestMagazine?.cover_image_url || "/placeholder.svg"} alt={latestMagazine?.title || "Latest Magazine"} className="max-h-full max-w-full object-contain"/>
-              </div>
-            </Card>
+            {/* Magazine promo removed from right column — show only article teasers here */}
           </aside>
         </div>
       </section>
@@ -182,58 +179,11 @@ const Home = () => {
             })()}
           </div>
 
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-3 text-insightBlack">Trending</h3>
-            <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4">
-              {articles.slice(0,10).map((a:any,i:number)=> (
-                <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[220px] bg-white rounded-md shadow-sm overflow-hidden group">
-                  <div className="flex items-center gap-3 p-3">
-                    <img src={imgOf(a)} alt={titleOf(a)} className="w-20 h-14 object-cover bg-black rounded"/>
-                    <div>
-                      <h4 className="font-semibold text-sm line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h4>
-                      <div className="text-xs text-gray-400 mt-1">{dateOf(a)}</div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+          {/* Trending section removed per design request */}
         </div>
       </section>
 
-      {/* Category sections (3) */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(() => {
-              const sorted = [...articles].filter(Boolean).sort((a:any,b:any)=>new Date(b?.date||0).getTime()-new Date(a?.date||0).getTime());
-              const cats = Array.from(new Set(sorted.map(s=>s.category).filter(Boolean))).slice(0,3);
-              return cats.map((cat:string, idx:number)=> {
-                const items = sorted.filter(s=>s.category===cat).slice(0,4);
-                return (
-                  <div key={cat} className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-semibold text-lg">{cat}</h4>
-                      <Link to={`/category/${encodeURIComponent(cat)}`} className="text-sm text-insightRed">View all</Link>
-                    </div>
-                    <div className="space-y-3">
-                      {items.map((it:any,i:number)=> (
-                        <Link key={slugOf(it)+i} to={`/article/${slugOf(it)}`} className="flex items-center gap-3 group">
-                          <img src={imgOf(it)} alt={titleOf(it)} className="w-20 h-14 object-contain bg-black rounded"/>
-                          <div>
-                            <h5 className="font-medium line-clamp-2 group-hover:text-insightRed">{titleOf(it)}</h5>
-                            <div className="text-xs text-gray-400">{dateOf(it)}</div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })
-            })()}
-          </div>
-        </div>
-      </section>
+      {/* Category sections removed (Technology / Leadership / Analytics) per request */}
 
       {/* Leadership Spotlight */}
       <section className="py-12 bg-gray-50">

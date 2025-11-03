@@ -29,7 +29,8 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
   initialPage,
 }) => {
   const [pdfError, setPdfError] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  const [viewerUrl, setViewerUrl] = React.useState<string | null>(null);
+  const [viewerData, setViewerData] = React.useState<Uint8Array | null>(null);
 
   const pageNavigationPluginInstance = pageNavigationPlugin();
   const { jumpToNextPage, jumpToPreviousPage, jumpToPage } = pageNavigationPluginInstance;
@@ -42,7 +43,6 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
 
   const handleDocumentLoad = () => {
     console.log("PDF loaded successfully");
-    setLoading(false);
     setPdfError(null);
 
     // If an initial page prop was provided, navigate to it (viewer pages are 0-based)
@@ -72,31 +72,57 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
 
   // respond to initialPage prop changes after load
   React.useEffect(() => {
-    if (!loading && typeof initialPage === 'number' && typeof jumpToPage === 'function') {
+    if (typeof initialPage === 'number' && typeof jumpToPage === 'function') {
       try {
         jumpToPage(Math.max(0, initialPage - 1));
       } catch (err) {
-        console.warn('Failed to jump to page on prop change', err);
+        // it's fine if viewer isn't ready yet
       }
     }
-  }, [initialPage, loading, jumpToPage]);
+  }, [initialPage, jumpToPage]);
 
   const retryLoad = () => {
-    setLoading(true);
     setPdfError(null);
   };
 
   // Check if file URL is valid
   React.useEffect(() => {
+    console.debug('[MagazinePDFViewer] incoming fileUrl:', fileUrl);
     if (!fileUrl || fileUrl.trim() === '') {
       setPdfError("No PDF file available");
-      setLoading(false);
       return;
     }
 
     // Reset states when fileUrl changes
-    setLoading(true);
     setPdfError(null);
+
+    // Prefetch the PDF to detect CORS / 401 issues early and provide a blob URL to the viewer.
+    let cancelled = false;
+    let createdUrl: string | null = null;
+    (async () => {
+      try {
+        const resp = await fetch(fileUrl, { method: 'GET' });
+        if (!resp.ok) {
+          throw new Error(`Failed to fetch PDF (status ${resp.status})`);
+        }
+        const arrayBuffer = await resp.arrayBuffer();
+        const uint8 = new Uint8Array(arrayBuffer);
+        console.debug('[MagazinePDFViewer] fetched PDF arrayBuffer size:', uint8.byteLength, 'bytes');
+        if (!cancelled) {
+          setViewerData(uint8);
+        }
+      } catch (err: any) {
+        console.error('Error fetching PDF for preview:', err);
+        setPdfError(err?.message || 'Failed to fetch PDF for preview');
+        setViewerUrl(null);
+        setViewerData(null);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      // viewerData is a typed array and doesn't need revocation
+    };
   }, [fileUrl]);
 
   if (!fileUrl || fileUrl.trim() === '') {
@@ -152,15 +178,7 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
 
       {/* Enhanced PDF Viewer */}
       <div className="relative bg-gray-50">
-        {loading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 backdrop-blur-sm">
-            <div className="text-center premium-card p-8">
-              <Loader2 className="h-12 w-12 animate-spin text-insightRed mx-auto mb-4" />
-              <p className="text-insightBlack font-medium text-lg mb-2">Loading Premium Content</p>
-              <p className="text-gray-600">Preparing your magazine experience...</p>
-            </div>
-          </div>
-        )}
+        {/* Viewer handles its own loading UI via renderLoader — avoid a separate global overlay that can get stuck */}
 
         {pdfError ? (
           <div className="text-center py-16 mx-4">
@@ -211,13 +229,15 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
                 <div className="h-full flex items-center justify-center">
                   <div className="pdf-page w-full h-full max-w-4xl mx-auto">
                     <Viewer
-                      fileUrl={fileUrl}
+                      fileUrl={viewerData || viewerUrl || fileUrl}
                       defaultScale={SpecialZoomLevel.PageFit}
                       scrollMode={ScrollMode.Page}
                       viewMode={ViewMode.SinglePage}
                       plugins={[pageNavigationPluginInstance, thumbnailPluginInstance, zoomPluginInstance]}
                       onDocumentLoad={handleDocumentLoad}
                       renderLoader={(percentages: number) => (
+                        <> 
+                          {console.debug('[MagazinePDFViewer] renderLoader percent:', percentages)}
                         <div className="flex items-center justify-center h-full">
                           <div className="text-center premium-card p-6">
                             <Loader2 className="h-8 w-8 animate-spin text-insightRed mx-auto mb-3" />
@@ -225,6 +245,7 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
                             <p className="text-sm text-gray-500">{Math.round(percentages)}% Complete</p>
                           </div>
                         </div>
+                        </>
                       )}
                     />
                   </div>
