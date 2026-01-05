@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -55,6 +55,42 @@ export type Database = {
           image_url?: string | null
           slug?: string
           title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          order_index: number
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          order_index?: number
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          order_index?: number
+          slug?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -115,6 +151,115 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      home_section_items: {
+        Row: {
+          action_label: string | null
+          action_url: string | null
+          article_slug: string | null
+          badge: string | null
+          created_at: string
+          featured: boolean
+          id: string
+          image_url: string | null
+          order_index: number
+          section_id: string
+          summary: string | null
+          title: string
+        }
+        Insert: {
+          action_label?: string | null
+          action_url?: string | null
+          article_slug?: string | null
+          badge?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: string
+          image_url?: string | null
+          order_index?: number
+          section_id: string
+          summary?: string | null
+          title: string
+        }
+        Update: {
+          action_label?: string | null
+          action_url?: string | null
+          article_slug?: string | null
+          badge?: string | null
+          created_at?: string
+          featured?: boolean
+          id?: string
+          image_url?: string | null
+          order_index?: number
+          section_id?: string
+          summary?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_section_items_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "home_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_sections: {
+        Row: {
+          accent_color: string | null
+          action_label: string | null
+          action_url: string | null
+          background_image_url: string | null
+          category_id: string | null
+          created_at: string
+          id: string
+          internal_name: string
+          kicker: string | null
+          layout_type: string
+          order_index: number
+          subtitle: string | null
+          title: string
+        }
+        Insert: {
+          accent_color?: string | null
+          action_label?: string | null
+          action_url?: string | null
+          background_image_url?: string | null
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          internal_name: string
+          kicker?: string | null
+          layout_type?: string
+          order_index?: number
+          subtitle?: string | null
+          title: string
+        }
+        Update: {
+          accent_color?: string | null
+          action_label?: string | null
+          action_url?: string | null
+          background_image_url?: string | null
+          category_id?: string | null
+          created_at?: string
+          id?: string
+          internal_name?: string
+          kicker?: string | null
+          layout_type?: string
+          order_index?: number
+          subtitle?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_sections_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       leadership_profiles: {
         Row: {
@@ -201,6 +346,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "magazine_articles_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "trending_articles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "magazine_articles_magazine_id_fkey"
             columns: ["magazine_id"]
             isOneToOne: false
@@ -258,6 +410,13 @@ export type Database = {
             columns: ["featured_article_id"]
             isOneToOne: false
             referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "magazines_featured_article_id_fkey"
+            columns: ["featured_article_id"]
+            isOneToOne: false
+            referencedRelation: "trending_articles"
             referencedColumns: ["id"]
           },
         ]
@@ -411,7 +570,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      trending_articles: {
+        Row: {
+          author: string | null
+          category: string | null
+          content: string | null
+          created_at: string | null
+          date: string | null
+          excerpt: string | null
+          featured: boolean | null
+          id: string | null
+          image_url: string | null
+          slug: string | null
+          title: string | null
+          updated_at: string | null
+          view_count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
