@@ -49,7 +49,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Headline ticker */}
-      <div className="bg-insightBlack text-white overflow-hidden">
+      {/* <div className="bg-insightBlack text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 py-2">
             <span className="inline-flex items-center px-3 py-1 rounded-full bg-insightRed text-white text-xs font-bold uppercase tracking-wide">
@@ -66,7 +66,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* HERO split */}
       <section className="py-6">

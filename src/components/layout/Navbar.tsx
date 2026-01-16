@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Facebook, Twitter, Instagram, Linkedin, Search } from 'lucide-react';
+import { Menu, X, Facebook, Twitter, Instagram, Linkedin, Search, Newspaper } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
+import { useArticles } from '@/hooks/useArticles';
 
 const categories = [
   { href: '/', label: 'Home' },
@@ -12,9 +13,20 @@ const categories = [
   { href: '/contact', label: 'Contact' },
 ];
 
+function titleOf(a: any) { return a?.title || 'Untitled'; }
+function slugOf(a: any) { return a?.slug || ''; }
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { settings } = useSettings();
+  const { data: rawArticles = [] } = useArticles();
+  const articles = Array.isArray(rawArticles) ? rawArticles : [];
+  const headlines = useMemo(() => {
+    return [...articles]
+      .filter(Boolean)
+      .sort((a, b) => new Date(b?.date || 0).getTime() - new Date(a?.date || 0).getTime())
+      .slice(0, 8);
+  }, [articles]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -22,14 +34,30 @@ const Navbar = () => {
     <header className="sticky top-0 z-[1000] shadow-sm">
       {/* Top Bar */}
       <div className="hidden md:block bg-insightBlack text-white text-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center gap-4">
+          <div className="flex items-center gap-4 shrink-0">
             <span className="opacity-80">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-insightRed text-white text-xs font-bold uppercase tracking-wide shrink-0">
+                <Newspaper className="w-3 h-3 mr-1" /> Latest
+              </span>
+              <div className="relative flex-1 overflow-hidden">
+                <div className="whitespace-nowrap animate-marquee">
+                  {headlines.map((a: any, i: number) => (
+                    <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="inline-flex items-center text-sm text-white/90 hover:text-white mx-6">
+                      {titleOf(a)}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 shrink-0">
             <a href="#" className="opacity-80 hover:opacity-100 transition"><Facebook size={16} /></a>
             <a href="#" className="opacity-80 hover:opacity-100 transition"><Twitter size={16} /></a>
-            <a href="#" className="opacity-80 hover:opacity-100 transition"><Instagram size={16} /></a>
+            <a href="https://www.instagram.com/theciovision/" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Instagram size={16} /></a>
             <a href="https://www.linkedin.com/company/theciovision" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Linkedin size={16} /></a>
             <Link to="/magazine" className="ml-4 inline-flex items-center px-3 py-1 rounded-full bg-insightRed hover:bg-insightRed/90 text-white font-medium">Subscribe</Link>
           </div>
@@ -39,7 +67,7 @@ const Navbar = () => {
       {/* Masthead */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="h-20 flex items-center justify-between">
+          <div className="h-20 flex items-center gap-8">
             {/* Logo */}
             <Link to="/" className="flex items-center group">
               <div className="relative">
@@ -66,14 +94,14 @@ const Navbar = () => {
             </Link>
 
             {/* Actions */}
-            <div className="hidden lg:flex items-center gap-4">
+            <div className="hidden lg:flex items-center gap-4 ml-auto">
               <div className="relative">
-                <input className="h-10 w-64 pl-10 pr-3 rounded-md border border-gray-200 bg-gray-50 focus:bg-white focus:border-insightRed outline-none transition" placeholder="Search" />
+                <input className="h-10 w-56 xl:w-64 pl-10 pr-3 rounded-md border border-gray-200 bg-gray-50 focus:bg-white focus:border-insightRed outline-none transition" placeholder="Search" />
                 <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               </div>
               <Link to="/magazine" className="inline-flex items-center h-10 px-4 rounded-md bg-insightRed text-white hover:bg-insightRed/90 transition">Read Latest</Link>
             </div>
-            <button className="lg:hidden inline-flex items-center justify-center p-3 rounded-md text-insightBlack hover:text-insightRed hover:bg-gray-100 focus:outline-none transition-colors duration-200" onClick={toggleMenu}>
+            <button className="lg:hidden inline-flex items-center justify-center p-3 rounded-md text-insightBlack hover:text-insightRed hover:bg-gray-100 focus:outline-none transition-colors duration-200 ml-auto" onClick={toggleMenu}>
               <span className="sr-only">Open main menu</span>
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>

@@ -154,7 +154,7 @@ const ArticleDetail = () => {
             </div>
           </div>
           
-          <div className="mt-12 bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+          {/* <div className="mt-12 bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center mb-4">
               <MessageSquare className="h-5 w-5 mr-2 text-insightRed" />
               <h3 className="text-xl font-semibold text-insightBlack">Join the Conversation</h3>
@@ -163,7 +163,7 @@ const ArticleDetail = () => {
             <Button className="bg-insightRed hover:bg-insightBlack text-white transition-colors">
               Leave a Comment
             </Button>
-          </div>
+          </div> */}
         </div>
         
         {relatedArticles.length > 0 && (
