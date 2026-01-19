@@ -1,29 +1,32 @@
-import React, {useEffect} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  MinimalButton,
   ScrollMode,
   SpecialZoomLevel,
-  Viewer,
   ViewMode,
+  Viewer,
   Worker,
+  type DocumentLoadEvent,
+  type LoadError,
 } from '@react-pdf-viewer/core';
-import {
-  pageNavigationPlugin,
-} from '@react-pdf-viewer/page-navigation';
-import {
-  ThumbnailDirection,
-  thumbnailPlugin,
-} from '@react-pdf-viewer/thumbnail';
-import { fullScreenPlugin } from '@react-pdf-viewer/full-screen';
-import { zoomPlugin } from '@react-pdf-viewer/zoom';
-import '@react-pdf-viewer/full-screen/lib/styles/index.css';
-import { Button } from '@/components/ui/button';
-import { FileWarning, Loader2, RefreshCw, Maximize2 } from 'lucide-react';
-
+import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
 import '@react-pdf-viewer/core/lib/styles/index.css';
-import '@react-pdf-viewer/page-navigation/lib/styles/index.css';
-import '@react-pdf-viewer/thumbnail/lib/styles/index.css';
-import '@react-pdf-viewer/zoom/lib/styles/index.css';
+import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  FileWarning,
+  Loader2,
+  Maximize2,
+  RefreshCw,
+} from 'lucide-react';
+
+const PDF_WORKER_URL = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url
+).toString();
 
 interface MagazinePDFViewerProps {
   fileUrl: string;
@@ -42,97 +45,124 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
   fullScreen = false,
   initialPage,
 }) => {
-  const [pdfError, setPdfError] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [viewerData, setViewerData] = React.useState<string | null>(null);
-
-  useEffect(() => {
-    let objectUrl: string | null = null;
-    const loadPdf = async () => {
-      if (!fileUrl) {
-        setPdfError("No file URL provided.");
-        setIsLoading(false);
-        return;
-      }
-      
-      try {
-        setIsLoading(true);
-        setPdfError(null);
-        
-        const response = await fetch(fileUrl);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch PDF: ${response.status} ${response.statusText}`);
-        }
-        
-        const arrayBuffer = await response.arrayBuffer();
-        const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-        objectUrl = URL.createObjectURL(blob);
-        setViewerData(objectUrl);
-        
-      } catch (error) {
-        setPdfError(error instanceof Error ? error.message : "An unknown error occurred while loading the PDF.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadPdf();
-
-    return () => {
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
-    };
-  }, [fileUrl]);
+  const isMobile = useIsMobile();
+  const [numPages, setNumPages] = useState(0);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const pageNavigationPluginInstance = pageNavigationPlugin();
-  const { jumpToNextPage, jumpToPreviousPage, jumpToPage } =
+  const { CurrentPageLabel, GoToNextPage, GoToPreviousPage } =
     pageNavigationPluginInstance;
 
-  const thumbnailPluginInstance = thumbnailPlugin();
-  const { Thumbnails } = thumbnailPluginInstance;
+  const viewMode = isMobile ? ViewMode.SinglePage : ViewMode.DualPageWithCover;
+  const initialPageIndex =
+    typeof initialPage === 'number' && !Number.isNaN(initialPage)
+      ? Math.max(0, initialPage - 1)
+      : 0;
 
-  const zoomPluginInstance = zoomPlugin();
-  const { ZoomInButton, ZoomOutButton, ZoomPopover } = zoomPluginInstance;
-  const fullScreenPluginInstance = fullScreenPlugin();
-  const { EnterFullScreen } = fullScreenPluginInstance;
+  useEffect(() => {
+    setNumPages(0);
+  }, [fileUrl]);
 
-  const handleDocumentLoad = () => {
-    setPdfError(null);
-    try {
-      if (
-        typeof initialPage === 'number' &&
-        initialPage >= 1 &&
-        typeof jumpToPage === 'function'
-      ) {
-        jumpToPage(Math.max(0, initialPage - 1));
-      }
-    } catch (e) {
-      console.warn('Failed to jump to initial page', e);
+  useEffect(() => {
+    if (typeof initialPage === 'number' && numPages > 0) {
+      const target = Math.max(1, Math.min(numPages, initialPage));
+      pageNavigationPluginInstance.jumpToPage(target - 1);
     }
-  };
+  }, [initialPage, numPages, pageNavigationPluginInstance]);
 
-  // Keyboard nav (← →)
-  React.useEffect(() => {
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
+        return;
+      }
       if (e.key === 'ArrowRight') {
-        try {
-          jumpToNextPage();
-        } catch (_) {}
+        pageNavigationPluginInstance.jumpToNextPage();
       } else if (e.key === 'ArrowLeft') {
-        try {
-          jumpToPreviousPage();
-        } catch (_) {}
-      } else if (e.key === 'f' || e.key === 'F') {
-        if (onFullScreen) onFullScreen();
+        pageNavigationPluginInstance.jumpToPreviousPage();
+      } else if ((e.key === 'f' || e.key === 'F') && onFullScreen) {
+        onFullScreen();
+      } else if (e.key === 'Escape' && fullScreen && onFullScreen) {
+        onFullScreen();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [jumpToNextPage, jumpToPreviousPage, onFullScreen]);
+  }, [pageNavigationPluginInstance, onFullScreen, fullScreen]);
 
-  const pdfjsVersion = '3.11.174';
+  const handleDocumentLoad = useCallback(
+    ({ doc }: DocumentLoadEvent) => {
+      setNumPages(doc.numPages);
+    },
+    []
+  );
+
+  const handleRetry = useCallback(() => {
+    setNumPages(0);
+    setReloadKey((prev) => prev + 1);
+  }, []);
+
+  const handleDownload = useCallback(() => {
+    if (onDownload) {
+      onDownload();
+      return;
+    }
+    if (fileUrl) {
+      window.open(fileUrl, '_blank', 'noopener,noreferrer');
+    }
+  }, [fileUrl, onDownload]);
+
+  const renderLoader = useCallback((percentages: number) => {
+    const progress = Math.min(100, Math.round(percentages));
+    return (
+      <div className="flipbook-loading">
+        <Loader2 className="h-10 w-10 animate-spin text-insightRed mb-4" />
+        <p className="text-lg font-medium text-gray-700">
+          Loading magazine content...
+        </p>
+        <div className="w-56 h-2 bg-gray-200 rounded-full overflow-hidden mt-4">
+          <div
+            className="h-full bg-insightRed transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="text-xs text-gray-500 mt-2">{progress}% Complete</p>
+      </div>
+    );
+  }, []);
+
+  const renderError = useCallback(
+    (error: LoadError) => (
+      <div className="flex items-center justify-center py-16">
+        <div className="text-center py-10 mx-4 max-w-md premium-card">
+          <FileWarning className="h-14 w-14 text-insightRed mx-auto mb-4" />
+          <h3 className="text-insightBlack font-bold text-xl mb-2">
+            Could Not Load Magazine
+          </h3>
+          <p className="text-gray-600 text-sm mb-6">
+            {error?.message || 'An unexpected error occurred.'}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button
+              onClick={handleRetry}
+              className="bg-insightRed hover:bg-insightBlack text-white"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Try Again
+            </Button>
+            <Button
+              onClick={handleDownload}
+              variant="outline"
+              className="border-insightRed text-insightRed hover:bg-insightRed hover:text-white"
+            >
+              Open PDF
+            </Button>
+          </div>
+        </div>
+      </div>
+    ),
+    [handleRetry, handleDownload]
+  );
 
   if (!fileUrl || fileUrl.trim() === '') {
     return (
@@ -142,7 +172,7 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
           No PDF Available
         </p>
         <p className="text-yellow-600 text-sm">
-          This magazine doesn't have a PDF file uploaded yet.
+          This magazine does not have a PDF file uploaded yet.
         </p>
       </div>
     );
@@ -150,9 +180,8 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
 
   return (
     <div className="pdf-viewer-container">
-      {/* Header */}
       <div className="pdf-viewer-toolbar">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-insightRed rounded-full flex items-center justify-center">
               <FileWarning className="h-4 w-4 text-white" />
@@ -166,85 +195,96 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
               <p className="text-sm text-gray-300">{title}</p>
             </div>
           </div>
-
-          <div className="flex items-center space-x-2">
-            <ZoomOutButton />
-            <ZoomPopover />
-            <ZoomInButton />
-            <EnterFullScreen>
-              {(props) => (
-                <Button
-                  onClick={props.onClick}
-                  variant="outline"
-                  className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-                >
-                  <Maximize2 className="h-4 w-4 mr-2" />
-                  Full screen
-                </Button>
-              )}
-            </EnterFullScreen>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              onClick={handleDownload}
+              variant="outline"
+              className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Download
+            </Button>
+            {onFullScreen && (
+              <Button
+                onClick={onFullScreen}
+                variant="outline"
+                className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+              >
+                <Maximize2 className="h-4 w-4 mr-2" />
+                {fullScreen ? 'Exit Reading' : 'Full screen'}
+              </Button>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="relative bg-gray-50 h-[calc(100vh-200px)]">
-        {isLoading ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50/80 z-10">
-            <Loader2 className="h-12 w-12 animate-spin text-insightRed mb-4" />
-            <p className="text-lg font-medium text-gray-700">Loading magazine content...</p>
-            <p className="text-sm text-gray-500">0% Complete</p>
+      <div className="flipbook-stage">
+        <div className="flipbook-shell">
+          <div
+            className={cn(
+              'flipbook-book magazine-viewer-frame',
+              fullScreen && 'magazine-viewer-frame--fullscreen'
+            )}
+          >
+            <Worker workerUrl={PDF_WORKER_URL}>
+              <Viewer
+                key={`${fileUrl}-${reloadKey}`}
+                fileUrl={fileUrl}
+                viewMode={viewMode}
+                scrollMode={ScrollMode.Page}
+                defaultScale={SpecialZoomLevel.PageFit}
+                plugins={[pageNavigationPluginInstance]}
+                initialPage={initialPageIndex}
+                onDocumentLoad={handleDocumentLoad}
+                renderLoader={renderLoader}
+                renderError={renderError}
+              />
+            </Worker>
           </div>
-        ) : pdfError || !viewerData ? (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center py-16 mx-4">
-              <div className="premium-card p-8 max-w-md mx-auto">
-                <FileWarning className="h-16 w-16 text-insightRed mx-auto mb-4" />
-                <h3 className="text-insightBlack font-bold text-xl mb-2">
-                  Could Not Load Magazine
-                </h3>
-                <p className="text-gray-600 text-sm mb-6">
-                  {pdfError || "An unexpected error occurred."}
-                </p>
+        </div>
+
+        {numPages > 0 && (
+          <div className="flipbook-nav">
+            <GoToPreviousPage>
+              {({ onClick, isDisabled }) => (
                 <Button
-                  onClick={() => window.location.reload()} // Simple retry
-                  className="bg-insightRed hover:bg-insightBlack text-white"
+                  onClick={onClick}
+                  variant="outline"
+                  disabled={isDisabled}
+                  className="border-gray-300"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Try Again
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Prev
                 </Button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="h-full grid grid-cols-[220px_1fr] gap-4">
-            <div className="hidden lg:block overflow-y-auto border-r bg-gray-100">
-              <Thumbnails />
-            </div>
-            <div className="h-full">
-              <Worker workerUrl={`https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.js`}>
-            <Viewer
-              fileUrl={viewerData as string}
-              plugins={[
-                pageNavigationPluginInstance,
-                thumbnailPluginInstance,
-                zoomPluginInstance,
-                fullScreenPluginInstance,
-              ]}
-                  onDocumentLoad={handleDocumentLoad}
-                  renderError={(_error) => (
-                    <div className="text-center py-16">
-                      <p className="text-red-600">Failed to render PDF.</p>
-                    </div>
-                  )}
-                  theme={{
-                    theme: 'dark',
-                  }}
-                  viewMode={ViewMode.DualPage}
-                  scrollMode={ScrollMode.Vertical}
-                  defaultScale={SpecialZoomLevel.PageFit}
-                />
-              </Worker>
-            </div>
+              )}
+            </GoToPreviousPage>
+            <CurrentPageLabel>
+              {({ currentPage, numberOfPages }) => (
+                <div className="text-sm text-gray-600">
+                  Page{' '}
+                  <span className="font-semibold">
+                    {numberOfPages ? currentPage + 1 : '-'}
+                  </span>{' '}
+                  of{' '}
+                  <span className="font-semibold">
+                    {numberOfPages || '-'}
+                  </span>
+                </div>
+              )}
+            </CurrentPageLabel>
+            <GoToNextPage>
+              {({ onClick, isDisabled }) => (
+                <Button
+                  onClick={onClick}
+                  variant="outline"
+                  disabled={isDisabled}
+                  className="border-gray-300"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              )}
+            </GoToNextPage>
           </div>
         )}
       </div>

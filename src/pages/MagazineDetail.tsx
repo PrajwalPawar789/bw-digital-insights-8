@@ -51,10 +51,13 @@ const MagazineDetail = () => {
 
   return (
     <div className={cn(
-      "min-h-screen py-12 transition-all duration-300 bg-white",
-      fullScreen ? "fixed inset-0 z-50 p-4 overflow-auto" : ""
+      "min-h-screen transition-all duration-300 bg-white",
+      fullScreen ? "fixed inset-0 z-50 p-4 overflow-auto" : "py-12"
     )}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={cn(
+        "mx-auto px-4 sm:px-6 lg:px-8",
+        fullScreen ? "max-w-none" : "max-w-7xl"
+      )}>
         {/* Magazine Header */}
         {!fullScreen && (
           <>
