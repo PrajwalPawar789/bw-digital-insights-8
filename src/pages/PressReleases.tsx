@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Megaphone } from "lucide-react";
 import { pressReleaseData } from "@/data/pressReleaseData";
+import Seo from "@/components/seo/Seo";
+import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
 
 // Legacy mock removed. Normalizing real data for the editorial list
 const pressReleases = pressReleaseData.map(pr => ({
@@ -19,6 +21,13 @@ const PressReleases = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [page, setPage] = useState(1);
+  const siteOrigin = getSiteOrigin();
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Press Releases", url: `${siteOrigin}/press-releases` },
+      ])
+    : undefined;
 
   const categories = allCategories;
 
@@ -41,8 +50,14 @@ const PressReleases = () => {
   }, [searchTerm, selectedCategory]);
 
   return (
-    <div className="min-h-screen">
-      <section className="bg-white border-b">
+    <>
+      <Seo
+        title="Press Releases"
+        description="Official announcements, company news, and media updates."
+        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+      />
+      <div className="min-h-screen">
+        <section className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div className="flex flex-col gap-4 mb-6">
             <div className="relative w-full max-w-xl">
@@ -91,6 +106,7 @@ const PressReleases = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 

@@ -7,6 +7,15 @@ import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import MagazinePDFViewer from '@/components/MagazinePDFViewer';
+import Seo from "@/components/seo/Seo";
+import { useSettings } from "@/hooks/useSettings";
+import {
+  buildBreadcrumbSchema,
+  buildPublicationIssueSchema,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
 
 const MagazineDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -14,49 +23,108 @@ const MagazineDetail = () => {
   const { data: magazineArticles = [], isLoading: articlesLoading } = useMagazineArticles(magazine?.id || '');
   const [fullScreen, setFullScreen] = useState<boolean>(false);
   const [initialPage, setInitialPage] = useState<number | undefined>(undefined);
+  const { settings } = useSettings();
 
-  const toggleFullScreen = () => setFullScreen(!fullScreen);
+  const toggleFullScreen = () => setFullScreen((prev) => !prev);
+
+  useEffect(() => {
+    if (!fullScreen) {
+      return;
+    }
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [fullScreen]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="flex items-center space-x-2">
-          <Loader2 className="h-8 w-8 animate-spin text-insightRed" />
-          <span className="text-lg">Loading magazine...</span>
+      <>
+        <Seo title="Magazine issue" noindex />
+        <div className="min-h-screen flex items-center justify-center bg-white">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-8 w-8 animate-spin text-insightRed" />
+            <span className="text-lg">Loading magazine...</span>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (error || !magazine) {
     console.log("Magazine not found, redirecting...");
     return (
-      <div className="min-h-screen py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl font-bold text-insightBlack mb-4">Magazine Not Found</h1>
-          <p className="mb-6 text-gray-600">The magazine you're looking for doesn't exist or the URL is invalid.</p>
-          <div className="mb-6">
-            <p className="text-sm text-gray-500">Requested slug: <code className="bg-gray-100 px-2 py-1 rounded">{slug}</code></p>
+      <>
+        <Seo title="Magazine not found" noindex />
+        <div className="min-h-screen py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-3xl font-bold text-insightBlack mb-4">Magazine Not Found</h1>
+            <p className="mb-6 text-gray-600">The magazine you're looking for doesn't exist or the URL is invalid.</p>
+            <div className="mb-6">
+              <p className="text-sm text-gray-500">Requested slug: <code className="bg-gray-100 px-2 py-1 rounded">{slug}</code></p>
+            </div>
+            <Link
+              to="/magazine"
+              className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md text-sm font-medium transition-colors"
+            >
+              <ChevronLeft className="mr-2 h-4 w-4" /> Back to Magazines
+            </Link>
           </div>
-          <Link
-            to="/magazine"
-            className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md text-sm font-medium transition-colors"
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back to Magazines
-          </Link>
         </div>
-      </div>
+      </>
     );
   }
 
+  const siteOrigin = getSiteOrigin();
+  const canonicalUrl = siteOrigin && slug ? `${siteOrigin}/magazine/${slug}` : undefined;
+  const publisherName = settings.siteTitle || settings.companyName || "The CIO Vision";
+  const publisherLogo = toAbsoluteUrl(settings.siteLogo || "/ciovision-logo.svg", siteOrigin);
+  const seoImage = toAbsoluteUrl(
+    magazine.cover_image_url || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800",
+    siteOrigin
+  );
+  const baseDescription = magazine.description || "Explore the latest magazine issue featuring executive interviews and industry analysis.";
+  const seoDescription = truncateText(baseDescription);
+
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Magazine", url: `${siteOrigin}/magazine` },
+        { name: magazine.title, url: canonicalUrl || `${siteOrigin}${window.location.pathname}` },
+      ])
+    : undefined;
+
+  const issueSchema = buildPublicationIssueSchema({
+    name: magazine.title,
+    description: seoDescription,
+    image: seoImage,
+    url: canonicalUrl,
+    datePublished: magazine.publish_date ? new Date(magazine.publish_date).toISOString() : undefined,
+    issueNumber: magazine.issue_number,
+    publisherName,
+    publisherLogo,
+  });
+
   return (
-    <div className={cn(
-      "min-h-screen transition-all duration-300 bg-white",
-      fullScreen ? "fixed inset-0 z-50 p-4 overflow-auto" : "py-12"
-    )}>
+    <>
+      <Seo
+        title={magazine.title}
+        description={baseDescription}
+        image={seoImage}
+        type="article"
+        publishedTime={magazine.publish_date ? new Date(magazine.publish_date).toISOString() : undefined}
+        schema={[...(breadcrumbSchema ? [breadcrumbSchema] : []), issueSchema]}
+      />
+      <div className={cn(
+        "min-h-screen transition-all duration-300 bg-white",
+        fullScreen ? "fixed inset-0 z-[2000] p-4 overflow-auto" : "py-12"
+      )}>
       <div className={cn(
         "mx-auto px-4 sm:px-6 lg:px-8",
-        fullScreen ? "max-w-none" : "max-w-7xl"
+        fullScreen ? "max-w-none h-full flex flex-col" : "max-w-7xl"
       )}>
         {/* Magazine Header */}
         {!fullScreen && (
@@ -168,7 +236,10 @@ const MagazineDetail = () => {
         )}
 
         {/* PDF Viewer */}
-        <div id="pdf-viewer" className="mb-12">
+        <div
+          id="pdf-viewer"
+          className={cn("mb-12", fullScreen && "mb-0 flex-1 min-h-0")}
+        >
           <MagazinePDFViewer
             fileUrl={magazine.pdf_url || "/sample-magazine.pdf"}
             title={magazine.title}
@@ -216,6 +287,7 @@ const MagazineDetail = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

@@ -43,5 +43,5 @@ export const useDatabaseSettings = () => {
 
 export const useCompanyName = () => {
   const { data: settings } = useDatabaseSettings();
-  return settings?.company_name || 'Insights Business Magazine';
+  return settings?.company_name || 'The CIO Vision';
 };

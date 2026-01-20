@@ -9,6 +9,8 @@ import { Calendar, ChevronRight, Newspaper, BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Seo from "@/components/seo/Seo";
+import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
 
 function imgOf(a: any) { return a?.image_url || "/placeholder.svg"; }
 function titleOf(a: any) { return a?.title || "Untitled"; }
@@ -46,8 +48,21 @@ const Home = () => {
     return { main, leftSide, rightSide, headlines, mostRead, latestGrid, latestMagazine };
   }, [articles, magazines]);
 
+  const siteOrigin = getSiteOrigin();
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([{ name: "Home", url: siteOrigin }])
+    : undefined;
+  const seoImage = latestMagazine?.cover_image_url || main?.image_url || "/ciovision-logo.svg";
+  const seoDescription = `${settings.companyName} delivers executive interviews, market intelligence, and leadership insights for business leaders.`;
+
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      <Seo
+        description={seoDescription}
+        image={seoImage}
+        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+      />
+      <div className="min-h-screen bg-white">
       {/* Headline ticker */}
       {/* <div className="bg-insightBlack text-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -247,6 +262,7 @@ const Home = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 

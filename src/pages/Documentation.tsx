@@ -10,9 +10,18 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Seo from "@/components/seo/Seo";
+import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
 
 const Documentation = () => {
   const [copiedEndpoint, setCopiedEndpoint] = useState<string | null>(null);
+  const siteOrigin = getSiteOrigin();
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Documentation", url: `${siteOrigin}/documentation` },
+      ])
+    : undefined;
 
   const copyToClipboard = (text: string, endpoint: string) => {
     navigator.clipboard.writeText(text);
@@ -163,11 +172,11 @@ const Documentation = () => {
           response: `[
   {
     "id": 1,
-    "title": "BW Digital Insights Launches New Executive Magazine",
+    "title": "The CIO Vision Launches New Executive Magazine",
     "date": "April 15, 2025",
     "category": "Company News",
-    "excerpt": "BW Digital Insights announces the launch of...",
-    "slug": "bw-digital-insights-launches-new-executive-magazine"
+    "excerpt": "The CIO Vision announces the launch of...",
+    "slug": "the-cio-vision-launches-new-executive-magazine"
   },
   ...
 ]`
@@ -177,15 +186,15 @@ const Documentation = () => {
           method: "GET",
           description: "Get a specific press release by slug",
           parameters: [
-            { name: "slug", description: "Press release slug (e.g., bw-digital-insights-launches-new-executive-magazine)", type: "string", required: true }
+            { name: "slug", description: "Press release slug (e.g., the-cio-vision-launches-new-executive-magazine)", type: "string", required: true }
           ],
           response: `{
   "id": 1,
-  "title": "BW Digital Insights Launches New Executive Magazine",
+  "title": "The CIO Vision Launches New Executive Magazine",
   "date": "April 15, 2025",
   "category": "Company News",
-  "content": "BW Digital Insights, a leading business media company...",
-  "slug": "bw-digital-insights-launches-new-executive-magazine"
+  "content": "The CIO Vision, a leading business media company...",
+  "slug": "the-cio-vision-launches-new-executive-magazine"
 }`
         }
       ]
@@ -193,19 +202,25 @@ const Documentation = () => {
   ];
 
   return (
-    <div className="min-h-screen py-16 bg-gradient-to-b from-gray-50 to-white">
+    <>
+      <Seo
+        title="Documentation"
+        description="API documentation for accessing magazines, articles, leadership profiles, and press releases."
+        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+      />
+      <div className="min-h-screen py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto mb-12 text-center">
           <h1 className="text-4xl font-bold text-insightBlack mb-4">API Documentation</h1>
           <p className="text-xl text-gray-600">
-            Complete reference for BW Digital Insights content API
+            Complete reference for The CIO Vision content API
           </p>
         </div>
 
         <div className="mb-12 p-6 bg-insightBlack text-white rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-4">Getting Started</h2>
           <p className="mb-4">
-            BW Digital Insights provides a RESTful API to access our magazine content, articles, leadership profiles, and press releases. All endpoints use slug-based URLs for consistent, SEO-friendly resource identification.
+            The CIO Vision provides a RESTful API to access our magazine content, articles, leadership profiles, and press releases. All endpoints use slug-based URLs for consistent, SEO-friendly resource identification.
           </p>
           <div className="bg-gray-800 p-4 rounded-md">
             <div className="flex justify-between items-center mb-2">
@@ -401,6 +416,7 @@ const Documentation = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

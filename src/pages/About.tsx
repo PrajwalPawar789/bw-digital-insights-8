@@ -8,6 +8,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useCompanyName } from '@/hooks/useDatabaseSettings';
+import Seo from "@/components/seo/Seo";
+import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
 
 const About = () => {
   const [activeTeamMember, setActiveTeamMember] = useState<number | null>(null);
@@ -38,6 +40,13 @@ const About = () => {
   ];
 
   const companyName = useCompanyName();
+  const siteOrigin = getSiteOrigin();
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "About", url: `${siteOrigin}/about` },
+      ])
+    : undefined;
 
   useEffect(() => {
     // Set up intersection observer for scroll animations
@@ -62,7 +71,13 @@ const About = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <>
+      <Seo
+        title="About"
+        description={`Learn about ${companyName}, our mission, values, and commitment to business intelligence.`}
+        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+      />
+      <div className="min-h-screen">
       {/* Hero Banner */}
       <div className="relative bg-gradient-to-r from-gray-900 to-insightBlack text-white py-20">
         <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center"></div>
@@ -201,6 +216,7 @@ const About = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 

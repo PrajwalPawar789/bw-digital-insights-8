@@ -8,11 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Filter, Calendar, ExternalLink, Loader2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Seo from "@/components/seo/Seo";
+import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
 
 const IndustryNews = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('all');
   const { data: newsData = [], isLoading } = useIndustryNews();
+  const siteOrigin = getSiteOrigin();
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Industry News", url: `${siteOrigin}/industry-news` },
+      ])
+    : undefined;
 
   const industries = ['all', ...Array.from(new Set(newsData.map(news => news.industry)))];
 
@@ -28,17 +37,26 @@ const IndustryNews = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center space-x-2">
-          <Loader2 className="h-8 w-8 animate-spin text-insightRed" />
-          <span className="text-lg">Loading industry news...</span>
+      <>
+        <Seo title="Industry News" noindex />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-8 w-8 animate-spin text-insightRed" />
+            <span className="text-lg">Loading industry news...</span>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <>
+      <Seo
+        title="Industry News"
+        description="Latest industry news, market shifts, and executive analysis across business sectors."
+        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+      />
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-insightBlack to-gray-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -153,6 +171,7 @@ const IndustryNews = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

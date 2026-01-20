@@ -11,7 +11,7 @@ export interface Testimonial {
 export const testimonialData: Testimonial[] = [
   {
     id: 1,
-    quote: "InsightsBW has been an invaluable resource for our executive team. The in-depth analysis and forward-looking perspectives have directly informed our strategic planning process.",
+    quote: "The CIO Vision has been an invaluable resource for our executive team. The in-depth analysis and forward-looking perspectives have directly informed our strategic planning process.",
     name: "Jonathan Reynolds",
     title: "Chief Executive Officer",
     company: "Nexus Innovations",
@@ -19,7 +19,7 @@ export const testimonialData: Testimonial[] = [
   },
   {
     id: 2,
-    quote: "The quality and depth of market insights provided by InsightsBW is unmatched. Their analysis has helped us identify emerging opportunities ahead of our competitors.",
+    quote: "The quality and depth of market insights provided by The CIO Vision is unmatched. Their analysis has helped us identify emerging opportunities ahead of our competitors.",
     name: "Michelle Zhang",
     title: "Chief Strategy Officer",
     company: "Global Ventures Corp",
@@ -27,7 +27,7 @@ export const testimonialData: Testimonial[] = [
   },
   {
     id: 3,
-    quote: "As a technology leader, I rely on InsightsBW to keep me informed of industry trends and breakthrough innovations. Their content consistently delivers value to my organization.",
+    quote: "As a technology leader, I rely on The CIO Vision to keep me informed of industry trends and breakthrough innovations. Their content consistently delivers value to my organization.",
     name: "David Rodriguez",
     title: "Chief Technology Officer",
     company: "Tech Solutions International",
@@ -35,7 +35,7 @@ export const testimonialData: Testimonial[] = [
   },
   {
     id: 4,
-    quote: "The leadership profiles and interviews in InsightsBW have provided me with practical insights that have directly influenced my management approach.",
+    quote: "The leadership profiles and interviews in The CIO Vision have provided me with practical insights that have directly influenced my management approach.",
     name: "Sarah Thompson",
     title: "Vice President of Operations",
     company: "Momentum Enterprises",
@@ -43,7 +43,7 @@ export const testimonialData: Testimonial[] = [
   },
   {
     id: 5,
-    quote: "InsightsBW has become essential reading for our entire executive committee. The content consistently challenges our thinking and broadens our strategic perspective.",
+    quote: "The CIO Vision has become essential reading for our entire executive committee. The content consistently challenges our thinking and broadens our strategic perspective.",
     name: "Michael Chen",
     title: "Chief Executive Officer",
     company: "Horizon Partners",
@@ -51,7 +51,7 @@ export const testimonialData: Testimonial[] = [
   },
   {
     id: 6,
-    quote: "The in-depth market analysis provided by InsightsBW has been crucial in our expansion planning. Their insights into emerging trends have given us a competitive edge.",
+    quote: "The in-depth market analysis provided by The CIO Vision has been crucial in our expansion planning. Their insights into emerging trends have given us a competitive edge.",
     name: "Jennifer Kumar",
     title: "Director of Business Development",
     company: "Global Reach Enterprises",

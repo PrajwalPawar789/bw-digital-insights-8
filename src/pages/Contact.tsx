@@ -14,6 +14,8 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { useCompanyName } from '@/hooks/useDatabaseSettings';
+import Seo from "@/components/seo/Seo";
+import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -33,6 +35,13 @@ const Contact = () => {
   });
 
   const companyName = useCompanyName();
+  const siteOrigin = getSiteOrigin();
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Contact", url: `${siteOrigin}/contact` },
+      ])
+    : undefined;
 
   const faqs = [
     {
@@ -125,7 +134,13 @@ const Contact = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <>
+      <Seo
+        title="Contact"
+        description={`Contact ${companyName} for business intelligence, partnerships, or media inquiries.`}
+        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+      />
+      <div className="min-h-screen">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-gray-900 to-insightBlack text-white py-20">
         <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1551038247-3d9af20df552?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center"></div>
@@ -361,7 +376,7 @@ const Contact = () => {
               height="100%" 
               style={{ border: 0 }} 
               loading="lazy"
-              title="InsightsBW Location"
+              title="The CIO Vision Location"
             ></iframe>
           </div>
         </section>
@@ -400,6 +415,7 @@ const Contact = () => {
         </section>
       </div>
     </div>
+    </>
   );
 };
 

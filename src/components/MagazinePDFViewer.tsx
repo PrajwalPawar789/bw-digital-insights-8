@@ -9,18 +9,21 @@ import {
   type LoadError,
 } from '@react-pdf-viewer/core';
 import { pageNavigationPlugin } from '@react-pdf-viewer/page-navigation';
+import { zoomPlugin } from '@react-pdf-viewer/zoom';
 import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/zoom/lib/styles/index.css';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import {
   ChevronLeft,
   ChevronRight,
-  Download,
   FileWarning,
   Loader2,
   Maximize2,
   RefreshCw,
+  ZoomIn as ZoomInIcon,
+  ZoomOut as ZoomOutIcon,
 } from 'lucide-react';
 
 const PDF_WORKER_URL = new URL(
@@ -50,8 +53,14 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
   const [reloadKey, setReloadKey] = useState(0);
 
   const pageNavigationPluginInstance = pageNavigationPlugin();
+  const zoomPluginInstance = zoomPlugin({ enableShortcuts: true });
   const { CurrentPageLabel, GoToNextPage, GoToPreviousPage } =
     pageNavigationPluginInstance;
+  const {
+    ZoomIn: ZoomInControl,
+    ZoomOut: ZoomOutControl,
+    CurrentScale,
+  } = zoomPluginInstance;
 
   const viewMode = isMobile ? ViewMode.SinglePage : ViewMode.DualPageWithCover;
   const initialPageIndex =
@@ -179,7 +188,12 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
   }
 
   return (
-    <div className="pdf-viewer-container">
+    <div
+      className={cn(
+        'pdf-viewer-container',
+        fullScreen && 'pdf-viewer-container--fullscreen'
+      )}
+    >
       <div className="pdf-viewer-toolbar">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center space-x-3">
@@ -196,14 +210,41 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              onClick={handleDownload}
-              variant="outline"
-              className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Download
-            </Button>
+            <div className="flex items-center gap-2">
+              <ZoomOutControl>
+                {({ onClick }) => (
+                  <Button
+                    onClick={onClick}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+                  >
+                    <ZoomOutIcon className="h-4 w-4 mr-2" />
+                    Zoom out
+                  </Button>
+                )}
+              </ZoomOutControl>
+              <CurrentScale>
+                {({ scale }) => (
+                  <span className="min-w-[56px] text-center text-xs font-semibold text-white/80">
+                    {Math.round(scale * 100)}%
+                  </span>
+                )}
+              </CurrentScale>
+              <ZoomInControl>
+                {({ onClick }) => (
+                  <Button
+                    onClick={onClick}
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+                  >
+                    <ZoomInIcon className="h-4 w-4 mr-2" />
+                    Zoom in
+                  </Button>
+                )}
+              </ZoomInControl>
+            </div>
             {onFullScreen && (
               <Button
                 onClick={onFullScreen}
@@ -233,7 +274,7 @@ const MagazinePDFViewer: React.FC<MagazinePDFViewerProps> = ({
                 viewMode={viewMode}
                 scrollMode={ScrollMode.Page}
                 defaultScale={SpecialZoomLevel.PageFit}
-                plugins={[pageNavigationPluginInstance]}
+                plugins={[pageNavigationPluginInstance, zoomPluginInstance]}
                 initialPage={initialPageIndex}
                 onDocumentLoad={handleDocumentLoad}
                 renderLoader={renderLoader}

@@ -21,8 +21,8 @@ interface SiteSettings {
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
-  siteTitle: "Insights Business Magazine",
-  companyName: "Insights Business Magazine",
+  siteTitle: "The CIO Vision",
+  companyName: "The CIO Vision",
   siteLogo: null,
   primaryColor: "#0f172a",
   analyticsCode: "",

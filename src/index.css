@@ -379,6 +379,27 @@
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+.pdf-viewer-container--fullscreen {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-viewer-container--fullscreen .flipbook-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-viewer-container--fullscreen .flipbook-shell {
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
 .pdf-viewer-toolbar {
   background: var(--gradient-dark);
   color: white;
@@ -425,7 +446,7 @@
 
 .magazine-viewer-frame--fullscreen {
   max-width: none;
-  height: min(88vh, 980px);
+  height: 100%;
 }
 
 .magazine-viewer-frame .rpv-core__viewer {

@@ -6,6 +6,15 @@ import { ChevronLeft, Calendar, User, Clock, Share2, Bookmark, MessageSquare, Ta
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { formatDistanceToNow } from 'date-fns';
+import Seo from "@/components/seo/Seo";
+import { useSettings } from "@/hooks/useSettings";
+import {
+  buildArticleSchema,
+  buildBreadcrumbSchema,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
 
 const ArticleDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -13,6 +22,7 @@ const ArticleDetail = () => {
   const { data: article, isLoading, error } = useArticleBySlug(slug || '');
   const { data: allArticles = [] } = useArticles();
   const [relatedArticles, setRelatedArticles] = useState<any[]>([]);
+  const { settings } = useSettings();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -57,31 +67,86 @@ const ArticleDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
-      </div>
+      <>
+        <Seo title="Loading article" noindex />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
+        </div>
+      </>
     );
   }
 
   if (error || !article) {
     return (
-      <div className="min-h-screen py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl font-bold text-insightBlack mb-4">Article Not Found</h1>
-          <p className="mb-6">The article you're looking for doesn't exist or has been removed.</p>
-          <Link
-            to="/"
-            className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back to Home
-          </Link>
+      <>
+        <Seo title="Article not found" noindex />
+        <div className="min-h-screen py-12 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-3xl font-bold text-insightBlack mb-4">Article Not Found</h1>
+            <p className="mb-6">The article you're looking for doesn't exist or has been removed.</p>
+            <Link
+              to="/"
+              className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              <ChevronLeft className="mr-2 h-4 w-4" /> Back to Home
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
+  const siteOrigin = getSiteOrigin();
+  const canonicalUrl = siteOrigin && slug ? `${siteOrigin}/article/${slug}` : undefined;
+  const publisherName = settings.siteTitle || settings.companyName || "The CIO Vision";
+  const publisherLogo = toAbsoluteUrl(settings.siteLogo || "/ciovision-logo.svg", siteOrigin);
+  const seoImage = toAbsoluteUrl(
+    article.image_url || "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800",
+    siteOrigin
+  );
+  const baseDescription = article.excerpt || article.content || "";
+  const seoDescription = truncateText(baseDescription);
+  const publishedTime = article.date ? new Date(article.date).toISOString() : undefined;
+
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Articles", url: `${siteOrigin}/articles` },
+        { name: article.title, url: canonicalUrl || `${siteOrigin}${window.location.pathname}` },
+      ])
+    : undefined;
+
+  const articleSchema = buildArticleSchema({
+    type: "Article",
+    headline: article.title,
+    description: seoDescription,
+    image: seoImage,
+    url: canonicalUrl,
+    author: article.author,
+    datePublished: publishedTime,
+    publisherName,
+    publisherLogo,
+    section: article.category,
+    keywords: article.category ? [article.category] : undefined,
+  });
+
+  const schema = [
+    ...(breadcrumbSchema ? [breadcrumbSchema] : []),
+    articleSchema,
+  ];
+
   return (
-    <div className="min-h-screen py-12 bg-gradient-to-b from-white to-gray-50">
+    <>
+      <Seo
+        title={article.title}
+        description={baseDescription}
+        image={seoImage}
+        type="article"
+        publishedTime={publishedTime}
+        author={article.author}
+        schema={schema}
+      />
+      <div className="min-h-screen py-12 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
           <Link
@@ -198,6 +263,7 @@ const ArticleDetail = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

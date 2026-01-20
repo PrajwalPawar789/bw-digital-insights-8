@@ -11,17 +11,20 @@ import SettingsManager from '@/components/admin/SettingsManager';
 import PressReleaseManager from '@/components/admin/PressReleaseManager';
 import TestimonialManager from '@/components/admin/TestimonialManager';
 import ClientLogosManager from "@/pages/admin/ClientLogosManager";
+import Seo from "@/components/seo/Seo";
 
 const AdminDashboard = () => {
   const { data: stats, isLoading } = useDashboardStats();
 
   return (
-    <div className="min-h-screen py-12 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-insightBlack">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-2">Manage your content and website settings</p>
-        </div>
+    <>
+      <Seo title="Admin Dashboard" noindex />
+      <div className="min-h-screen py-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-insightBlack">Admin Dashboard</h1>
+            <p className="text-gray-600 mt-2">Manage your content and website settings</p>
+          </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -143,8 +146,9 @@ const AdminDashboard = () => {
             <SettingsManager />
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -5,6 +5,14 @@ import { ChevronLeft, Linkedin, Twitter, Mail, Loader2, Award, Building2, MapPin
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import Seo from "@/components/seo/Seo";
+import {
+  buildBreadcrumbSchema,
+  buildProfileSchema,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
 
 const LeadershipProfile = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -12,33 +20,75 @@ const LeadershipProfile = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center space-x-2">
-          <Loader2 className="h-8 w-8 animate-spin text-insightRed" />
-          <span className="text-lg">Loading profile...</span>
+      <>
+        <Seo title="Leadership profile" noindex />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-8 w-8 animate-spin text-insightRed" />
+            <span className="text-lg">Loading profile...</span>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (error || !leader) {
     return (
-      <div className="min-h-screen py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl font-bold text-insightBlack mb-4">Profile Not Found</h1>
-          <p className="mb-6">The leadership profile you're looking for doesn't exist.</p>
-          <Link to="/leadership">
-            <Button className="bg-insightRed hover:bg-red-700">
-              <ChevronLeft className="mr-2 h-4 w-4" /> Back to Leadership Team
-            </Button>
-          </Link>
+      <>
+        <Seo title="Profile not found" noindex />
+        <div className="min-h-screen py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-3xl font-bold text-insightBlack mb-4">Profile Not Found</h1>
+            <p className="mb-6">The leadership profile you're looking for doesn't exist.</p>
+            <Link to="/leadership">
+              <Button className="bg-insightRed hover:bg-red-700">
+                <ChevronLeft className="mr-2 h-4 w-4" /> Back to Leadership Team
+              </Button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
+  const siteOrigin = getSiteOrigin();
+  const canonicalUrl = siteOrigin && slug ? `${siteOrigin}/leadership/${slug}` : undefined;
+  const seoImage = toAbsoluteUrl(
+    leader.image_url || 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=500',
+    siteOrigin
+  );
+  const baseDescription = leader.bio || `${leader.name} leadership profile.`;
+  const seoDescription = truncateText(baseDescription);
+  const sameAs = [leader.linkedin_url, leader.twitter_url].filter(Boolean) as string[];
+
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Leadership", url: `${siteOrigin}/leadership` },
+        { name: leader.name, url: canonicalUrl || `${siteOrigin}${window.location.pathname}` },
+      ])
+    : undefined;
+
+  const profileSchema = buildProfileSchema({
+    name: leader.name,
+    description: seoDescription,
+    image: seoImage,
+    jobTitle: leader.title,
+    worksFor: leader.company,
+    url: canonicalUrl,
+    sameAs,
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <>
+      <Seo
+        title={leader.name}
+        description={baseDescription}
+        image={seoImage}
+        type="profile"
+        schema={[...(breadcrumbSchema ? [breadcrumbSchema] : []), profileSchema]}
+      />
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Premium Hero Section */}
       <section className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-20 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
@@ -255,6 +305,7 @@ const LeadershipProfile = () => {
         </Card>
       </div>
     </div>
+    </>
   );
 };
 

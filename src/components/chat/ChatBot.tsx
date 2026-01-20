@@ -27,13 +27,13 @@ const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [messages, setMessages] = useState<{ text: string; isUser: boolean }[]>([
-    { text: "Hello! I'm your Insights Business Magazine Assistant. How can I help you with magazine subscriptions, business insights, or industry inquiries today?", isUser: false }
+    { text: "Hello! I'm The CIO Vision Assistant. How can I help you with magazine subscriptions, business insights, or industry inquiries today?", isUser: false }
   ]);
   const [input, setInput] = useState("");
 
   useEffect(() => {
     setMessages([
-      { text: `Hello! I'm your ${companyName} Assistant. How can I help you with magazine subscriptions, business insights, or industry inquiries today?`, isUser: false }
+      { text: `Hello! I'm ${companyName} Assistant. How can I help you with magazine subscriptions, business insights, or industry inquiries today?`, isUser: false }
     ]);
   }, [companyName]);
 

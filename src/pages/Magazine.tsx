@@ -17,6 +17,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import Seo from "@/components/seo/Seo";
+import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
 
 const Magazine = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -227,21 +229,37 @@ const Magazine = () => {
   };
 
   const companyName = useCompanyName();
+  const siteOrigin = getSiteOrigin();
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Magazine", url: `${siteOrigin}/magazine` },
+      ])
+    : undefined;
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-insightRed" />
-          <p className="text-lg font-medium">Loading magazines...</p>
-          <p className="text-sm text-gray-600">Preparing the latest business insights for you</p>
+      <>
+        <Seo title="Magazine" noindex />
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="flex flex-col items-center space-y-4">
+            <Loader2 className="h-12 w-12 animate-spin text-insightRed" />
+            <p className="text-lg font-medium">Loading magazines...</p>
+            <p className="text-sm text-gray-600">Preparing the latest business insights for you</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <>
+      <Seo
+        title="Magazine"
+        description={`Explore ${companyName} magazine issues featuring executive interviews, industry analysis, and leadership insights.`}
+        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       {/* Hero / Featured carousel */}
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -406,6 +424,7 @@ const Magazine = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -5,12 +5,22 @@ import { ChevronLeft, Calendar, Share2, ArrowUpRight, Globe, FileText } from 'lu
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { supabase } from '@/integrations/supabase/client';
+import Seo from "@/components/seo/Seo";
+import { useSettings } from "@/hooks/useSettings";
+import {
+  buildArticleSchema,
+  buildBreadcrumbSchema,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
 
 const PressReleaseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [pressRelease, setPressRelease] = useState<PressRelease | undefined>();
   const [relatedPressReleases, setRelatedPressReleases] = useState<PressRelease[]>([]);
   const [loading, setLoading] = useState(true);
+  const { settings } = useSettings();
 
   useEffect(() => {
     const fetchPressRelease = async () => {
@@ -120,26 +130,32 @@ const PressReleaseDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
-      </div>
+      <>
+        <Seo title="Press release" noindex />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
+        </div>
+      </>
     );
   }
 
   if (!pressRelease) {
     return (
-      <div className="min-h-screen py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl font-bold text-insightBlack mb-4">Press Release Not Found</h1>
-          <p className="mb-6">The press release you're looking for doesn't exist.</p>
-          <Link
-            to="/press-releases"
-            className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" /> Back to Press Releases
-          </Link>
+      <>
+        <Seo title="Press release not found" noindex />
+        <div className="min-h-screen py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-3xl font-bold text-insightBlack mb-4">Press Release Not Found</h1>
+            <p className="mb-6">The press release you're looking for doesn't exist.</p>
+            <Link
+              to="/press-releases"
+              className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              <ChevronLeft className="mr-2 h-4 w-4" /> Back to Press Releases
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -150,8 +166,49 @@ const PressReleaseDetail = () => {
     day: 'numeric'
   });
 
+  const siteOrigin = getSiteOrigin();
+  const canonicalUrl = siteOrigin && slug ? `${siteOrigin}/press-releases/${slug}` : undefined;
+  const publisherName = settings.siteTitle || settings.companyName || "The CIO Vision";
+  const publisherLogo = toAbsoluteUrl(settings.siteLogo || "/ciovision-logo.svg", siteOrigin);
+  const seoImage = toAbsoluteUrl(pressRelease.image, siteOrigin);
+  const baseDescription = pressRelease.excerpt || pressRelease.content || "";
+  const seoDescription = truncateText(baseDescription);
+  const publishedTime = pressRelease.date ? new Date(pressRelease.date).toISOString() : undefined;
+
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Press Releases", url: `${siteOrigin}/press-releases` },
+        { name: pressRelease.title, url: canonicalUrl || `${siteOrigin}${window.location.pathname}` },
+      ])
+    : undefined;
+
+  const pressReleaseSchema = buildArticleSchema({
+    type: "PressRelease",
+    headline: pressRelease.title,
+    description: seoDescription,
+    image: seoImage,
+    url: canonicalUrl,
+    author: pressRelease.author,
+    datePublished: publishedTime,
+    publisherName,
+    publisherLogo,
+    section: pressRelease.category,
+    keywords: pressRelease.category ? [pressRelease.category] : undefined,
+  });
+
   return (
-    <div className="min-h-screen py-12 bg-gradient-to-b from-white to-gray-50">
+    <>
+      <Seo
+        title={pressRelease.title}
+        description={baseDescription}
+        image={seoImage}
+        type="article"
+        publishedTime={publishedTime}
+        author={pressRelease.author}
+        schema={[...(breadcrumbSchema ? [breadcrumbSchema] : []), pressReleaseSchema]}
+      />
+      <div className="min-h-screen py-12 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
           <Link
@@ -206,10 +263,10 @@ const PressReleaseDetail = () => {
         <div className="bg-gray-50 p-6 rounded-lg shadow-sm mb-12">
           <div className="flex items-center mb-4">
             <Globe className="h-5 w-5 mr-2 text-insightRed" />
-            <h3 className="text-lg font-semibold text-insightBlack">About InsightsBW</h3>
+            <h3 className="text-lg font-semibold text-insightBlack">About The CIO Vision</h3>
           </div>
           <p className="text-gray-600 mb-4">
-            InsightsBW is a leading global research and advisory firm, providing executives with actionable insights, strategic guidance, and data-driven analysis to make informed decisions in rapidly evolving markets. 
+            The CIO Vision is a leading global research and advisory firm, providing executives with actionable insights, strategic guidance, and data-driven analysis to make informed decisions in rapidly evolving markets. 
             With a global network of industry experts and innovative research methodologies, we help organizations navigate complexity and drive sustainable growth.
           </p>
           <div className="flex flex-wrap gap-3">
@@ -284,6 +341,7 @@ const PressReleaseDetail = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

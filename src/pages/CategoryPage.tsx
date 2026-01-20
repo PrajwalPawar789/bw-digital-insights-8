@@ -4,11 +4,14 @@ import { useState, useEffect } from 'react';
 import { newsData } from '../data/newsData';
 import { ChevronRight } from 'lucide-react';
 import { Card, CardContent } from "@/components/ui/card";
+import Seo from "@/components/seo/Seo";
+import { buildBreadcrumbSchema, getSiteOrigin, truncateText } from "@/lib/seo";
 
 const CategoryPage = () => {
   const { categoryName } = useParams<{ categoryName: string }>();
   const [articles, setArticles] = useState(newsData);
   const [loading, setLoading] = useState(true);
+  const siteOrigin = getSiteOrigin();
 
   useEffect(() => {
     // Filter articles by category (case-insensitive)
@@ -22,35 +25,59 @@ const CategoryPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
-      </div>
+      <>
+        <Seo title="Category" noindex />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
+        </div>
+      </>
     );
   }
 
   if (articles.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-insightBlack mb-4">No Articles Found</h1>
-            <p className="text-lg text-gray-600 mb-8">
-              We couldn't find any articles in the {categoryName} category.
-            </p>
-            <Link 
-              to="/"
-              className="inline-flex items-center px-6 py-3 bg-insightRed text-white rounded-md font-medium hover:bg-red-700 transition-colors"
-            >
-              Back to Home
-            </Link>
+      <>
+        <Seo title={`${categoryName || "Category"} Articles`} noindex />
+        <div className="min-h-screen bg-gray-50 py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-insightBlack mb-4">No Articles Found</h1>
+              <p className="text-lg text-gray-600 mb-8">
+                We couldn't find any articles in the {categoryName} category.
+              </p>
+              <Link 
+                to="/"
+                className="inline-flex items-center px-6 py-3 bg-insightRed text-white rounded-md font-medium hover:bg-red-700 transition-colors"
+              >
+                Back to Home
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
+  const formattedCategory = categoryName ? categoryName.charAt(0).toUpperCase() + categoryName.slice(1) : "Category";
+  const pageDescription = truncateText(
+    `Explore ${articles.length} ${formattedCategory.toLowerCase()} articles covering business insights, leadership strategies, and market trends.`
+  );
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Articles", url: `${siteOrigin}/articles` },
+        { name: formattedCategory, url: `${siteOrigin}/category/${categoryName || ""}` },
+      ])
+    : undefined;
+
   return (
-    <div className="min-h-screen bg-gray-50 py-16">
+    <>
+      <Seo
+        title={`${formattedCategory} Articles`}
+        description={pageDescription}
+        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+      />
+      <div className="min-h-screen bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-insightBlack mb-4 capitalize">
@@ -95,6 +122,7 @@ const CategoryPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

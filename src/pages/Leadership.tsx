@@ -5,6 +5,8 @@ import { Linkedin, Twitter, ArrowRight, Users, Award, Building2, Mail } from 'lu
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import Seo from "@/components/seo/Seo";
+import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
 
 const Leadership = () => {
   const { data: leaders, isLoading } = useLeadershipProfiles();
@@ -12,6 +14,13 @@ const Leadership = () => {
   const [filter, setFilter] = useState<string>('all');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewLeader, setPreviewLeader] = useState<any | null>(null);
+  const siteOrigin = getSiteOrigin();
+  const breadcrumbSchema = siteOrigin
+    ? buildBreadcrumbSchema([
+        { name: "Home", url: siteOrigin },
+        { name: "Leadership", url: `${siteOrigin}/leadership` },
+      ])
+    : undefined;
 
   const allLeaders = Array.isArray(leaders) ? leaders : [];
 
@@ -35,9 +44,12 @@ const Leadership = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
-      </div>
+      <>
+        <Seo title="Leadership" noindex />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-insightRed"></div>
+        </div>
+      </>
     );
   }
 
@@ -45,7 +57,13 @@ const Leadership = () => {
   const closePreview = () => { setPreviewOpen(false); setPreviewLeader(null); };
 
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      <Seo
+        title="Leadership"
+        description="Executive profiles, leadership interviews, and insights from influential business leaders."
+        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+      />
+      <div className="min-h-screen bg-white">
 
 
       <div className="max-w-7xl mx-auto px-12 sm:px-6 lg:px-8">
@@ -129,6 +147,7 @@ const Leadership = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   );
 };
 
