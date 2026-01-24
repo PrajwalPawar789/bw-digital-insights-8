@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useArticles } from "@/hooks/useArticles";
 import Seo from "@/components/seo/Seo";
@@ -30,7 +30,7 @@ const Search = () => {
 
   return (
     <>
-      <Seo title={q ? `Search: ${q}` : "Search"} description={q ? `Search results for ${q}` : undefined} schema={breadcrumbSchema ? [breadcrumbSchema] : undefined} noindex={false} />
+      <Seo title={q ? `Search: ${q}` : "Search"} description={q ? `Search results for ${q}` : undefined} schema={breadcrumbSchema ? [breadcrumbSchema] : undefined} noindex />
 
       <div className="min-h-screen bg-white">
         <section className="py-12">
@@ -42,7 +42,7 @@ const Search = () => {
               <p className="text-gray-600">Please enter a search term.</p>
             ) : (
               <>
-                <p className="text-gray-700 mb-6">Results for "{q}" — {results.length} found</p>
+                <p className="text-gray-700 mb-6">Results for "{q}" - {results.length} found</p>
                 {results.length > 0 ? (
                   <EditorialList articles={results} />
                 ) : (

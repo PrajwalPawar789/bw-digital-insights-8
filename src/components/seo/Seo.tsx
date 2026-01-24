@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import { useSettings } from "@/hooks/useSettings";
 import {
   DEFAULT_DESCRIPTION,
+  BRAND_ALIASES,
+  BRAND_SOCIALS,
   buildOrganizationSchema,
   buildWebSiteSchema,
   getSiteOrigin,
@@ -47,7 +49,11 @@ const Seo = ({
   const origin = getSiteOrigin();
   const canonicalUrl = canonical || (origin ? `${origin}${location.pathname}` : undefined);
   const metaDescription = description ? truncateText(description) : DEFAULT_DESCRIPTION;
-  const metaTitle = title ? `${title} | ${siteName}` : siteName;
+  const normalizedTitle = title ? title.trim() : "";
+  const metaTitle =
+    normalizedTitle && normalizedTitle.toLowerCase() !== siteName.toLowerCase()
+      ? `${normalizedTitle} | ${siteName}`
+      : siteName;
   const imageUrl = toAbsoluteUrl(image || settings.siteLogo || "/ciovision-logo.svg", origin);
   const robotsContent = noindex
     ? "noindex, nofollow"
@@ -56,8 +62,26 @@ const Seo = ({
   const schemaItems: Array<Record<string, unknown>> = [];
   if (includeSiteSchema && origin) {
     const logoUrl = toAbsoluteUrl(settings.siteLogo || "/ciovision-logo.svg", origin);
-    schemaItems.push(buildOrganizationSchema(siteName, origin, logoUrl));
-    schemaItems.push(buildWebSiteSchema(siteName, origin));
+    const brandAliases = Array.from(
+      new Set(
+        BRAND_ALIASES
+          .map((alias) => alias.trim())
+          .filter((alias) => alias && alias.toLowerCase() !== siteName.toLowerCase())
+      )
+    );
+    const searchTarget = `${origin}/search?q=`;
+    schemaItems.push(
+      buildOrganizationSchema(siteName, origin, logoUrl, {
+        alternateName: brandAliases,
+        sameAs: BRAND_SOCIALS,
+      })
+    );
+    schemaItems.push(
+      buildWebSiteSchema(siteName, origin, {
+        alternateName: brandAliases,
+        searchUrl: searchTarget,
+      })
+    );
   }
   if (schema) {
     if (Array.isArray(schema)) {

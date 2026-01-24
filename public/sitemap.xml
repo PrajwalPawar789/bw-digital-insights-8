@@ -1,47 +1,47 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://example.com/</loc>
+    <loc>https://theciovision.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://example.com/magazine</loc>
+    <loc>https://theciovision.com/magazine</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://example.com/articles</loc>
+    <loc>https://theciovision.com/articles</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/industry-news</loc>
+    <loc>https://theciovision.com/industry-news</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/leadership</loc>
+    <loc>https://theciovision.com/leadership</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/press-releases</loc>
+    <loc>https://theciovision.com/press-releases</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/about</loc>
+    <loc>https://theciovision.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://example.com/contact</loc>
+    <loc>https://theciovision.com/contact</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://example.com/documentation</loc>
+    <loc>https://theciovision.com/documentation</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

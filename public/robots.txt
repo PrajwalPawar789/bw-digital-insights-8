@@ -1,7 +1,7 @@
-User-agent: *
+﻿User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /admin/
 
 # Update this sitemap URL for your production domain.
-Sitemap: https://example.com/sitemap.xml
+Sitemap: https://theciovision.com/sitemap.xml

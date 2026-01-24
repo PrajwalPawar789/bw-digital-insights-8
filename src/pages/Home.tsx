@@ -56,7 +56,14 @@ const Home = () => {
     ? buildBreadcrumbSchema([{ name: "Home", url: siteOrigin }])
     : undefined;
   const seoImage = latestMagazine?.cover_image_url || main?.image_url || "/ciovision-logo.svg";
-  const seoDescription = `${settings.companyName} delivers executive interviews, market intelligence, and leadership insights for business leaders.`;
+  const seoDescription = `${settings.companyName} (theciovision.com) delivers executive interviews, market intelligence, and leadership insights for business leaders.`;
+  const seoKeywords = [
+    settings.companyName,
+    "TheCIOVision",
+    "theciovision",
+    "CIO Vision magazine",
+    "CIO Vision news",
+  ];
 
   const heroLoading = isArticlesLoading;
 
@@ -65,6 +72,7 @@ const Home = () => {
       <Seo
         description={seoDescription}
         image={seoImage}
+        keywords={seoKeywords}
         schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
       />
       <div className="min-h-screen bg-white">

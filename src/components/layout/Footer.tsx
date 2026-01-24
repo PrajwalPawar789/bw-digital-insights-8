@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import React, { useRef, useState } from "react";
 
 const Footer = () => {
   const { settings } = useSettings();
+  const year = new Date().getFullYear();
 
   // Newsletter subscription states
   const [email, setEmail] = useState('');
@@ -207,9 +208,10 @@ const Footer = () => {
                 <div>
                   <span className="text-xl font-bold text-white">{settings.companyName}</span>
                   <div className="text-xs font-semibold text-gray-400 -mt-1">BUSINESS MAGAZINE</div>
+                  <div className="text-xs text-gray-500 mt-1">theciovision.com</div>
                 </div>
               </Link>
-              <span className="text-gray-400 ml-6 text-base">© 2026 {settings.companyName}. All rights reserved.</span>
+              <span className="text-gray-400 ml-6 text-base">(c) {year} {settings.companyName}. All rights reserved.</span>
             </div>
             
             <div className="flex space-x-6 mt-6 md:mt-0">

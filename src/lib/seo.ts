@@ -1,5 +1,11 @@
 export const DEFAULT_DESCRIPTION =
-  "Executive insights, leadership interviews, and market intelligence for modern business leaders.";
+  "The CIO Vision (theciovision.com) delivers executive insights, leadership interviews, and market intelligence for modern business leaders.";
+
+export const BRAND_ALIASES = ["TheCIOVision", "theciovision", "theciovision.com"];
+export const BRAND_SOCIALS = [
+  "https://www.linkedin.com/company/theciovision",
+  "https://www.instagram.com/theciovision/",
+];
 
 export type BreadcrumbItem = {
   name: string;
@@ -42,6 +48,16 @@ type PublicationIssueSchemaOptions = {
   publisherLogo?: string;
 };
 
+type OrganizationSchemaOptions = {
+  alternateName?: string[];
+  sameAs?: string[];
+};
+
+type WebSiteSchemaOptions = {
+  alternateName?: string[];
+  searchUrl?: string;
+};
+
 const assignIf = (target: Record<string, unknown>, key: string, value: unknown) => {
   if (value === undefined || value === null || value === "") {
     return;
@@ -50,6 +66,10 @@ const assignIf = (target: Record<string, unknown>, key: string, value: unknown) 
 };
 
 export const getSiteOrigin = () => {
+  const envOrigin = import.meta.env?.VITE_SITE_URL;
+  if (envOrigin) {
+    return envOrigin.replace(/\/$/, "");
+  }
   if (typeof window === "undefined") {
     return "";
   }
@@ -94,7 +114,12 @@ export const buildBreadcrumbSchema = (items: BreadcrumbItem[]) => ({
   })),
 });
 
-export const buildOrganizationSchema = (name: string, url: string, logo?: string) => {
+export const buildOrganizationSchema = (
+  name: string,
+  url: string,
+  logo?: string,
+  options?: OrganizationSchemaOptions
+) => {
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -102,15 +127,44 @@ export const buildOrganizationSchema = (name: string, url: string, logo?: string
     url,
   };
   assignIf(schema, "logo", logo);
+  if (options?.alternateName && options.alternateName.length > 0) {
+    schema.alternateName = options.alternateName;
+  }
+  if (options?.sameAs && options.sameAs.length > 0) {
+    schema.sameAs = options.sameAs;
+  }
   return schema;
 };
 
-export const buildWebSiteSchema = (name: string, url: string) => ({
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name,
-  url,
-});
+export const buildWebSiteSchema = (
+  name: string,
+  url: string,
+  options?: WebSiteSchemaOptions
+) => {
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name,
+    url,
+  };
+
+  if (options?.alternateName && options.alternateName.length > 0) {
+    schema.alternateName = options.alternateName;
+  }
+
+  if (options?.searchUrl) {
+    const target = options.searchUrl.includes("{search_term_string}")
+      ? options.searchUrl
+      : `${options.searchUrl}{search_term_string}`;
+    schema.potentialAction = {
+      "@type": "SearchAction",
+      target,
+      "query-input": "required name=search_term_string",
+    };
+  }
+
+  return schema;
+};
 
 export const buildArticleSchema = (options: ArticleSchemaOptions) => {
   const schema: Record<string, unknown> = {
