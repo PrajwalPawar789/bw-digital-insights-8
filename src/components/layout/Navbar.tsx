@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Menu, X, Facebook, Twitter, Instagram, Linkedin, Search, Newspaper } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { useArticles } from '@/hooks/useArticles';
@@ -29,6 +30,16 @@ const Navbar = () => {
   }, [articles]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const onSubmitSearch = (e: any) => {
+    e.preventDefault();
+    const q = String(searchQuery || '').trim();
+    if (!q) return;
+    navigate(`/search?q=${encodeURIComponent(q)}`);
+    setIsMenuOpen(false);
+  }; 
 
   return (
     <header className="sticky top-0 z-[1000] shadow-sm">
@@ -55,11 +66,11 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex items-center gap-4 shrink-0">
-            <a href="#" className="opacity-80 hover:opacity-100 transition"><Facebook size={16} /></a>
-            <a href="#" className="opacity-80 hover:opacity-100 transition"><Twitter size={16} /></a>
+            {/* <a href="#" className="opacity-80 hover:opacity-100 transition"><Facebook size={16} /></a>
+            <a href="#" className="opacity-80 hover:opacity-100 transition"><Twitter size={16} /></a> */}
             <a href="https://www.instagram.com/theciovision/" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Instagram size={16} /></a>
             <a href="https://www.linkedin.com/company/theciovision" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Linkedin size={16} /></a>
-            <Link to="/magazine" className="ml-4 inline-flex items-center px-3 py-1 rounded-full bg-insightRed hover:bg-insightRed/90 text-white font-medium">Subscribe</Link>
+            <Link to="/contact" className="ml-4 inline-flex items-center px-3 py-1 rounded-full bg-insightRed hover:bg-insightRed/90 text-white font-medium">Subscribe</Link>
           </div>
         </div>
       </div>
@@ -95,10 +106,18 @@ const Navbar = () => {
 
             {/* Actions */}
             <div className="hidden lg:flex items-center gap-4 ml-auto">
-              <div className="relative">
-                <input className="h-10 w-56 xl:w-64 pl-10 pr-3 rounded-md border border-gray-200 bg-gray-50 focus:bg-white focus:border-insightRed outline-none transition" placeholder="Search" />
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              </div>
+              <form onSubmit={onSubmitSearch} className="relative">
+                <input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-10 w-56 xl:w-64 pl-10 pr-3 rounded-md border border-gray-200 bg-gray-50 focus:bg-white focus:border-insightRed outline-none transition"
+                  placeholder="Search"
+                  aria-label="Search articles"
+                />
+                <button type="submit" aria-label="Submit search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <Search size={18} />
+                </button>
+              </form>
               <Link to="/magazine" className="inline-flex items-center h-10 px-4 rounded-md bg-insightRed text-white hover:bg-insightRed/90 transition">Read Latest</Link>
             </div>
             <button className="lg:hidden inline-flex items-center justify-center p-3 rounded-md text-insightBlack hover:text-insightRed hover:bg-gray-100 focus:outline-none transition-colors duration-200 ml-auto" onClick={toggleMenu}>
@@ -141,7 +160,7 @@ const Navbar = () => {
             ))}
           </div>
           <div className="px-4 pb-4">
-            <Link to="/magazine" className="inline-flex w-full items-center justify-center h-11 rounded-md bg-insightRed text-white font-medium hover:bg-insightRed/90">
+            <Link to="/contact" className="inline-flex w-full items-center justify-center h-11 rounded-md bg-insightRed text-white font-medium hover:bg-insightRed/90">
               Subscribe
             </Link>
           </div>

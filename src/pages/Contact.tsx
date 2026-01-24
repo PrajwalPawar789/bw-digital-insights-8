@@ -333,7 +333,7 @@ const Contact = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-start hover:bg-gray-100 p-3 rounded-md transition-colors">
+                {/* <div className="flex items-start hover:bg-gray-100 p-3 rounded-md transition-colors">
                   <Globe className="text-insightRed h-6 w-6 mt-1 mr-4 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-insightBlack">Social Media</h3>
@@ -360,7 +360,7 @@ const Contact = () => {
                       </a>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </section>
@@ -371,7 +371,8 @@ const Contact = () => {
           <h2 className="text-2xl font-bold text-insightBlack mb-6 text-center">Find Us</h2>
           <div className="bg-white rounded-lg shadow-md overflow-hidden h-96">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095912456!2d-74.0066351842904!3d40.71275807933106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a1635a483dd%3A0x8e454c34e23e297!2sOne%20World%20Trade%20Center!5e0!3m2!1sen!2sus!4v1617745309772!5m2!1sen!2sus" 
+              // src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095912456!2d-74.0066351842904!3d40.71275807933106!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a1635a483dd%3A0x8e454c34e23e297!2sOne%20World%20Trade%20Center!5e0!3m2!1sen!2sus!4v1617745309772!5m2!1sen!2sus" 
+              src="https://www.google.com/maps?q=123+Innovation+Drive,+Tech+City,+ST+12345,+United+States&output=embed"
               width="100%" 
               height="100%" 
               style={{ border: 0 }} 

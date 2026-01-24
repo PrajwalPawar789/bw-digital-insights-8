@@ -268,7 +268,7 @@ const Magazine = () => {
               <h1 className="text-4xl md:text-5xl font-bold mb-4 text-insightBlack">{companyName} Magazine</h1>
               <p className="text-gray-600 mb-6 max-w-2xl">Explore our curated issues — deep-dive interviews, long-form features, and analysis from industry leaders. Subscribe for full access to archives and exclusive content.</p>
               <div className="flex items-center gap-3">
-                <Link to="/magazine" className="inline-flex items-center px-4 py-2 rounded-md bg-insightRed text-white font-medium hover:bg-insightRed/90">Subscribe</Link>
+                <Link to="/contact" className="inline-flex items-center px-4 py-2 rounded-md bg-insightRed text-white font-medium hover:bg-insightRed/90">Subscribe</Link>
                 <Link to="/contact" className="text-sm text-gray-600 hover:text-insightBlack">Request a Corporate License</Link>
               </div>
             </div>

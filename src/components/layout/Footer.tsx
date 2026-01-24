@@ -209,16 +209,16 @@ const Footer = () => {
                   <div className="text-xs font-semibold text-gray-400 -mt-1">BUSINESS MAGAZINE</div>
                 </div>
               </Link>
-              <span className="text-gray-400 ml-6 text-base">© 2025 {settings.companyName}. All rights reserved.</span>
+              <span className="text-gray-400 ml-6 text-base">© 2026 {settings.companyName}. All rights reserved.</span>
             </div>
             
             <div className="flex space-x-6 mt-6 md:mt-0">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
+              {/* <a href="#" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
                 <Facebook size={22} />
               </a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
                 <Twitter size={22} />
-              </a>
+              </a> */}
               <a href="https://www.instagram.com/theciovision/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
                 <Instagram size={22} />
               </a>

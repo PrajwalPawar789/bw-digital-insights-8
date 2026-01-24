@@ -61,7 +61,7 @@ const Articles = () => {
       <section className="relative bg-gradient-to-br from-insightBlack via-gray-900 to-insightBlack text-white py-16">
         <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl md:text-5xl font-bold">Editorial <span className="text-insightRed">Articles</span></h1>
+          <h1 className="text-4xl md:text-5xl font-bold">Editorial, Top Stories and News <span className="text-insightRed">Articles</span></h1>
           <p className="text-lg text-gray-300 max-w-3xl mt-3">Insights, strategies, and leadership stories for modern executives.</p>
         </div>
       </section>
