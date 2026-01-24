@@ -384,6 +384,9 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
 }
 
 .pdf-viewer-container--fullscreen .flipbook-stage {

@@ -1,0 +1,17 @@
+export const articleCategories = [
+  "News",
+  "Top Trending News",
+  "Editor's Picks",
+  "Top Stories",
+  "Business",
+  "Technology",
+  "Leadership",
+  "Innovation",
+  "Strategy",
+  "Finance",
+  "Marketing",
+  "Healthcare",
+  "Manufacturing",
+  "Energy",
+  "Other",
+];

@@ -9,7 +9,7 @@ interface PremiumMagazineShowcaseProps {
   companyName?: string;
 }
 
-const PremiumMagazineShowcase = ({ magazines = [], companyName = "Insight Business" }: PremiumMagazineShowcaseProps) => {
+const PremiumMagazineShowcase = ({ magazines = [], companyName = "The CIO Vision" }: PremiumMagazineShowcaseProps) => {
   const featuredMagazines = magazines.slice(0, 6);
 
   return (

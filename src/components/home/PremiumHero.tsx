@@ -9,7 +9,7 @@ interface PremiumHeroProps {
   companyName?: string;
 }
 
-const PremiumHero = ({ latestMagazine, magazineData = [], companyName = "Insight Business" }: PremiumHeroProps) => {
+const PremiumHero = ({ latestMagazine, magazineData = [], companyName = "The CIO Vision" }: PremiumHeroProps) => {
   const stats = [
     { icon: Users, value: '50K+', label: 'C-Suite Readers' },
     { icon: BookOpen, value: '120+', label: 'Exclusive Interviews' },

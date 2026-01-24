@@ -1,13 +1,13 @@
 ﻿import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useArticles, useFeaturedArticles } from "@/hooks/useArticles";
+import { useArticles } from "@/hooks/useArticles";
 import { useMagazines } from "@/hooks/useMagazines";
 import { useLeadershipProfiles } from "@/hooks/useLeadership";
 import { usePressReleases } from "@/hooks/usePressReleases";
 import { useSettings } from "@/hooks/useSettings";
-import { Calendar, ChevronRight, Newspaper, BookOpen } from "lucide-react";
+import { Calendar, ChevronRight, BookOpen } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Seo from "@/components/seo/Seo";
 import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
@@ -23,9 +23,8 @@ function categoryOf(a: any) { return a?.category || "Business"; }
 function excerptOf(a: any) { return a?.excerpt || ""; }
 
 const Home = () => {
-  const { data: rawArticles = [] } = useArticles();
+  const { data: rawArticles = [], isLoading: isArticlesLoading } = useArticles();
   const { data: rawMagazines = [] } = useMagazines();
-  const { data: featured = [] } = useFeaturedArticles();
   const { settings } = useSettings();
   const { data: leadership = [] } = useLeadershipProfiles();
   const { data: press = [] } = usePressReleases();
@@ -33,19 +32,23 @@ const Home = () => {
   const articles = Array.isArray(rawArticles) ? rawArticles : [];
   const magazines = Array.isArray(rawMagazines) ? rawMagazines : [];
 
-  const { main, leftSide, rightSide, headlines, mostRead, latestGrid, latestMagazine } = useMemo(() => {
-    const byDate = [...articles].filter(Boolean).sort((a, b) => new Date(b?.date || 0).getTime() - new Date(a?.date || 0).getTime());
-    const featuredFirst = [...byDate].sort((a, b) => (b?.featured ? 1 : 0) - (a?.featured ? 1 : 0));
-    
-    const main = featuredFirst[0];
-    const leftSide = featuredFirst.slice(1, 3);
-    const rightSide = featuredFirst.slice(3, 5);
-    const headlines = featuredFirst.slice(5, 13);
-    const mostRead = byDate.slice(0, 4);
-    const latestGrid = byDate.slice(11, 15);
+  const { main, leftSide, rightSide, editorPicks, topStories, latestMagazine } = useMemo(() => {
+    const byDate = [...articles]
+      .filter(Boolean)
+      .sort((a, b) => new Date(b?.date || 0).getTime() - new Date(a?.date || 0).getTime());
+    const normalizeCategory = (value: any) => String(value || "").toLowerCase();
+    const editorsPicksByDate = byDate.filter((a) => normalizeCategory(a?.category) === "editor's picks");
+    const newsByDate = byDate.filter((a) => normalizeCategory(a?.category) === "news");
+    const topStoriesByDate = byDate.filter((a) => normalizeCategory(a?.category) === "top stories");
+
+    const main = editorsPicksByDate[0];
+    const leftSide = newsByDate.slice(0, 2);
+    const rightSide = newsByDate.slice(2, 4);
+    const editorPicks = editorsPicksByDate.slice(1, 4);
+    const topStories = topStoriesByDate.slice(0, 6);
     const latestMagazine = magazines[0] || null;
     
-    return { main, leftSide, rightSide, headlines, mostRead, latestGrid, latestMagazine };
+    return { main, leftSide, rightSide, editorPicks, topStories, latestMagazine };
   }, [articles, magazines]);
 
   const siteOrigin = getSiteOrigin();
@@ -54,6 +57,8 @@ const Home = () => {
     : undefined;
   const seoImage = latestMagazine?.cover_image_url || main?.image_url || "/ciovision-logo.svg";
   const seoDescription = `${settings.companyName} delivers executive interviews, market intelligence, and leadership insights for business leaders.`;
+
+  const heroLoading = isArticlesLoading;
 
   return (
     <>
@@ -86,56 +91,102 @@ const Home = () => {
       {/* HERO split */}
       <section className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left rail: 2 Cards */}
-          <aside className="lg:col-span-3 space-y-6">
-            {leftSide.map((a: any, i: number) => (
-              <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="block group rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition bg-white">
-                <div className="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                </div>
-                <div className="p-4">
-                  <div className="text-xs text-insightRed font-bold mb-2 uppercase tracking-wider">{categoryOf(a)}</div>
-                  <h3 className="font-bold text-lg leading-tight group-hover:text-insightRed transition-colors line-clamp-2">{titleOf(a)}</h3>
-                </div>
-              </Link>
-            ))}
-          </aside>
-
-          {/* Center: Main Feature */}
-          <div className="lg:col-span-6 space-y-6">
-            {main && (
-              <article className="space-y-4">
-                <Link to={`/article/${slugOf(main)}`} className="block group rounded-2xl overflow-hidden shadow-lg bg-white">
-                  <div className="w-full aspect-[16/9] bg-gray-100 flex items-center justify-center">
-                    <img src={imgOf(main)} alt={titleOf(main)} className="max-h-full max-w-full object-contain" />
+          {heroLoading ? (
+            <>
+              <aside className="lg:col-span-3 space-y-6">
+                {[0, 1].map((i) => (
+                  <div key={`hero-left-skel-${i}`} className="rounded-xl overflow-hidden border border-gray-200 bg-white">
+                    <Skeleton className="aspect-video w-full rounded-none" />
+                    <div className="p-4 space-y-2">
+                      <Skeleton className="h-3 w-24" />
+                      <Skeleton className="h-5 w-full" />
+                      <Skeleton className="h-5 w-5/6" />
+                    </div>
                   </div>
-                </Link>
+                ))}
+              </aside>
 
-                <div className="p-4 bg-white rounded-md">
-                  {/* category tag removed as requested */}
-                  <h1 style={{ fontSize: '27px' }} className="font-bold leading-tight text-insightBlack">{titleOf(main)}</h1>
-                  <p className="text-gray-700 mt-2 line-clamp-2 md:line-clamp-3">{excerptOf(main)}</p>
-                  <Link to={`/article/${slugOf(main)}`} className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium mt-3">Read full story <ChevronRight className="ml-1 h-4 w-4"/></Link>
+              <div className="lg:col-span-6 space-y-6">
+                <div className="space-y-4">
+                  <div className="rounded-2xl overflow-hidden shadow-lg bg-white">
+                    <Skeleton className="w-full aspect-[16/9] rounded-none" />
+                  </div>
+                  <div className="p-4 bg-white rounded-md space-y-3">
+                    <Skeleton className="h-8 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                    <Skeleton className="h-4 w-28" />
+                  </div>
                 </div>
-              </article>
-            )}
+              </div>
 
-          </div>
+              <aside className="lg:col-span-3 space-y-6">
+                {[0, 1].map((i) => (
+                  <div key={`hero-right-skel-${i}`} className="rounded-xl overflow-hidden border border-gray-200 bg-white">
+                    <Skeleton className="aspect-video w-full rounded-none" />
+                    <div className="p-4 space-y-2">
+                      <Skeleton className="h-3 w-24" />
+                      <Skeleton className="h-5 w-full" />
+                      <Skeleton className="h-5 w-5/6" />
+                    </div>
+                  </div>
+                ))}
+              </aside>
+            </>
+          ) : (
+            <>
+              {/* Left rail: 2 Cards */}
+              <aside className="lg:col-span-3 space-y-6">
+                {leftSide.map((a: any, i: number) => (
+                  <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="block group rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition bg-white">
+                    <div className="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    </div>
+                    <div className="p-4">
+                      <div className="text-xs text-insightRed font-bold mb-2 uppercase tracking-wider">{categoryOf(a)}</div>
+                      <h3 className="font-bold text-lg leading-tight group-hover:text-insightRed transition-colors line-clamp-2">{titleOf(a)}</h3>
+                    </div>
+                  </Link>
+                ))}
+              </aside>
 
-          {/* Right: 2 Cards */}
-          <aside className="lg:col-span-3 space-y-6">
-            {rightSide.map((a: any, i: number) => (
-              <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="block group rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition bg-white">
-                <div className="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                </div>
-                <div className="p-4">
-                  <div className="text-xs text-insightRed font-bold mb-2 uppercase tracking-wider">{categoryOf(a)}</div>
-                  <h3 className="font-bold text-lg leading-tight group-hover:text-insightRed transition-colors line-clamp-2">{titleOf(a)}</h3>
-                </div>
-              </Link>
-            ))}
-          </aside>
+              {/* Center: Main Feature */}
+              <div className="lg:col-span-6 space-y-6">
+                {main && (
+                  <article className="space-y-4">
+                    <Link to={`/article/${slugOf(main)}`} className="block group rounded-2xl overflow-hidden shadow-lg bg-white">
+                      <div className="w-full aspect-[16/9] bg-gray-100 flex items-center justify-center">
+                        <img src={imgOf(main)} alt={titleOf(main)} className="max-h-full max-w-full object-contain" />
+                      </div>
+                    </Link>
+
+                    <div className="p-4 bg-white rounded-md">
+                      {/* category tag removed as requested */}
+                      <h1 style={{ fontSize: '27px' }} className="font-bold leading-tight text-insightBlack">{titleOf(main)}</h1>
+                      <p className="text-gray-700 mt-2 line-clamp-2 md:line-clamp-3">{excerptOf(main)}</p>
+                      <Link to={`/article/${slugOf(main)}`} className="inline-flex items-center text-insightRed hover:text-insightBlack font-medium mt-3">Read full story <ChevronRight className="ml-1 h-4 w-4"/></Link>
+                    </div>
+                  </article>
+                )}
+
+              </div>
+
+              {/* Right: 2 Cards */}
+              <aside className="lg:col-span-3 space-y-6">
+                {rightSide.map((a: any, i: number) => (
+                  <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="block group rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition bg-white">
+                    <div className="aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                      <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    </div>
+                    <div className="p-4">
+                      <div className="text-xs text-insightRed font-bold mb-2 uppercase tracking-wider">{categoryOf(a)}</div>
+                      <h3 className="font-bold text-lg leading-tight group-hover:text-insightRed transition-colors line-clamp-2">{titleOf(a)}</h3>
+                    </div>
+                  </Link>
+                ))}
+              </aside>
+            </>
+          )}
         </div>
       </section>
 
@@ -147,17 +198,19 @@ const Home = () => {
             <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto py-2 -mx-4 px-4">
-            {(featured && featured.length ? featured : latestGrid).map((a:any,i:number)=>(
-              <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="min-w-[260px] max-w-[320px] bg-white rounded-lg shadow group overflow-hidden">
-                <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
-                </div>
-                <div className="p-3">
-                  <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
-                  <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                  <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {editorPicks.map((a:any,i:number)=>(
+              <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="group">
+                <Card className="overflow-hidden hover:shadow-lg transition">
+                  <div className="aspect-[16/10] bg-black flex items-center justify-center">
+                    <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain" />
+                  </div>
+                  <CardContent>
+                    {/* <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div> */}
+                    <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
+                    <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
+                  </CardContent>
+                </Card>
               </Link>
             ))}
           </div>
@@ -173,22 +226,18 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(() => {
-              const sorted = [...articles].filter(Boolean).sort((a:any,b:any)=>new Date(b?.date||0).getTime()-new Date(a?.date||0).getTime());
-              const top = sorted.slice(0,6);
-              return top.map((a:any,i:number)=> (
-                <Card key={slugOf(a)+i} className="overflow-hidden group hover:shadow-lg transition">
-                  <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                    <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain"/>
-                  </div>
-                  <CardContent>
-                    <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div>
-                    <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                    <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                  </CardContent>
-                </Card>
-              ))
-            })()}
+            {topStories.map((a:any,i:number)=> (
+              <Card key={slugOf(a)+i} className="overflow-hidden group hover:shadow-lg transition">
+                <div className="aspect-[16/10] bg-black flex items-center justify-center">
+                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain"/>
+                </div>
+                <CardContent>
+                  {/* <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div> */}
+                  <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
+                  <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
           {/* Trending section removed per design request */}

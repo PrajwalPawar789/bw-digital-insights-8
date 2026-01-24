@@ -23,7 +23,7 @@ const About = () => {
 
   // Timeline data for company history
   const timeline = [
-    { year: 2015, title: "Company Founded", description: "CIO VISION was founded with a vision to transform business intelligence." },
+    { year: 2015, title: "Company Founded", description: "The CIO Vision was founded with a vision to transform business intelligence." },
     { year: 2017, title: "Global Expansion", description: "Opened offices in Europe and Asia, expanding our international presence." },
     { year: 2019, title: "Technology Innovation", description: "Launched our proprietary analytics platform revolutionizing data insights." },
     { year: 2021, title: "Industry Recognition", description: "Received multiple awards for thought leadership and innovation." },
@@ -104,7 +104,7 @@ const About = () => {
               </div>
               <h2 className="text-2xl font-bold text-insightBlack mb-4">Our Mission</h2>
               <p className="text-gray-600">
-                At CIO VISION, we are dedicated to providing cutting-edge insights and thought leadership 
+                At The CIO Vision, we are dedicated to providing cutting-edge insights and thought leadership 
                 in the technology and business landscape. Our mission is to empower leaders with actionable 
                 intelligence, innovative perspectives, and in-depth analysis that drives strategic decision-making.
               </p>
@@ -130,7 +130,7 @@ const About = () => {
       <section id="values" className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-insight CIO VISION Black mb-4">Our Core Values</h2>
+            <h2 className="text-3xl font-bold text-insight The CIO Vision Black mb-4">Our Core Values</h2>
             <p className="max-w-3xl mx-auto text-gray-600">
               These principles guide everything we do at .
             </p>
@@ -177,9 +177,9 @@ const About = () => {
                 >
                   <div className="flex items-center justify-center w-full md:w-1/2">
                     <div className="w-full md:w-3/4 lg:w-2/3 p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                      <span className="inline-block px-2 py-1 text-xs font-semibold bg-red-100 text-insightRed rounded-md mb-2">
+                      {/* <span className="inline-block px-2 py-1 text-xs font-semibold bg-red-100 text-insightRed rounded-md mb-2">
                         {event.year}
-                      </span>
+                      </span> */}
                       <h3 className="text-xl font-bold text-insightBlack mb-2">{event.title}</h3>
                       <p className="text-gray-600">{event.description}</p>
                     </div>
@@ -203,7 +203,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Business?</h2>
           <p className="max-w-3xl mx-auto text-gray-300 mb-8">
-            Discover how CIO VISION can help your organization navigate complexity and drive innovation.
+            Discover how The CIO Vision can help your organization navigate complexity and drive innovation.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button className="bg-insightRed hover:bg-red-700 text-white">

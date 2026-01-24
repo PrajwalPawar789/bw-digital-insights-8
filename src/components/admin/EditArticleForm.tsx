@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, X } from 'lucide-react';
+import { articleCategories } from '@/lib/articleCategories';
 
 interface EditArticleFormProps {
   article: any;
@@ -77,7 +78,7 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
     }
   };
 
-  const categories = ['Technology', 'Finance', 'Leadership', 'Healthcare', 'Manufacturing', 'Energy', 'Other'];
+  const categories = articleCategories;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

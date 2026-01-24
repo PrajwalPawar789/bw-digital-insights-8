@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useMagazineBySlug } from '@/hooks/useMagazines';
 import { useMagazineArticles } from '@/hooks/useMagazineArticles';
@@ -24,8 +24,31 @@ const MagazineDetail = () => {
   const [fullScreen, setFullScreen] = useState<boolean>(false);
   const [initialPage, setInitialPage] = useState<number | undefined>(undefined);
   const { settings } = useSettings();
+  const fullScreenRef = useRef<HTMLDivElement>(null);
 
-  const toggleFullScreen = () => setFullScreen((prev) => !prev);
+  const toggleFullScreen = async () => {
+    if (fullScreen) {
+      if (document.fullscreenElement) {
+        try {
+          await document.exitFullscreen();
+        } catch {
+          // Ignore fullscreen API errors and still exit reading mode
+        }
+      }
+      setFullScreen(false);
+      return;
+    }
+
+    setFullScreen(true);
+    const target = fullScreenRef.current ?? document.documentElement;
+    if (target?.requestFullscreen) {
+      try {
+        await target.requestFullscreen();
+      } catch {
+        // If fullscreen is blocked, we still keep reading mode active
+      }
+    }
+  };
 
   useEffect(() => {
     if (!fullScreen) {
@@ -39,6 +62,17 @@ const MagazineDetail = () => {
       document.body.style.overflow = originalOverflow;
     };
   }, [fullScreen]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setFullScreen(false);
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   if (isLoading) {
     return (
@@ -118,14 +152,16 @@ const MagazineDetail = () => {
         publishedTime={magazine.publish_date ? new Date(magazine.publish_date).toISOString() : undefined}
         schema={[...(breadcrumbSchema ? [breadcrumbSchema] : []), issueSchema]}
       />
-      <div className={cn(
-        "min-h-screen transition-all duration-300 bg-white",
-        fullScreen ? "fixed inset-0 z-[2000] p-4 overflow-auto" : "py-12"
-      )}>
-      <div className={cn(
-        "mx-auto px-4 sm:px-6 lg:px-8",
-        fullScreen ? "max-w-none h-full flex flex-col" : "max-w-7xl"
-      )}>
+      <div
+        ref={fullScreenRef}
+        className={cn(
+          "min-h-screen transition-all duration-300 bg-white",
+          fullScreen ? "fixed inset-0 z-[2000] overflow-hidden" : "py-12"
+        )}
+      >
+        <div className={cn(
+          fullScreen ? "h-full w-full flex flex-col" : "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+        )}>
         {/* Magazine Header */}
         {!fullScreen && (
           <>

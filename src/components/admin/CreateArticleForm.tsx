@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { toast } from 'sonner';
 import { slugify } from '@/lib/slugify';
 import { Upload, X } from 'lucide-react';
+import { articleCategories } from '@/lib/articleCategories';
 
 interface CreateArticleFormProps {
   open: boolean;
@@ -32,7 +33,7 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
   const [featured, setFeatured] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const categories = ['Technology', 'Business', 'Leadership', 'Innovation', 'Strategy', 'Finance', 'Marketing'];
+  const categories = articleCategories;
 
   const handleImageUpload = async (file: File) => {
     try {
