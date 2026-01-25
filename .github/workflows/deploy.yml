@@ -33,3 +33,7 @@ jobs:
           local-dir: ./build/
           server-dir: ${{ secrets.FTP_REMOTE_DIR }}
           dangerous-clean-slate: true
+          exclude: |
+            **/.htaccess
+            **/robots.txt
+            **/sitemap.xml
