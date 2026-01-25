@@ -227,7 +227,7 @@ const Footer = () => {
               <a href="https://www.linkedin.com/company/theciovision" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
                 <Linkedin size={22} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
+              <a href="info@theciovision.com" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
                 <Mail size={22} />
               </a>
             </div>
