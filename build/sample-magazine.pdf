@@ -1,27 +1,26 @@
-
 %PDF-1.4
 1 0 obj
-<</Type /Catalog /Pages 2 0 R>>
+<< /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<</Type /Pages /Kids [3 0 R] /Count 5>>
+<< /Type /Pages /Kids [3 0 R] /Count 5 >>
 endobj
 3 0 obj
-<</Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 6 0 R>>
+<< /Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 6 0 R >>
 endobj
 4 0 obj
-<</Font <</F1 5 0 R>>>>
+<< /Font << /F1 5 0 R >> >>
 endobj
 5 0 obj
-<</Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold>>
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
 endobj
 6 0 obj
-<</Length 368>>
+<< /Length 424 >>
 stream
 BT
 /F1 24 Tf
 50 700 Td
-(InsightsBW Magazine) Tj
+(The CIO Vision) Tj
 /F1 14 Tf
 0 -40 Td
 (Business Intelligence & Market Analysis) Tj
@@ -42,10 +41,10 @@ ET
 endstream
 endobj
 7 0 obj
-<</Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 8 0 R>>
+<< /Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 8 0 R >>
 endobj
 8 0 obj
-<</Length 250>>
+<< /Length 274 >>
 stream
 BT
 /F1 18 Tf
@@ -64,10 +63,10 @@ ET
 endstream
 endobj
 9 0 obj
-<</Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 10 0 R>>
+<< /Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 10 0 R >>
 endobj
 10 0 obj
-<</Length 285>>
+<< /Length 290 >>
 stream
 BT
 /F1 18 Tf
@@ -88,10 +87,10 @@ ET
 endstream
 endobj
 11 0 obj
-<</Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 12 0 R>>
+<< /Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 12 0 R >>
 endobj
 12 0 obj
-<</Length 270>>
+<< /Length 277 >>
 stream
 BT
 /F1 18 Tf
@@ -110,10 +109,10 @@ ET
 endstream
 endobj
 13 0 obj
-<</Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 14 0 R>>
+<< /Type /Page /Parent 2 0 R /Resources 4 0 R /MediaBox [0 0 612 792] /Contents 14 0 R >>
 endobj
 14 0 obj
-<</Length 280>>
+<< /Length 298 >>
 stream
 BT
 /F1 18 Tf
@@ -135,21 +134,21 @@ xref
 0 15
 0000000000 65535 f
 0000000009 00000 n
-0000000056 00000 n
-0000000111 00000 n
-0000000212 00000 n
-0000000253 00000 n
-0000000325 00000 n
-0000000744 00000 n
-0000000845 00000 n
-0000001146 00000 n
-0000001249 00000 n
-0000001585 00000 n
-0000001690 00000 n
-0000002011 00000 n
-0000002116 00000 n
+0000000058 00000 n
+0000000115 00000 n
+0000000219 00000 n
+0000000262 00000 n
+0000000337 00000 n
+0000000811 00000 n
+0000000915 00000 n
+0000001239 00000 n
+0000001344 00000 n
+0000001685 00000 n
+0000001791 00000 n
+0000002119 00000 n
+0000002225 00000 n
 trailer
-<</Size 15/Root 1 0 R>>
+<< /Size 15 /Root 1 0 R >>
 startxref
-2447
+2574
 %%EOF
