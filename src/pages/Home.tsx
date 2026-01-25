@@ -163,10 +163,15 @@ const Home = () => {
                 {main && (
                   <article className="space-y-4">
                     <Link to={`/article/${slugOf(main)}`} className="block group rounded-2xl overflow-hidden shadow-lg bg-white">
-                      <div className="w-full aspect-[16/9] bg-gray-100 flex items-center justify-center">
-                        <img src={imgOf(main)} alt={titleOf(main)} className="max-h-full max-w-full object-contain" />
-                      </div>
-                    </Link>
+  <div className="w-full aspect-[16/9] bg-gray-100 overflow-hidden">
+    <img
+      src={imgOf(main)}
+      alt={titleOf(main)}
+      className="w-full h-full object-cover"
+    />
+  </div>
+</Link>
+
 
                     <div className="p-4 bg-white rounded-md">
                       {/* category tag removed as requested */}
