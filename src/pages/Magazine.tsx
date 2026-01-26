@@ -334,11 +334,11 @@ const Magazine = () => {
                 </div>
               </div>
 
-              <div className="mt-3 flex items-center gap-3 text-sm text-gray-600">
+              {/* <div className="mt-3 flex items-center gap-3 text-sm text-gray-600">
                 <span>Showing {filteredMagazines.length} of {allMagazines.length}</span>
                 {searchTerm && <Badge variant="secondary">Search: "{searchTerm}"</Badge>}
                 {selectedCategory !== 'all' && <Badge variant="secondary">Category: {selectedCategory}</Badge>}
-              </div>
+              </div> */}
             </Card>
 
             {/* Grid */}
