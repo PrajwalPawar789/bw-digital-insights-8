@@ -173,7 +173,7 @@ const Home = () => {
 </Link>
 
 
-                    <div className="p-4 bg-white rounded-md">
+                    <div className=" bg-white rounded-md">
                       {/* category tag removed as requested */}
                       <h1 style={{ fontSize: '27px' }} className="font-bold leading-tight text-insightBlack">{titleOf(main)}</h1>
                       <p className="text-gray-700 mt-2 line-clamp-2 md:line-clamp-3">{excerptOf(main)}</p>
@@ -204,7 +204,7 @@ const Home = () => {
       </section>
 
       {/* Redesigned Editor's Picks - horizontal scroller */}
-      <section className="py-12 bg-white">
+      <section className="py-4 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-insightBlack">Editor's Picks</h2>
@@ -214,14 +214,14 @@ const Home = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {editorPicks.map((a:any,i:number)=>(
               <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="group">
-                <Card className="overflow-hidden hover:shadow-lg transition">
-                  <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                    <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain" />
+                <Card className="overflow-hidden hover:shadow-lg transition text-left">
+                  <div className="aspect-[16/9] bg-black flex items-center justify-center">
+                    <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
                   </div>
-                  <CardContent>
+                  <CardContent className="p-4 pt-0 text-left flex flex-col items-start">
                     {/* <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div> */}
-                    <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                    <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
+                    <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed text-left">{titleOf(a)}</h3>
+                    <div className="text-xs text-gray-400 mt-2 flex items-center gap-2 justify-start"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
                   </CardContent>
                 </Card>
               </Link>
@@ -240,16 +240,18 @@ const Home = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {topStories.map((a:any,i:number)=> (
-              <Card key={slugOf(a)+i} className="overflow-hidden group hover:shadow-lg transition">
-                <div className="aspect-[16/10] bg-black flex items-center justify-center">
-                  <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-contain"/>
-                </div>
-                <CardContent>
-                  {/* <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div> */}
-                  <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed">{titleOf(a)}</h3>
-                  <div className="text-xs text-gray-400 mt-2 flex items-center gap-2"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                </CardContent>
-              </Card>
+              <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="group block">
+                <Card className="overflow-hidden group-hover:shadow-lg transition text-left">
+                  <div className="aspect-[16/10] bg-black flex items-center justify-center">
+                    <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover"/>
+                  </div>
+                  <CardContent className="p-4 pt-0 text-left flex flex-col items-start">
+                    {/* <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div> */}
+                    <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed text-left">{titleOf(a)}</h3>
+                    <div className="text-xs text-gray-400 mt-2 flex items-center gap-2 justify-start"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
 
@@ -260,7 +262,7 @@ const Home = () => {
       {/* Category sections removed (Technology / Leadership / Analytics) per request */}
 
       {/* Leadership Spotlight */}
-      <section className="py-12 bg-gray-50">
+      {/* <section className="py-4 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-insightBlack">Leadership Spotlight</h2>
@@ -281,10 +283,10 @@ const Home = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Press Releases */}
-      <section className="py-12 bg-white">
+      {/* <section className="py-8 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-insightBlack">Press Releases</h2>
@@ -304,7 +306,7 @@ const Home = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA */}
       <section className="py-16 bg-insightRed text-white">

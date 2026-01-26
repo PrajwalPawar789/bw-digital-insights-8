@@ -153,19 +153,19 @@ const Footer = () => {
             <h4 className="text-xl font-semibold mb-6">Legal</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors text-base">
+                <Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors text-base">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors text-base">
+                <Link to="/terms-of-service" className="text-gray-400 hover:text-white transition-colors text-base">
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors text-base">
+                <Link to="/cookie-policy" className="text-gray-400 hover:text-white transition-colors text-base">
                   Cookie Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -179,14 +179,14 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors text-base">
+                <Link to="/partner-with-us" className="text-gray-400 hover:text-white transition-colors text-base">
                   Partner With Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors text-base">
+                <Link to="/advertise" className="text-gray-400 hover:text-white transition-colors text-base">
                   Advertise
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

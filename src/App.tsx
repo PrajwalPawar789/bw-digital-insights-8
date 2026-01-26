@@ -1,10 +1,10 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
+import ScrollToTop from "@/components/ScrollToTop";
 import Home from "@/pages/Home";
 import Magazine from "@/pages/Magazine";
 import MagazineDetail from "@/pages/MagazineDetail";
@@ -23,6 +23,11 @@ import Documentation from "@/pages/Documentation";
 import IndustryNews from "@/pages/IndustryNews";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AnalyticsInjector from "@/components/AnalyticsInjector";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TermsOfService from "@/pages/TermsOfService";
+import CookiePolicy from "@/pages/CookiePolicy";
+import PartnerWithUs from "@/pages/PartnerWithUs";
+import Advertise from "@/pages/Advertise";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +45,7 @@ const App = () => (
       <Sonner />
       <AnalyticsInjector />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/admin/*" element={<AdminDashboard />} />
           <Route path="*" element={
@@ -60,6 +66,11 @@ const App = () => (
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/documentation" element={<Documentation />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route path="/partner-with-us" element={<PartnerWithUs />} />
+                <Route path="/advertise" element={<Advertise />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
