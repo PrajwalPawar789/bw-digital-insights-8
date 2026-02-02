@@ -109,8 +109,14 @@ export const useUpdateMagazine = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["magazines"] });
+      if (data?.slug) {
+        queryClient.invalidateQueries({ queryKey: ["magazines", data.slug] });
+      }
+      if (data?.id) {
+        queryClient.invalidateQueries({ queryKey: ["magazines", "by-id", data.id] });
+      }
       toast.success("Magazine updated successfully");
     },
     onError: (error) => {

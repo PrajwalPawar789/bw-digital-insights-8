@@ -10,6 +10,8 @@ import { useImageUpload } from "@/hooks/useImageUpload";
 import { useSettings } from "@/hooks/useSettings";
 import { useUpdateDatabaseSettings } from "@/hooks/useUpdateDatabaseSettings";
 import { useDatabaseSettings } from "@/hooks/useDatabaseSettings";
+import { useArticles } from "@/hooks/useArticles";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Loader2, Upload, X, Save } from "lucide-react";
 import React from "react";
@@ -17,6 +19,7 @@ import React from "react";
 const SettingsManager = () => {
   const { settings, loading, saveSettings, updateHomepageSection, resetSettings } = useSettings();
   const { data: dbSettings } = useDatabaseSettings();
+  const { data: articles = [], isLoading: articlesLoading } = useArticles();
   const { mutate: updateDbSetting, isPending: updatingDbSetting } = useUpdateDatabaseSettings();
   const { uploadImage, uploading } = useImageUpload();
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -250,6 +253,36 @@ const SettingsManager = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="hero-main-article">Hero Main Feature</Label>
+            <Select
+              value={settings.heroMainArticleId || "auto"}
+              onValueChange={(value) =>
+                updateDbSetting({ key: "hero_main_article_id", value: value === "auto" ? null : value })
+              }
+              disabled={articlesLoading || updatingDbSetting}
+            >
+              <SelectTrigger id="hero-main-article">
+                <SelectValue placeholder="Select main feature (auto)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="auto">Auto (latest Editor's Pick)</SelectItem>
+                {Array.isArray(articles) && articles.map((article: any) => (
+                  <SelectItem key={article.id} value={article.id}>
+                    {article.title || "Untitled"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground">
+              Choose a specific article to show in the homepage hero main feature.
+            </p>
+            {updatingDbSetting && (
+              <p className="text-sm text-muted-foreground">Updating...</p>
+            )}
+          </div>
+
+          <Separator />
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label htmlFor="featured-articles">Featured Articles</Label>

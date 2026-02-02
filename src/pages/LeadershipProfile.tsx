@@ -193,12 +193,12 @@ const LeadershipProfile = () => {
                   A comprehensive look at career achievements and leadership impact
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                 {leader.bio.split('\n').map((paragraph, index) => (
                   <div key={index}>
                     {index === 0 ? (
                       <p className="text-lg text-gray-800 leading-relaxed font-medium">
-                        {paragraph}
+                        {/* {paragraph} */}
                       </p>
                     ) : (
                       <p className="text-gray-700 leading-relaxed">
@@ -245,7 +245,7 @@ const LeadershipProfile = () => {
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg">
+            {/* <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="text-xl text-insightBlack">Industry Impact</CardTitle>
               </CardHeader>
@@ -263,7 +263,7 @@ const LeadershipProfile = () => {
                   <span className="font-semibold">5,000+</span>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
 

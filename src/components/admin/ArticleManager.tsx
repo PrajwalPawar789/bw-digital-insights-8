@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { useArticles, useDeleteArticle } from '@/hooks/useArticles';
+import { useUpdateDatabaseSettings } from '@/hooks/useUpdateDatabaseSettings';
+import { useSettings } from '@/hooks/useSettings';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +14,8 @@ import EditArticleForm from './EditArticleForm';
 const ArticleManager = () => {
   const { data: articles = [], isLoading, error } = useArticles();
   const deleteArticle = useDeleteArticle();
+  const { settings } = useSettings();
+  const { mutate: updateDbSetting, isPending: updatingDbSetting } = useUpdateDatabaseSettings();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [createFormOpen, setCreateFormOpen] = useState(false);
   const [editFormOpen, setEditFormOpen] = useState(false);
@@ -97,10 +101,26 @@ const ArticleManager = () => {
                       <Badge variant={article.featured ? "default" : "secondary"}>
                         {article.featured ? "Featured" : "Regular"}
                       </Badge>
+                      {settings.heroMainArticleId === article.id && (
+                        <Badge variant="default">Main Feature</Badge>
+                      )}
                       <Badge variant="outline">{article.category}</Badge>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2 ml-4">
+                    <Button
+                      variant={settings.heroMainArticleId === article.id ? "secondary" : "outline"}
+                      size="sm"
+                      onClick={() =>
+                        updateDbSetting({
+                          key: "hero_main_article_id",
+                          value: settings.heroMainArticleId === article.id ? null : article.id,
+                        })
+                      }
+                      disabled={updatingDbSetting}
+                    >
+                      {settings.heroMainArticleId === article.id ? "Unset Main" : "Set Main"}
+                    </Button>
                     <Button variant="outline" size="sm" onClick={() => handleEdit(article)}>
                       <Edit className="h-4 w-4" />
                     </Button>

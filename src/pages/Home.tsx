@@ -41,15 +41,20 @@ const Home = () => {
     const newsByDate = byDate.filter((a) => normalizeCategory(a?.category) === "news");
     const topStoriesByDate = byDate.filter((a) => normalizeCategory(a?.category) === "top stories");
 
-    const main = editorsPicksByDate[0];
+    const selectedMain = settings.heroMainArticleId
+      ? byDate.find((a) => a?.id === settings.heroMainArticleId)
+      : undefined;
+    const main = selectedMain || editorsPicksByDate[0];
     const leftSide = newsByDate.slice(0, 2);
     const rightSide = newsByDate.slice(2, 4);
-    const editorPicks = editorsPicksByDate.slice(1, 4);
+    const editorPicks = editorsPicksByDate
+      .filter((a) => !main || a?.id !== main?.id)
+      .slice(0, 3);
     const topStories = topStoriesByDate.slice(0, 6);
     const latestMagazine = magazines[0] || null;
     
     return { main, leftSide, rightSide, editorPicks, topStories, latestMagazine };
-  }, [articles, magazines]);
+  }, [articles, magazines, settings.heroMainArticleId]);
 
   const siteOrigin = getSiteOrigin();
   const breadcrumbSchema = siteOrigin
@@ -262,7 +267,7 @@ const Home = () => {
       {/* Category sections removed (Technology / Leadership / Analytics) per request */}
 
       {/* Leadership Spotlight */}
-      {/* <section className="py-4 bg-gray-50">
+      <section className="pb-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-insightBlack">Leadership Spotlight</h2>
@@ -270,20 +275,22 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {(leadership || []).slice(0,3).map((l:any)=> (
-              <Card key={l.id} className="overflow-hidden hover:shadow-lg">
-                <div className="h-48 bg-gray-100 flex items-center justify-center">
-                  <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="max-h-full max-w-full object-contain" />
-                </div>
-                <div className="p-4 text-center">
-                  <div className="text-insightRed font-semibold text-sm">{l.title}</div>
-                  <h3 className="font-semibold text-lg">{l.name}</h3>
-                  {l.company && <div className="text-sm text-gray-500">{l.company}</div>}
-                </div>
-              </Card>
+              <Link key={l.id} to={`/leadership/${l.slug}`} className="block group">
+                <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="h-48 bg-gray-100 overflow-hidden">
+                    <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="p-4 text-center">
+                    <div className="text-insightRed font-semibold text-sm">{l.title}</div>
+                    <h3 className="font-semibold text-lg group-hover:text-insightRed transition-colors">{l.name}</h3>
+                    {l.company && <div className="text-sm text-gray-500">{l.company}</div>}
+                  </div>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
-      </section> */}
+      </section>
 
       {/* Press Releases */}
       {/* <section className="py-8 bg-white">

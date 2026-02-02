@@ -91,6 +91,10 @@ const MagazineManager = () => {
   };
 
   const handleSubmit = () => {
+    if (uploadingFile) {
+      toast.error('Please wait for the file upload to finish before saving.');
+      return;
+    }
     if (!title || !description || !publishDate) {
       toast.error('Please fill in all required fields (title, description, publish date).');
       return;
@@ -315,8 +319,8 @@ const MagazineManager = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleSubmit} className="flex-1">
-                {editMode ? 'Update Magazine' : 'Create Magazine'}
+              <Button onClick={handleSubmit} className="flex-1" disabled={uploadingFile !== null}>
+                {uploadingFile ? 'Uploading...' : editMode ? 'Update Magazine' : 'Create Magazine'}
               </Button>
               <Button variant="outline" onClick={handleDialogClose}>
                 Cancel

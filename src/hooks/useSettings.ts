@@ -18,6 +18,7 @@ interface SiteSettings {
   primaryColor: string;
   analyticsCode: string;
   homepageSections: HomepageSettings;
+  heroMainArticleId: string | null;
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -32,7 +33,8 @@ const DEFAULT_SETTINGS: SiteSettings = {
     leadershipProfiles: true,
     pressReleases: true,
     industryNews: true,
-  }
+  },
+  heroMainArticleId: null,
 };
 
 export const useSettings = () => {
@@ -60,6 +62,7 @@ export const useSettings = () => {
           ...localSettings,
           companyName: dbSettings.company_name || localSettings.companyName,
           siteTitle: dbSettings.company_name || localSettings.siteTitle,
+          heroMainArticleId: dbSettings.hero_main_article_id || null,
         };
       }
       

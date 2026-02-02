@@ -29,10 +29,10 @@ export const useDatabaseSettings = () => {
       }
 
       // Convert array to object for easier access
-      const settingsObject: Record<string, string> = {};
+      const settingsObject: Record<string, string | null> = {};
       data?.forEach((setting: DatabaseSetting) => {
         if (setting && typeof setting.key === 'string') {
-          settingsObject[setting.key] = setting.value ?? '';
+          settingsObject[setting.key] = setting.value ?? null;
         }
       });
 

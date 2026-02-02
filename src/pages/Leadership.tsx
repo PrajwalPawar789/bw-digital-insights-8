@@ -76,7 +76,7 @@ const Leadership = () => {
               <div key={l.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
                 <div className="relative">
                   <div className="aspect-video bg-gray-100">
-                    <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="w-full h-full object-cover" />
+                    <img src={l.image_url || '/placeholder.svg'} alt={l.name} className="w-full h-full" />
                   </div>
                   {l.industry && (
                     <span className="absolute top-3 left-3 bg-white/90 text-insightBlack text-xs font-semibold px-2 py-1 rounded">{l.industry}</span>
@@ -93,7 +93,7 @@ const Leadership = () => {
                       {l.twitter_url && <a href={l.twitter_url} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-blue-400"><Twitter className="h-4 w-4"/></a>}
                     </div>
                     <div className="flex items-center gap-3">
-                      <Button size="sm" onClick={()=>openPreview(l)} variant="outline">Quick View</Button>
+                      {/* <Button size="sm" onClick={()=>openPreview(l)} variant="outline">Quick View</Button> */}
                       <Link to={`/leadership/${l.slug}`} className="text-insightRed hover:text-insightBlack text-sm inline-flex items-center">Read profile <ArrowRight className="ml-1 h-4 w-4"/></Link>
                     </div>
                   </div>

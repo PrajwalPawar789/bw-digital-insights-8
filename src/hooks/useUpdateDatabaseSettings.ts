@@ -7,7 +7,7 @@ export const useUpdateDatabaseSettings = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ key, value }: { key: string; value: string }) => {
+    mutationFn: async ({ key, value }: { key: string; value: string | null }) => {
       const { data, error } = await supabase
         .from('settings')
         .upsert(
