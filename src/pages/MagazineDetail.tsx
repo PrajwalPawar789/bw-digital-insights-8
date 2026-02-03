@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useMagazineBySlug } from '@/hooks/useMagazines';
 import { useMagazineArticles } from '@/hooks/useMagazineArticles';
 import { ChevronLeft, Loader2, BookOpen, ArrowRight } from 'lucide-react';
-import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import MagazinePDFViewer from '@/components/MagazinePDFViewer';
+import MagazineFlipbookEmbed from '@/components/MagazineFlipbookEmbed';
+import MagazineFlipbookLightbox from '@/components/MagazineFlipbookLightbox';
 import Seo from "@/components/seo/Seo";
 import { useSettings } from "@/hooks/useSettings";
 import {
@@ -16,63 +15,25 @@ import {
   toAbsoluteUrl,
   truncateText,
 } from "@/lib/seo";
+import { motion } from 'framer-motion';
 
 const MagazineDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: magazine, isLoading, error } = useMagazineBySlug(slug || '');
   const { data: magazineArticles = [], isLoading: articlesLoading } = useMagazineArticles(magazine?.id || '');
-  const [fullScreen, setFullScreen] = useState<boolean>(false);
   const [initialPage, setInitialPage] = useState<number | undefined>(undefined);
+  const [activePage, setActivePage] = useState(1);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const { settings } = useSettings();
-  const fullScreenRef = useRef<HTMLDivElement>(null);
-
-  const toggleFullScreen = async () => {
-    if (fullScreen) {
-      if (document.fullscreenElement) {
-        try {
-          await document.exitFullscreen();
-        } catch {
-          // Ignore fullscreen API errors and still exit reading mode
-        }
-      }
-      setFullScreen(false);
-      return;
-    }
-
-    setFullScreen(true);
-    const target = fullScreenRef.current ?? document.documentElement;
-    if (target?.requestFullscreen) {
-      try {
-        await target.requestFullscreen();
-      } catch {
-        // If fullscreen is blocked, we still keep reading mode active
-      }
-    }
-  };
+  const fallbackPdfUrl =
+    "https://xafgvakclkwjivgfzljq.supabase.co/storage/v1/object/public/magazine-pdfs/magazine-pdfs/1769290939583-y42jndu8ij.pdf";
+  const previewPdfUrl = magazine?.pdf_url || fallbackPdfUrl;
 
   useEffect(() => {
-    if (!fullScreen) {
-      return;
+    if (typeof initialPage === 'number' && !Number.isNaN(initialPage)) {
+      setActivePage(Math.max(1, initialPage));
     }
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [fullScreen]);
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      if (!document.fullscreenElement) {
-        setFullScreen(false);
-      }
-    };
-
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
+  }, [initialPage]);
 
   if (isLoading) {
     return (
@@ -152,18 +113,9 @@ const MagazineDetail = () => {
         publishedTime={magazine.publish_date ? new Date(magazine.publish_date).toISOString() : undefined}
         schema={[...(breadcrumbSchema ? [breadcrumbSchema] : []), issueSchema]}
       />
-      <div
-        ref={fullScreenRef}
-        className={cn(
-          "min-h-screen transition-all duration-300 bg-white",
-          fullScreen ? "fixed inset-0 z-[2000] overflow-hidden" : "py-12"
-        )}
-      >
-        <div className={cn(
-          fullScreen ? "h-full w-full flex flex-col" : "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
-        )}>
+      <div className="min-h-screen transition-all duration-300 bg-white py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Magazine Header */}
-        {!fullScreen && (
           <>
             <div className="flex flex-col md:flex-row items-start gap-8 mb-12">
               <div className="md:w-1/3">
@@ -206,7 +158,10 @@ const MagazineDetail = () => {
                   </span>
                   <div className="flex gap-3">
                     <Button
-                      onClick={() => document.getElementById('pdf-viewer')?.scrollIntoView({ behavior: 'smooth' })}
+                      onClick={() => {
+                        setInitialPage(undefined);
+                        document.getElementById('pdf-viewer')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
                       className="inline-flex items-center bg-insightRed hover:bg-insightBlack text-white px-6 py-3 rounded-md text-sm font-medium transition-colors"
                     >
                       <BookOpen className="mr-2 h-4 w-4" /> Read Online
@@ -250,8 +205,6 @@ const MagazineDetail = () => {
                               const page = magazineArticle.page_number || 1;
                               setInitialPage(page);
                               document.getElementById('pdf-viewer')?.scrollIntoView({ behavior: 'smooth' });
-                              // open viewer in reading mode
-                              setFullScreen(true);
                             }} className="bg-insightBlack text-white hover:bg-black/90">Preview</Button>
 
                             <Link
@@ -269,25 +222,68 @@ const MagazineDetail = () => {
               </div>
             )}
           </>
-        )}
-
-        {/* PDF Viewer */}
-        <div
-          id="pdf-viewer"
-          className={cn("mb-12", fullScreen && "mb-0 flex-1 min-h-0")}
-        >
-          <MagazinePDFViewer
-            fileUrl={magazine.pdf_url || "/sample-magazine.pdf"}
-            title={magazine.title}
-            onFullScreen={toggleFullScreen}
-            fullScreen={fullScreen}
-            initialPage={initialPage}
-          />
         </div>
 
-        {/* Magazine Information */}
-        {!fullScreen && (
-          <div>
+        <section id="pdf-viewer" className="relative w-full py-12 sm:py-16 lg:py-20">
+          <div
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,0,0,0.1),transparent_65%)]"
+            aria-hidden="true"
+          />
+          <div
+            className="absolute inset-0 bg-[linear-gradient(180deg,#ffffff,rgba(245,245,245,0.95))]"
+            aria-hidden="true"
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.98 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+            className="relative mx-auto flex max-w-[1200px] flex-col gap-6 px-4 sm:px-6 lg:px-8"
+          >
+            <div className="flex flex-col gap-4 text-center sm:text-left">
+              <div className="inline-flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-[0.4em] text-gray-500 sm:justify-start">
+                <span className="h-px w-10 bg-insightRed/70" />
+                Magazine Preview
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  {/* <h2 className="text-3xl font-semibold text-insightBlack sm:text-4xl">
+                    Executive-Grade Preview Experience
+                  </h2>
+                  <p className="max-w-2xl text-base text-gray-700 sm:text-lg">
+                    Cinematic page turns, a distraction-free layout, and a premium reading flow
+                    designed for decision-makers.
+                  </p> */}
+                </div>
+                {/* <div className="flex items-center gap-2 text-xs text-gray-600">
+                  <span className="h-2 w-2 rounded-full bg-insightRed/80" />
+                  Optimized for fast executive reading
+                </div> */}
+              </div>
+            </div>
+
+            {/* <div className="flex flex-col gap-2 text-xs text-gray-600 sm:flex-row sm:items-center sm:justify-between">
+              <span className="inline-flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-insightRed/70" />
+                Use Left and Right arrow keys or swipe to turn pages.
+              </span>
+              <span className="text-gray-500">Your preview focus stays locked on the active page.</span>
+            </div> */}
+
+            <MagazineFlipbookEmbed
+              pdfUrl={previewPdfUrl}
+              title={magazine.title}
+              initialPage={initialPage}
+              onOpenFullscreen={() => setLightboxOpen(true)}
+              onReadFullIssue={() => window.open(previewPdfUrl, '_blank', 'noopener,noreferrer')}
+              onPageChange={(page) => setActivePage(page)}
+            />
+          </motion.div>
+        </section>
+
+        <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+          {/* Magazine Information */}
+          {/* <div>
             <h2 className="text-2xl font-bold text-insightBlack mb-6">About This Issue</h2>
             <div className="bg-white p-8 rounded-lg shadow-sm border">
               <div className="grid md:grid-cols-2 gap-8">
@@ -319,10 +315,18 @@ const MagazineDetail = () => {
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          </div> */}
+        </div>
+
+        <MagazineFlipbookLightbox
+          open={lightboxOpen}
+          onClose={() => setLightboxOpen(false)}
+          pdfUrl={previewPdfUrl}
+          bgImageUrl={magazine.cover_image_url}
+          title={magazine.title}
+          initialPage={activePage}
+        />
       </div>
-    </div>
     </>
   );
 };

@@ -26,10 +26,7 @@ import {
   ZoomOut as ZoomOutIcon,
 } from 'lucide-react';
 
-const PDF_WORKER_URL = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url
-).toString();
+const PDF_WORKER_URL = '/pdf.worker.min.js';
 
 interface MagazinePDFViewerProps {
   fileUrl: string;
