@@ -324,7 +324,7 @@ const MagazineFlipbookEmbed = ({
       aria-label={`${title || "Magazine"} preview`}
     >
       <div
-        className="magazine-embed-frame group focus-within:ring-2 focus-within:ring-insightRed/40"
+        className="magazine-embed-frame group focus-visible:ring-2 focus-visible:ring-insightRed/40"
         role="region"
         aria-busy={!isReady}
         tabIndex={0}
