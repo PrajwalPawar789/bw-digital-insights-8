@@ -16,6 +16,7 @@ import {
   truncateText,
 } from "@/lib/seo";
 import { motion } from 'framer-motion';
+import { buildCurrentPublicStorageUrl } from "@/lib/storageUrl";
 
 const MagazineDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -25,8 +26,10 @@ const MagazineDetail = () => {
   const [activePage, setActivePage] = useState(1);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { settings } = useSettings();
-  const fallbackPdfUrl =
-    "https://xafgvakclkwjivgfzljq.supabase.co/storage/v1/object/public/magazine-pdfs/magazine-pdfs/1769290939583-y42jndu8ij.pdf";
+  const fallbackPdfUrl = buildCurrentPublicStorageUrl(
+    "magazine-pdfs",
+    "magazine-pdfs/1769290939583-y42jndu8ij.pdf"
+  );
   const previewPdfUrl = magazine?.pdf_url || fallbackPdfUrl;
 
   useEffect(() => {

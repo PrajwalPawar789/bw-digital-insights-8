@@ -2,6 +2,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { toCurrentStorageUrl } from "@/lib/storageUrl";
+
+const normalizeMagazineUrls = (magazine: any) => ({
+  ...magazine,
+  cover_image_url: toCurrentStorageUrl(magazine?.cover_image_url),
+  pdf_url: toCurrentStorageUrl(magazine?.pdf_url),
+});
 
 export const useMagazines = () => {
   return useQuery({
@@ -13,7 +20,7 @@ export const useMagazines = () => {
         .order("publish_date", { ascending: false });
       
       if (error) throw error;
-      return data;
+      return (data || []).map(normalizeMagazineUrls);
     },
   });
 };
@@ -30,7 +37,7 @@ export const useFeaturedMagazines = () => {
         .limit(3);
       
       if (error) throw error;
-      return data;
+      return (data || []).map(normalizeMagazineUrls);
     },
   });
 };
@@ -46,7 +53,7 @@ export const useMagazineBySlug = (slug: string, options?: { enabled?: boolean })
         .single();
       
       if (error) throw error;
-      return data;
+      return normalizeMagazineUrls(data);
     },
     enabled: !!slug && (options?.enabled !== false),
   });
@@ -63,7 +70,7 @@ export const useMagazineById = (id: string) => {
         .single();
       
       if (error) throw error;
-      return data;
+      return normalizeMagazineUrls(data);
     },
     enabled: !!id,
   });

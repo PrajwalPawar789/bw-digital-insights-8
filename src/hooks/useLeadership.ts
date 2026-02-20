@@ -2,6 +2,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { toCurrentStorageUrl } from "@/lib/storageUrl";
+
+const normalizeLeadershipImageUrl = (profile: any) => ({
+  ...profile,
+  image_url: toCurrentStorageUrl(profile?.image_url),
+});
 
 export const useLeadershipProfiles = () => {
   return useQuery({
@@ -13,7 +19,7 @@ export const useLeadershipProfiles = () => {
         .order("name");
       
       if (error) throw error;
-      return data;
+      return (data || []).map(normalizeLeadershipImageUrl);
     },
   });
 };
@@ -30,7 +36,7 @@ export const useFeaturedLeadership = () => {
         .limit(6);
       
       if (error) throw error;
-      return data;
+      return (data || []).map(normalizeLeadershipImageUrl);
     },
   });
 };
@@ -46,7 +52,7 @@ export const useLeadershipBySlug = (slug: string) => {
         .single();
       
       if (error) throw error;
-      return data;
+      return normalizeLeadershipImageUrl(data);
     },
     enabled: !!slug,
   });

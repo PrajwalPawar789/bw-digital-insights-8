@@ -14,6 +14,7 @@ import {
   toAbsoluteUrl,
   truncateText,
 } from "@/lib/seo";
+import { toCurrentStorageUrl } from "@/lib/storageUrl";
 
 const PressReleaseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -47,7 +48,7 @@ const PressReleaseDetail = () => {
             date: supabaseRelease.date,
             category: 'Press Release', // Default category
             slug: supabaseRelease.slug,
-            image: supabaseRelease.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800',
+            image: toCurrentStorageUrl(supabaseRelease.image_url) || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800',
             author: supabaseRelease.author
           };
           setPressRelease(convertedRelease);
@@ -68,7 +69,7 @@ const PressReleaseDetail = () => {
               date: item.date,
               category: 'Press Release',
               slug: item.slug,
-              image: item.image_url || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800',
+              image: toCurrentStorageUrl(item.image_url) || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800',
               author: item.author
             }));
             setRelatedPressReleases(convertedRelated);

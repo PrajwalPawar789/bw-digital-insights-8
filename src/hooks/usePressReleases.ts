@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { toCurrentStorageUrl } from '@/lib/storageUrl';
 
 type PressReleasePayload = {
   id?: string;
@@ -15,6 +16,11 @@ type PressReleasePayload = {
   featured: boolean;
 };
 
+const normalizePressReleaseImageUrl = (item: any) => ({
+  ...item,
+  image_url: toCurrentStorageUrl(item?.image_url),
+});
+
 export const usePressReleases = () => {
   return useQuery({
     queryKey: ['press_releases'],
@@ -25,7 +31,7 @@ export const usePressReleases = () => {
         .order('date', { ascending: false });
 
       if (error) throw new Error(error.message);
-      return data || [];
+      return (data || []).map(normalizePressReleaseImageUrl);
     },
   });
 };
@@ -114,7 +120,7 @@ export const useFeaturedPressReleases = () => {
         .order('date', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map(normalizePressReleaseImageUrl);
     },
   });
 };

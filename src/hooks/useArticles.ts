@@ -2,6 +2,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { toCurrentStorageUrl } from "@/lib/storageUrl";
+
+const normalizeArticleImageUrl = (article: any) => ({
+  ...article,
+  image_url: toCurrentStorageUrl(article?.image_url),
+});
 
 export const useArticles = () => {
   return useQuery({
@@ -13,7 +19,7 @@ export const useArticles = () => {
         .order("date", { ascending: false });
       
       if (error) throw error;
-      return data;
+      return (data || []).map(normalizeArticleImageUrl);
     },
   });
 };
@@ -30,7 +36,7 @@ export const useFeaturedArticles = () => {
         .limit(6);
       
       if (error) throw error;
-      return data;
+      return (data || []).map(normalizeArticleImageUrl);
     },
   });
 };
@@ -46,7 +52,7 @@ export const useArticleBySlug = (slug: string) => {
         .single();
       
       if (error) throw error;
-      return data;
+      return normalizeArticleImageUrl(data);
     },
     enabled: !!slug,
   });
