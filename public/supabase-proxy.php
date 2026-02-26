@@ -77,14 +77,51 @@ foreach ($incomingHeaders as $name => $value) {
     }
 }
 
+$hopByHopHeaders = [
+    'connection',
+    'keep-alive',
+    'proxy-authenticate',
+    'proxy-authorization',
+    'te',
+    'trailers',
+    'transfer-encoding',
+    'upgrade',
+    'content-length',
+];
+
+$passthroughHeaders = [];
+
 $ch = curl_init($targetUrl);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HEADER, true);
+curl_setopt($ch, CURLOPT_HEADER, false);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
 curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 curl_setopt($ch, CURLOPT_ENCODING, '');
+curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function ($curlHandle, $headerLine) use (&$passthroughHeaders, $hopByHopHeaders) {
+    if (strpos($headerLine, ':') === false) {
+        return strlen($headerLine);
+    }
+
+    [$name, $value] = explode(':', $headerLine, 2);
+    $name = trim($name);
+    $value = trim($value);
+    $lower = strtolower($name);
+
+    if (
+        $name === '' ||
+        $value === '' ||
+        in_array($lower, $hopByHopHeaders, true) ||
+        $lower === 'set-cookie' ||
+        $lower === 'content-type'
+    ) {
+        return strlen($headerLine);
+    }
+
+    $passthroughHeaders[] = $name . ': ' . $value;
+    return strlen($headerLine);
+});
 
 if (!empty($forwardHeaders)) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $forwardHeaders);
@@ -107,43 +144,17 @@ if ($rawResponse === false) {
 }
 
 $statusCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$headerSize = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+$contentType = (string) (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: '');
 curl_close($ch);
-
-$rawHeaders = substr($rawResponse, 0, $headerSize);
-$responseBody = substr($rawResponse, $headerSize);
 
 http_response_code($statusCode > 0 ? $statusCode : 502);
 
-$hopByHopHeaders = [
-    'connection',
-    'keep-alive',
-    'proxy-authenticate',
-    'proxy-authorization',
-    'te',
-    'trailers',
-    'transfer-encoding',
-    'upgrade',
-    'content-length',
-];
-
-$headerLines = preg_split('/\r\n|\r|\n/', (string) $rawHeaders);
-if (is_array($headerLines)) {
-    foreach ($headerLines as $line) {
-        if (strpos($line, ':') === false) {
-            continue;
-        }
-        [$name, $value] = explode(':', $line, 2);
-        $name = trim($name);
-        $value = trim($value);
-        $lower = strtolower($name);
-
-        if ($name === '' || $value === '' || in_array($lower, $hopByHopHeaders, true) || $lower === 'set-cookie') {
-            continue;
-        }
-
-        header($name . ': ' . $value, false);
-    }
+if ($contentType !== '') {
+    header('Content-Type: ' . $contentType);
 }
 
-echo $responseBody;
+foreach ($passthroughHeaders as $headerLine) {
+    header($headerLine, false);
+}
+
+echo $rawResponse;
