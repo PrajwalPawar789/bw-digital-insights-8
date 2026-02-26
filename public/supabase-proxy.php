@@ -93,12 +93,19 @@ $passthroughHeaders = [];
 
 $ch = curl_init($targetUrl);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, false);
 curl_setopt($ch, CURLOPT_HEADER, false);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
 curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 curl_setopt($ch, CURLOPT_ENCODING, '');
+
+$responseBody = '';
+curl_setopt($ch, CURLOPT_WRITEFUNCTION, static function ($curlHandle, $chunk) use (&$responseBody) {
+    $responseBody .= $chunk;
+    return strlen($chunk);
+});
+
 curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function ($curlHandle, $headerLine) use (&$passthroughHeaders, $hopByHopHeaders) {
     if (strpos($headerLine, ':') === false) {
         return strlen($headerLine);
@@ -114,7 +121,8 @@ curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function ($curlHandle, $headerLi
         $value === '' ||
         in_array($lower, $hopByHopHeaders, true) ||
         $lower === 'set-cookie' ||
-        $lower === 'content-type'
+        $lower === 'content-type' ||
+        $lower === 'content-encoding'
     ) {
         return strlen($headerLine);
     }
@@ -132,9 +140,9 @@ if ($requestBody !== false && $requestBody !== '' && !in_array($method, ['GET', 
     curl_setopt($ch, CURLOPT_POSTFIELDS, $requestBody);
 }
 
-$rawResponse = curl_exec($ch);
+$ok = curl_exec($ch);
 
-if ($rawResponse === false) {
+if ($ok === false) {
     $errorMessage = curl_error($ch);
     curl_close($ch);
     http_response_code(502);
@@ -157,4 +165,4 @@ foreach ($passthroughHeaders as $headerLine) {
     header($headerLine, false);
 }
 
-echo $rawResponse;
+echo $responseBody;

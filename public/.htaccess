@@ -1,8 +1,16 @@
 RewriteEngine On
 
+# Ensure PHP proxy works with path-info URLs:
+# /supabase-proxy.php/rest/v1/...
+RewriteRule ^supabase-proxy\.php(/.*)?$ - [L,NC]
+
+# Preserve Authorization header for PHP under some Apache/FastCGI setups.
+RewriteCond %{HTTP:Authorization} .
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 # Same-origin proxy for Supabase on shared hosting.
 # Requests to /supabase/* are forwarded by supabase-proxy.php.
-RewriteRule ^supabase/(.*)$ /supabase-proxy.php?path=$1 [QSA,L]
+RewriteRule ^supabase/(.*)$ /supabase-proxy.php?path=$1 [QSA,L,NC]
 
 # Serve existing files/directories directly.
 RewriteCond %{REQUEST_FILENAME} -f [OR]
