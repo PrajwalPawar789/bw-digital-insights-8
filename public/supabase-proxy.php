@@ -13,6 +13,24 @@ if (!function_exists('curl_init')) {
 }
 
 $rawPath = isset($_GET['path']) ? (string) $_GET['path'] : '';
+
+// Support both query style (`?path=rest/v1/...`) and path-info style
+// (`/supabase-proxy.php/rest/v1/...`) so hosting rewrites are optional.
+if ($rawPath === '') {
+    $pathInfo = isset($_SERVER['PATH_INFO']) ? (string) $_SERVER['PATH_INFO'] : '';
+    if ($pathInfo !== '') {
+        $rawPath = $pathInfo;
+    } else {
+        $requestUri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '';
+        $scriptName = isset($_SERVER['SCRIPT_NAME']) ? (string) $_SERVER['SCRIPT_NAME'] : '';
+        $requestPath = (string) (parse_url($requestUri, PHP_URL_PATH) ?? '');
+
+        if ($requestPath !== '' && $scriptName !== '' && str_starts_with($requestPath, $scriptName)) {
+            $rawPath = substr($requestPath, strlen($scriptName));
+        }
+    }
+}
+
 $path = ltrim($rawPath, '/');
 
 if ($path === '' || strpos($path, '..') !== false) {
@@ -129,4 +147,3 @@ if (is_array($headerLines)) {
 }
 
 echo $responseBody;
-
