@@ -1,0 +1,13 @@
+RewriteEngine On
+
+# Same-origin proxy for Supabase on shared hosting.
+# Requests to /supabase/* are forwarded by supabase-proxy.php.
+RewriteRule ^supabase/(.*)$ /supabase-proxy.php?path=$1 [QSA,L]
+
+# Serve existing files/directories directly.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# SPA fallback.
+RewriteRule ^ index.html [L]

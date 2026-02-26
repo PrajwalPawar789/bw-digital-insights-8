@@ -274,7 +274,7 @@ const Home = () => {
             <Link to="/leadership" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {(leadership || []).slice(0,3).map((l:any)=> (
+            {(leadership || []).slice(0,6).map((l:any)=> (
               <Link key={l.id} to={`/leadership/${l.slug}`} className="block group">
                 <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="h-48 bg-gray-100 overflow-hidden">

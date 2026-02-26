@@ -1,7 +1,6 @@
-const CURRENT_SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
-const CURRENT_PUBLIC_STORAGE_PREFIX = CURRENT_SUPABASE_URL
-  ? `${CURRENT_SUPABASE_URL}/storage/v1/object/public/`
-  : "";
+import { getSupabasePublicStoragePrefix } from "@/integrations/supabase/url";
+
+const CURRENT_PUBLIC_STORAGE_PREFIX = getSupabasePublicStoragePrefix();
 
 /**
  * Rewrites any Supabase public storage URL to the currently configured project URL.

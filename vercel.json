@@ -4,6 +4,10 @@
   "outputDirectory": "build",
   "framework": "vite",
   "routes": [
+    {
+      "src": "/supabase/(.*)",
+      "dest": "https://elrnafeyidalkswgdqvx.supabase.co/$1"
+    },
     { "handle": "filesystem" },
     { "src": "/.*", "dest": "/index.html" }
   ]
