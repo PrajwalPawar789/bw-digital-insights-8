@@ -1,7 +1,19 @@
 
 import { useState } from "react";
+import { createClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { toast } from "sonner";
+
+const DIRECT_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const DIRECT_SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+// Storage uploads bypass the production PHP proxy because binary request bodies
+// are not reliably forwarded there.
+const directStorageClient =
+  DIRECT_SUPABASE_URL && DIRECT_SUPABASE_ANON_KEY
+    ? createClient<Database>(DIRECT_SUPABASE_URL, DIRECT_SUPABASE_ANON_KEY)
+    : null;
 
 export const useImageUpload = () => {
   const [uploading, setUploading] = useState(false);
@@ -26,7 +38,9 @@ export const useImageUpload = () => {
       console.log("File size:", file.size, "bytes");
       console.log("File type:", file.type);
       
-      const { data, error } = await supabase.storage
+      const storageClient = directStorageClient ?? supabase;
+
+      const { error } = await storageClient.storage
         .from('website-images')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -39,7 +53,7 @@ export const useImageUpload = () => {
         throw error;
       }
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = storageClient.storage
         .from('website-images')
         .getPublicUrl(fileName);
 
@@ -75,7 +89,9 @@ export const useImageUpload = () => {
       console.log("File size:", file.size, "bytes");
       console.log("File type:", file.type);
       
-      const { data, error } = await supabase.storage
+      const storageClient = directStorageClient ?? supabase;
+
+      const { error } = await storageClient.storage
         .from('magazine-pdfs')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -88,7 +104,7 @@ export const useImageUpload = () => {
         throw error;
       }
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = storageClient.storage
         .from('magazine-pdfs')
         .getPublicUrl(fileName);
 
@@ -125,7 +141,9 @@ export const useImageUpload = () => {
       
       if (!folderParts) throw new Error("Invalid file URL");
 
-      const { error } = await supabase.storage
+      const storageClient = directStorageClient ?? supabase;
+
+      const { error } = await storageClient.storage
         .from('website-images')
         .remove([folderParts]);
 
@@ -147,7 +165,9 @@ export const useImageUpload = () => {
       
       if (!folderParts) throw new Error("Invalid PDF URL");
 
-      const { error } = await supabase.storage
+      const storageClient = directStorageClient ?? supabase;
+
+      const { error } = await storageClient.storage
         .from('magazine-pdfs')
         .remove([folderParts]);
 
