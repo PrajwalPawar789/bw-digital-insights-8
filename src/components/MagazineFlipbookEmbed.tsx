@@ -32,6 +32,9 @@ const formatPage = (value?: number | null) => {
   return value.toString().padStart(2, "0");
 };
 
+const FLIPBOOK_RETRY_DELAY_MS = 60;
+const MAX_FLIPBOOK_SYNC_ATTEMPTS = 30;
+
 const MagazineFlipbookEmbed = ({
   pdfUrl,
   title,
@@ -45,6 +48,9 @@ const MagazineFlipbookEmbed = ({
   const instanceRef = useRef<any>(null);
   const pdfRef = useRef<string>("");
   const pendingPageRef = useRef<number | undefined>(initialPage);
+  const readyRef = useRef(false);
+  const retryTimerRef = useRef<number | null>(null);
+  const readyTimerRef = useRef<number | null>(null);
   const titleRef = useRef<string | undefined>(title);
   const onPageChangeRef = useRef<typeof onPageChange>(onPageChange);
   const pageCountRef = useRef<number | null>(null);
@@ -65,17 +71,89 @@ const MagazineFlipbookEmbed = ({
     onPageChangeRef.current = onPageChange;
   }, [onPageChange]);
 
+  const clearPendingPageRetry = useCallback(() => {
+    if (retryTimerRef.current !== null) {
+      window.clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+  }, []);
+
+  const clearReadyRetry = useCallback(() => {
+    if (readyTimerRef.current !== null) {
+      window.clearTimeout(readyTimerRef.current);
+      readyTimerRef.current = null;
+    }
+  }, []);
+
+  const getControllableInstance = useCallback(() => {
+    const instance = instanceRef.current;
+    if (typeof instance?.gotoPage !== "function") {
+      return null;
+    }
+    if (typeof instance?.target?.gotoPage !== "function") {
+      return null;
+    }
+    return instance;
+  }, []);
+
+  const normalizePage = useCallback((page: number) => {
+    const nextPage = Math.max(1, page);
+    const maxPage = pageCountRef.current;
+    if (typeof maxPage === "number" && maxPage > 0) {
+      return Math.min(maxPage, nextPage);
+    }
+    return nextPage;
+  }, []);
+
+  const flushPendingPage = useCallback(
+    (attempt = 0) => {
+      clearPendingPageRetry();
+
+      const requestedPage = pendingPageRef.current;
+      if (typeof requestedPage !== "number" || Number.isNaN(requestedPage)) {
+        return;
+      }
+
+      const instance = getControllableInstance();
+      if (!readyRef.current || !instance) {
+        if (attempt < MAX_FLIPBOOK_SYNC_ATTEMPTS) {
+          retryTimerRef.current = window.setTimeout(
+            () => flushPendingPage(attempt + 1),
+            FLIPBOOK_RETRY_DELAY_MS
+          );
+        }
+        return;
+      }
+
+      const nextPage = normalizePage(requestedPage);
+      try {
+        instance.gotoPage(nextPage);
+        pendingPageRef.current = undefined;
+        setCurrentPage(nextPage);
+        onPageChangeRef.current?.(nextPage);
+      } catch (error) {
+        if (attempt < MAX_FLIPBOOK_SYNC_ATTEMPTS) {
+          retryTimerRef.current = window.setTimeout(
+            () => flushPendingPage(attempt + 1),
+            FLIPBOOK_RETRY_DELAY_MS
+          );
+          return;
+        }
+        console.error("Unable to sync flipbook page", error);
+      }
+    },
+    [clearPendingPageRetry, getControllableInstance, normalizePage]
+  );
+
   useEffect(() => {
     pendingPageRef.current = initialPage;
     if (typeof initialPage === "number" && !Number.isNaN(initialPage)) {
-      const nextPage = Math.max(1, initialPage);
+      const nextPage = normalizePage(initialPage);
       setCurrentPage(nextPage);
       onPageChangeRef.current?.(nextPage);
-      if (instanceRef.current?.gotoPage) {
-        instanceRef.current.gotoPage(nextPage);
-      }
+      flushPendingPage();
     }
-  }, [initialPage]);
+  }, [flushPendingPage, initialPage, normalizePage]);
 
   useEffect(() => {
     const node = shellRef.current;
@@ -114,21 +192,42 @@ const MagazineFlipbookEmbed = ({
 
   const handleReady = useCallback(
     (book: any) => {
-      updatePageState(book);
-      setIsReady(true);
+      const syncReadyState = (attempt = 0) => {
+        clearReadyRetry();
 
-      if (!pageCountRef.current && instanceRef.current) {
-        window.setTimeout(() => {
-          const totalPages =
-            instanceRef.current?.target?.pageCount ?? instanceRef.current?.pageCount;
-          if (typeof totalPages === "number" && !Number.isNaN(totalPages)) {
-            pageCountRef.current = totalPages;
-            setPageCount(totalPages);
+        const instance = getControllableInstance();
+        if (!instance) {
+          updatePageState(book);
+          if (attempt < MAX_FLIPBOOK_SYNC_ATTEMPTS) {
+            readyTimerRef.current = window.setTimeout(
+              () => syncReadyState(attempt + 1),
+              FLIPBOOK_RETRY_DELAY_MS
+            );
           }
-        }, 250);
-      }
+          return;
+        }
+
+        readyRef.current = true;
+        updatePageState(book ?? instance);
+        setIsReady(true);
+        flushPendingPage();
+
+        if (!pageCountRef.current) {
+          window.setTimeout(() => {
+            const totalPages = instance.target?.pageCount ?? instance.pageCount;
+            if (typeof totalPages === "number" && !Number.isNaN(totalPages)) {
+              pageCountRef.current = totalPages;
+              setPageCount(totalPages);
+            }
+          }, 250);
+        }
+      };
+
+      window.requestAnimationFrame(() => {
+        syncReadyState();
+      });
     },
-    [updatePageState]
+    [clearReadyRetry, flushPendingPage, getControllableInstance, updatePageState]
   );
 
   const handleFlip = useCallback(
@@ -159,6 +258,9 @@ const MagazineFlipbookEmbed = ({
 
     setError(null);
     setIsReady(false);
+    readyRef.current = false;
+    clearReadyRetry();
+    clearPendingPageRetry();
 
     if (instanceRef.current?.dispose) {
       instanceRef.current.dispose();
@@ -228,6 +330,9 @@ const MagazineFlipbookEmbed = ({
 
     return () => {
       // Ensure the underlying flipbook canvas is fully disposed on re-init/unmount.
+      readyRef.current = false;
+      clearReadyRetry();
+      clearPendingPageRetry();
       if (instanceRef.current?.dispose) {
         instanceRef.current.dispose();
       }
@@ -236,7 +341,7 @@ const MagazineFlipbookEmbed = ({
         target.innerHTML = "";
       }
     };
-  }, [handleFlip, handleReady, initNonce, isInView, pdfUrl]);
+  }, [clearPendingPageRetry, clearReadyRetry, handleFlip, handleReady, initNonce, isInView, pdfUrl]);
 
   useEffect(() => {
     if (!hasFocus) {
@@ -244,43 +349,55 @@ const MagazineFlipbookEmbed = ({
     }
 
     const onKey = (event: KeyboardEvent) => {
+      const instance = getControllableInstance();
+      if (!readyRef.current || !instance) {
+        return;
+      }
       if (event.key === "ArrowRight") {
-        instanceRef.current?.next?.();
+        instance.next?.();
       }
       if (event.key === "ArrowLeft") {
-        instanceRef.current?.prev?.();
+        instance.prev?.();
       }
     };
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [hasFocus]);
+  }, [getControllableInstance, hasFocus]);
 
   const handlePrev = useCallback(() => {
-    const instance = instanceRef.current;
-    if (!instance) {
+    const instance = getControllableInstance();
+    if (!readyRef.current || !instance) {
       return;
     }
     instance.prev?.();
     window.requestAnimationFrame(() => updatePageState(instance));
-  }, [updatePageState]);
+  }, [getControllableInstance, updatePageState]);
 
   const handleNext = useCallback(() => {
-    const instance = instanceRef.current;
-    if (!instance) {
+    const instance = getControllableInstance();
+    if (!readyRef.current || !instance) {
       return;
     }
     instance.next?.();
     window.requestAnimationFrame(() => updatePageState(instance));
-  }, [updatePageState]);
+  }, [getControllableInstance, updatePageState]);
 
   const handleZoomIn = useCallback(() => {
-    instanceRef.current?.zoom?.(1);
-  }, []);
+    const instance = getControllableInstance();
+    if (!readyRef.current || !instance) {
+      return;
+    }
+    instance.zoom?.(1);
+  }, [getControllableInstance]);
 
   const handleZoomOut = useCallback(() => {
-    instanceRef.current?.zoom?.(-1);
-  }, []);
+    const instance = getControllableInstance();
+    if (!readyRef.current || !instance) {
+      return;
+    }
+    instance.zoom?.(-1);
+  }, [getControllableInstance]);
 
   const handleOpenFullscreen = useCallback(() => {
     if (onOpenFullscreen) {

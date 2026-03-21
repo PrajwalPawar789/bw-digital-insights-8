@@ -25,6 +25,9 @@ const formatPage = (value?: number | null) => {
   return value.toString().padStart(2, "0");
 };
 
+const FLIPBOOK_RETRY_DELAY_MS = 60;
+const MAX_FLIPBOOK_SYNC_ATTEMPTS = 30;
+
 const MagazineFlipbookLightbox = ({
   open,
   onClose,
@@ -35,6 +38,11 @@ const MagazineFlipbookLightbox = ({
 }: MagazineFlipbookLightboxProps) => {
   const viewerRef = useRef<HTMLDivElement | null>(null);
   const instanceRef = useRef<any>(null);
+  const pendingPageRef = useRef<number | undefined>(initialPage);
+  const readyRef = useRef(false);
+  const retryTimerRef = useRef<number | null>(null);
+  const readyTimerRef = useRef<number | null>(null);
+  const pageCountRef = useRef<number | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(initialPage || 1);
@@ -49,25 +57,122 @@ const MagazineFlipbookLightbox = ({
 
     const totalPages = book?.target?.pageCount ?? book?.pageCount;
     if (typeof totalPages === "number" && !Number.isNaN(totalPages)) {
+      pageCountRef.current = totalPages;
       setPageCount(totalPages);
     }
   }, []);
 
-  const handleReady = useCallback(
-    (book: any) => {
-      updatePageState(book);
-      setIsReady(true);
-      if (!pageCount && instanceRef.current) {
-        window.setTimeout(() => {
-          const totalPages =
-            instanceRef.current?.target?.pageCount ?? instanceRef.current?.pageCount;
-          if (typeof totalPages === "number" && !Number.isNaN(totalPages)) {
-            setPageCount(totalPages);
-          }
-        }, 250);
+  const clearPendingPageRetry = useCallback(() => {
+    if (retryTimerRef.current !== null) {
+      window.clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+  }, []);
+
+  const clearReadyRetry = useCallback(() => {
+    if (readyTimerRef.current !== null) {
+      window.clearTimeout(readyTimerRef.current);
+      readyTimerRef.current = null;
+    }
+  }, []);
+
+  const getControllableInstance = useCallback(() => {
+    const instance = instanceRef.current;
+    if (typeof instance?.gotoPage !== "function") {
+      return null;
+    }
+    if (typeof instance?.target?.gotoPage !== "function") {
+      return null;
+    }
+    return instance;
+  }, []);
+
+  const normalizePage = useCallback((page: number) => {
+    const nextPage = Math.max(1, page);
+    const maxPage = pageCountRef.current;
+    if (typeof maxPage === "number" && maxPage > 0) {
+      return Math.min(maxPage, nextPage);
+    }
+    return nextPage;
+  }, []);
+
+  const flushPendingPage = useCallback(
+    (attempt = 0) => {
+      clearPendingPageRetry();
+
+      const requestedPage = pendingPageRef.current;
+      if (typeof requestedPage !== "number" || Number.isNaN(requestedPage)) {
+        return;
+      }
+
+      const instance = getControllableInstance();
+      if (!readyRef.current || !instance) {
+        if (attempt < MAX_FLIPBOOK_SYNC_ATTEMPTS) {
+          retryTimerRef.current = window.setTimeout(
+            () => flushPendingPage(attempt + 1),
+            FLIPBOOK_RETRY_DELAY_MS
+          );
+        }
+        return;
+      }
+
+      const nextPage = normalizePage(requestedPage);
+      try {
+        instance.gotoPage(nextPage);
+        pendingPageRef.current = undefined;
+        setCurrentPage(nextPage);
+      } catch (error) {
+        if (attempt < MAX_FLIPBOOK_SYNC_ATTEMPTS) {
+          retryTimerRef.current = window.setTimeout(
+            () => flushPendingPage(attempt + 1),
+            FLIPBOOK_RETRY_DELAY_MS
+          );
+          return;
+        }
+        console.error("Unable to sync lightbox flipbook page", error);
       }
     },
-    [pageCount, updatePageState]
+    [clearPendingPageRetry, getControllableInstance, normalizePage]
+  );
+
+  const handleReady = useCallback(
+    (book: any) => {
+      const syncReadyState = (attempt = 0) => {
+        clearReadyRetry();
+
+        const instance = getControllableInstance();
+        if (!instance) {
+          updatePageState(book);
+          if (attempt < MAX_FLIPBOOK_SYNC_ATTEMPTS) {
+            readyTimerRef.current = window.setTimeout(
+              () => syncReadyState(attempt + 1),
+              FLIPBOOK_RETRY_DELAY_MS
+            );
+          }
+          return;
+        }
+
+        readyRef.current = true;
+        updatePageState(book ?? instance);
+        setIsReady(true);
+        flushPendingPage();
+
+        if (!pageCountRef.current) {
+          window.setTimeout(() => {
+            const totalPages = instance.target?.pageCount ?? instance.pageCount;
+            if (typeof totalPages === "number" && !Number.isNaN(totalPages)) {
+              pageCountRef.current = totalPages;
+              setPageCount(totalPages);
+            }
+          }, 250);
+        }
+      };
+
+      window.requestAnimationFrame(() => {
+        syncReadyState();
+      });
+    },
+    [clearReadyRetry, flushPendingPage, getControllableInstance, updatePageState]
   );
 
   const handleFlip = useCallback(
@@ -78,30 +183,38 @@ const MagazineFlipbookLightbox = ({
   );
 
   const handlePrev = useCallback(() => {
-    const instance = instanceRef.current;
-    if (!instance) {
+    const instance = getControllableInstance();
+    if (!readyRef.current || !instance) {
       return;
     }
     instance.prev?.();
     window.requestAnimationFrame(() => updatePageState(instance));
-  }, [updatePageState]);
+  }, [getControllableInstance, updatePageState]);
 
   const handleNext = useCallback(() => {
-    const instance = instanceRef.current;
-    if (!instance) {
+    const instance = getControllableInstance();
+    if (!readyRef.current || !instance) {
       return;
     }
     instance.next?.();
     window.requestAnimationFrame(() => updatePageState(instance));
-  }, [updatePageState]);
+  }, [getControllableInstance, updatePageState]);
 
   const handleZoomIn = useCallback(() => {
-    instanceRef.current?.zoom?.(1);
-  }, []);
+    const instance = getControllableInstance();
+    if (!readyRef.current || !instance) {
+      return;
+    }
+    instance.zoom?.(1);
+  }, [getControllableInstance]);
 
   const handleZoomOut = useCallback(() => {
-    instanceRef.current?.zoom?.(-1);
-  }, []);
+    const instance = getControllableInstance();
+    if (!readyRef.current || !instance) {
+      return;
+    }
+    instance.zoom?.(-1);
+  }, [getControllableInstance]);
 
   useEffect(() => {
     if (!open) {
@@ -125,6 +238,9 @@ const MagazineFlipbookLightbox = ({
 
       setIsReady(false);
       setError(null);
+      readyRef.current = false;
+      clearReadyRetry();
+      clearPendingPageRetry();
 
       const height = target.clientHeight || 600;
       const isMobile = window.matchMedia("(max-width: 640px)").matches;
@@ -189,7 +305,7 @@ const MagazineFlipbookLightbox = ({
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [bgImageUrl, handleFlip, handleReady, initialPage, open, pdfUrl, initNonce]);
+  }, [bgImageUrl, clearPendingPageRetry, clearReadyRetry, handleFlip, handleReady, initialPage, open, pdfUrl, initNonce]);
 
   useEffect(() => {
     if (open) {
@@ -197,6 +313,9 @@ const MagazineFlipbookLightbox = ({
     }
 
     const instance = instanceRef.current;
+    readyRef.current = false;
+    clearReadyRetry();
+    clearPendingPageRetry();
     if (instance?.dispose) {
       instance.dispose();
     } else if (instance?.destroy) {
@@ -211,7 +330,7 @@ const MagazineFlipbookLightbox = ({
 
     setIsReady(false);
     setError(null);
-  }, [open]);
+  }, [clearPendingPageRetry, clearReadyRetry, open]);
 
   useEffect(() => {
     if (!open) {
@@ -221,6 +340,9 @@ const MagazineFlipbookLightbox = ({
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onClose();
+      }
+      if (!readyRef.current) {
+        return;
       }
       if (event.key === "ArrowRight") {
         handleNext();
@@ -238,14 +360,13 @@ const MagazineFlipbookLightbox = ({
     if (!open) {
       return;
     }
+    pendingPageRef.current = initialPage;
     if (typeof initialPage === "number" && !Number.isNaN(initialPage)) {
-      const nextPage = Math.max(1, initialPage);
+      const nextPage = normalizePage(initialPage);
       setCurrentPage(nextPage);
-      if (instanceRef.current?.gotoPage) {
-        instanceRef.current.gotoPage(nextPage);
-      }
+      flushPendingPage();
     }
-  }, [initialPage, open]);
+  }, [flushPendingPage, initialPage, normalizePage, open]);
 
   const handleRetry = useCallback(() => {
     setError(null);
