@@ -15,6 +15,35 @@ const directStorageClient =
     ? createClient<Database>(DIRECT_SUPABASE_URL, DIRECT_SUPABASE_ANON_KEY)
     : null;
 
+const getStorageClient = async () => {
+  if (!directStorageClient) {
+    return supabase;
+  }
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session) {
+    const { error } = await directStorageClient.auth.setSession({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+    });
+
+    if (error) {
+      console.warn("Falling back to proxied Supabase client for storage access:", error);
+      return supabase;
+    }
+  } else {
+    const { error } = await directStorageClient.auth.signOut();
+    if (error) {
+      console.warn("Failed to clear direct storage session:", error);
+    }
+  }
+
+  return directStorageClient;
+};
+
 export const useImageUpload = () => {
   const [uploading, setUploading] = useState(false);
 
@@ -38,7 +67,7 @@ export const useImageUpload = () => {
       console.log("File size:", file.size, "bytes");
       console.log("File type:", file.type);
       
-      const storageClient = directStorageClient ?? supabase;
+      const storageClient = await getStorageClient();
 
       const { error } = await storageClient.storage
         .from('website-images')
@@ -89,7 +118,7 @@ export const useImageUpload = () => {
       console.log("File size:", file.size, "bytes");
       console.log("File type:", file.type);
       
-      const storageClient = directStorageClient ?? supabase;
+      const storageClient = await getStorageClient();
 
       const { error } = await storageClient.storage
         .from('magazine-pdfs')
@@ -141,7 +170,7 @@ export const useImageUpload = () => {
       
       if (!folderParts) throw new Error("Invalid file URL");
 
-      const storageClient = directStorageClient ?? supabase;
+      const storageClient = await getStorageClient();
 
       const { error } = await storageClient.storage
         .from('website-images')
@@ -165,7 +194,7 @@ export const useImageUpload = () => {
       
       if (!folderParts) throw new Error("Invalid PDF URL");
 
-      const storageClient = directStorageClient ?? supabase;
+      const storageClient = await getStorageClient();
 
       const { error } = await storageClient.storage
         .from('magazine-pdfs')

@@ -1,5 +1,7 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import { AdminAuthProvider } from "@/components/admin/AdminAuthProvider";
+import RequireAdminAuth from "@/components/admin/RequireAdminAuth";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -22,6 +24,7 @@ import NotFound from "@/pages/NotFound";
 import Documentation from "@/pages/Documentation";
 import IndustryNews from "@/pages/IndustryNews";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminLogin from "@/pages/admin/AdminLogin";
 import AnalyticsInjector from "@/components/AnalyticsInjector";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
@@ -44,39 +47,47 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AnalyticsInjector />
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/admin/*" element={<AdminDashboard />} />
-          <Route path="*" element={
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/magazine" element={<Magazine />} />
-                <Route path="/magazine/:slug" element={<MagazineDetail />} />
-                <Route path="/articles" element={<Articles />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/industry-news" element={<IndustryNews />} />
-                <Route path="/leadership" element={<Leadership />} />
-                <Route path="/leadership/:slug" element={<LeadershipProfile />} />
-                <Route path="/press-releases" element={<PressReleases />} />
-                <Route path="/press-releases/:slug" element={<PressReleaseDetail />} />
-                <Route path="/article/:slug" element={<ArticleDetail />} />
-                <Route path="/category/:categoryName" element={<CategoryPage />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/documentation" element={<Documentation />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms-of-service" element={<TermsOfService />} />
-                <Route path="/cookie-policy" element={<CookiePolicy />} />
-                <Route path="/partner-with-us" element={<PartnerWithUs />} />
-                <Route path="/advertise" element={<Advertise />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          } />
-        </Routes>
-      </BrowserRouter>
+      <AdminAuthProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route element={<RequireAdminAuth />}>
+              <Route path="/admin/*" element={<AdminDashboard />} />
+            </Route>
+            <Route
+              path="*"
+              element={
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/magazine" element={<Magazine />} />
+                    <Route path="/magazine/:slug" element={<MagazineDetail />} />
+                    <Route path="/articles" element={<Articles />} />
+                    <Route path="/search" element={<Search />} />
+                    <Route path="/industry-news" element={<IndustryNews />} />
+                    <Route path="/leadership" element={<Leadership />} />
+                    <Route path="/leadership/:slug" element={<LeadershipProfile />} />
+                    <Route path="/press-releases" element={<PressReleases />} />
+                    <Route path="/press-releases/:slug" element={<PressReleaseDetail />} />
+                    <Route path="/article/:slug" element={<ArticleDetail />} />
+                    <Route path="/category/:categoryName" element={<CategoryPage />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/documentation" element={<Documentation />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/terms-of-service" element={<TermsOfService />} />
+                    <Route path="/cookie-policy" element={<CookiePolicy />} />
+                    <Route path="/partner-with-us" element={<PartnerWithUs />} />
+                    <Route path="/advertise" element={<Advertise />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Layout>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </AdminAuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

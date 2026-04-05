@@ -1,0 +1,3 @@
+-- Placeholder for the remote baseline migration already recorded in Supabase.
+-- The original SQL is not present in this repository, so this file keeps the
+-- local migration history aligned with the remote project.

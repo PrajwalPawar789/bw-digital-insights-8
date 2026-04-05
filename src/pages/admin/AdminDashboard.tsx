@@ -1,8 +1,9 @@
 import React from 'react';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { Users, FileText, BookOpen, Megaphone, BarChart3 } from 'lucide-react';
+import { Users, FileText, BookOpen, Megaphone, BarChart3, Loader2, LogOut } from 'lucide-react';
 import ArticleManager from '@/components/admin/ArticleManager';
 import MagazineManager from '@/components/admin/MagazineManager';
 import LeaderManager from '@/components/admin/LeaderManager';
@@ -11,19 +12,56 @@ import SettingsManager from '@/components/admin/SettingsManager';
 import PressReleaseManager from '@/components/admin/PressReleaseManager';
 import TestimonialManager from '@/components/admin/TestimonialManager';
 import ClientLogosManager from "@/pages/admin/ClientLogosManager";
+import { useAdminAuth } from "@/components/admin/AdminAuthProvider";
 import Seo from "@/components/seo/Seo";
 
 const AdminDashboard = () => {
-  const { data: stats, isLoading } = useDashboardStats();
+  const { data: stats } = useDashboardStats();
+  const { session, signOut } = useAdminAuth();
+  const [isSigningOut, setIsSigningOut] = React.useState(false);
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Failed to sign out:", error);
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   return (
     <>
       <Seo title="Admin Dashboard" noindex />
       <div className="min-h-screen py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-insightBlack">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-2">Manage your content and website settings</p>
+          <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-insightBlack">Admin Dashboard</h1>
+              <p className="text-gray-600 mt-2">Manage your content and website settings</p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+                Signed in as{" "}
+                <span className="font-medium text-insightBlack">{session?.user.email || "Admin user"}</span>
+              </div>
+              <Button disabled={isSigningOut} onClick={handleSignOut} type="button" variant="outline">
+                {isSigningOut ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Signing out
+                  </>
+                ) : (
+                  <>
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
         {/* Stats Overview */}
