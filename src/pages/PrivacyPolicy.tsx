@@ -23,6 +23,7 @@ const PrivacyPolicy = () => {
         title="Privacy Policy"
         description={`How ${companyName} collects, uses, and protects your data.`}
         schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        noindex
       />
       <div className="min-h-screen bg-white">
         <section className="relative overflow-hidden bg-gradient-to-br from-insightBlack via-gray-900 to-insightRed py-20 text-white">

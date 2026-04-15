@@ -60,6 +60,7 @@ const LeadershipProfile = () => {
   const baseDescription = leader.bio || `${leader.name} leadership profile.`;
   const seoDescription = truncateText(baseDescription);
   const sameAs = [leader.linkedin_url, leader.twitter_url].filter(Boolean) as string[];
+  const modifiedTime = leader.updated_at ? new Date(leader.updated_at).toISOString() : undefined;
 
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
@@ -86,6 +87,7 @@ const LeadershipProfile = () => {
         description={baseDescription}
         image={seoImage}
         type="profile"
+        modifiedTime={modifiedTime}
         schema={[...(breadcrumbSchema ? [breadcrumbSchema] : []), profileSchema]}
       />
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">

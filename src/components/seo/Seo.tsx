@@ -55,6 +55,7 @@ const Seo = ({
       ? `${normalizedTitle} | ${siteName}`
       : siteName;
   const imageUrl = toAbsoluteUrl(image || settings.siteLogo || "/ciovision-logo.svg", origin);
+  const imageAlt = normalizedTitle || siteName;
   const robotsContent = noindex
     ? "noindex, nofollow"
     : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
@@ -116,11 +117,14 @@ const Seo = ({
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content="en_US" />
       {imageUrl && <meta property="og:image" content={imageUrl} />}
+      {imageUrl && <meta property="og:image:alt" content={imageAlt} />}
+      {modifiedTime && <meta property="og:updated_time" content={modifiedTime} />}
 
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={metaTitle} />
       <meta name="twitter:description" content={metaDescription} />
       {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+      {imageUrl && <meta name="twitter:image:alt" content={imageAlt} />}
 
       {publishedTime && <meta property="article:published_time" content={publishedTime} />}
       {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}

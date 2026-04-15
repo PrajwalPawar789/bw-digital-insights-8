@@ -18,7 +18,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Seo from "@/components/seo/Seo";
-import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildPageSchema,
+  getLatestDate,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
 
 const Magazine = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -230,11 +238,41 @@ const Magazine = () => {
 
   const companyName = useCompanyName();
   const siteOrigin = getSiteOrigin();
+  const pageDescription = `Explore ${companyName} magazine issues featuring executive interviews, industry analysis, and leadership insights.`;
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
         { name: "Home", url: siteOrigin },
         { name: "Magazine", url: `${siteOrigin}/magazine` },
       ])
+    : undefined;
+  const modifiedTime = getLatestDate(
+    ...allMagazines.map((magazine: any) => magazine?.updated_at || magazine?.publish_date)
+  );
+  const pageSchema = siteOrigin
+    ? buildPageSchema({
+        type: "CollectionPage",
+        name: `${companyName} Magazine`,
+        description: pageDescription,
+        url: `${siteOrigin}/magazine`,
+        dateModified: modifiedTime,
+      })
+    : undefined;
+  const itemListSchema = siteOrigin
+    ? buildItemListSchema(
+        "Magazine Archive",
+        allMagazines.slice(0, 10).map((magazine: any, index: number) => ({
+          name: magazine.title,
+          url: `${siteOrigin}/magazine/${magazine.slug}`,
+          image: toAbsoluteUrl(magazine.cover_image_url || "/placeholder.svg", siteOrigin),
+          description: truncateText(
+            magazine.description || `${companyName} magazine issue ${magazine.title}`
+          ),
+          datePublished: magazine.publish_date,
+          position: index + 1,
+          itemType: "PublicationIssue",
+        })),
+        `${siteOrigin}/magazine`
+      )
     : undefined;
 
   if (isLoading) {
@@ -256,8 +294,10 @@ const Magazine = () => {
     <>
       <Seo
         title="Magazine"
-        description={`Explore ${companyName} magazine issues featuring executive interviews, industry analysis, and leadership insights.`}
-        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        description={pageDescription}
+        modifiedTime={modifiedTime}
+        keywords={["business magazine", "executive magazine", "leadership magazine", "industry analysis"]}
+        schema={[breadcrumbSchema, pageSchema, itemListSchema].filter(Boolean) as Record<string, unknown>[]}
       />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       {/* Hero / Featured carousel */}

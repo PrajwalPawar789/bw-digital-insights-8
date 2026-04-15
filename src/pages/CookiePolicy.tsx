@@ -48,6 +48,7 @@ const CookiePolicy = () => {
         title="Cookie Policy"
         description={`Learn how ${companyName} uses cookies and how you can control preferences.`}
         schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        noindex
       />
       <div className="min-h-screen bg-white">
         <section className="relative overflow-hidden bg-gradient-to-br from-insightBlack via-gray-900 to-gray-800 py-20 text-white">

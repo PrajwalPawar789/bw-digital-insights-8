@@ -6,7 +6,15 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import Seo from "@/components/seo/Seo";
-import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildPageSchema,
+  getLatestDate,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
 
 const Leadership = () => {
   const { data: leaders, isLoading } = useLeadershipProfiles();
@@ -15,6 +23,7 @@ const Leadership = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewLeader, setPreviewLeader] = useState<any | null>(null);
   const siteOrigin = getSiteOrigin();
+  const pageDescription = "Executive profiles, leadership interviews, and insights from influential business leaders.";
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
         { name: "Home", url: siteOrigin },
@@ -23,6 +32,7 @@ const Leadership = () => {
     : undefined;
 
   const allLeaders = Array.isArray(leaders) ? leaders : [];
+  const modifiedTime = getLatestDate(...allLeaders.map((leader: any) => leader?.updated_at));
 
   const industries = useMemo(() => {
     const set = new Set<string>();
@@ -41,6 +51,29 @@ const Leadership = () => {
 
   const featured = filtered.filter((l:any) => l.featured).slice(0,5);
   const regular = filtered.filter((l:any) => !l.featured);
+  const pageSchema = siteOrigin
+    ? buildPageSchema({
+        type: "CollectionPage",
+        name: "Leadership",
+        description: pageDescription,
+        url: `${siteOrigin}/leadership`,
+        dateModified: modifiedTime,
+      })
+    : undefined;
+  const itemListSchema = siteOrigin
+    ? buildItemListSchema(
+        "Leadership Directory",
+        allLeaders.slice(0, 12).map((leader: any, index: number) => ({
+          name: leader.name,
+          url: `${siteOrigin}/leadership/${leader.slug}`,
+          image: toAbsoluteUrl(leader.image_url || "/placeholder.svg", siteOrigin),
+          description: truncateText(leader.bio || `${leader.name} leadership profile.`),
+          position: index + 1,
+          itemType: "Person",
+        })),
+        `${siteOrigin}/leadership`
+      )
+    : undefined;
 
   if (isLoading) {
     return (
@@ -60,8 +93,10 @@ const Leadership = () => {
     <>
       <Seo
         title="Leadership"
-        description="Executive profiles, leadership interviews, and insights from influential business leaders."
-        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        description={pageDescription}
+        modifiedTime={modifiedTime}
+        keywords={["leadership profiles", "executive interviews", "business leaders", "C-suite insights"]}
+        schema={[breadcrumbSchema, pageSchema, itemListSchema].filter(Boolean) as Record<string, unknown>[]}
       />
       <div className="min-h-screen bg-white">
 

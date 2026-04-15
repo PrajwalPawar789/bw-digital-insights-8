@@ -207,6 +207,7 @@ const Documentation = () => {
         title="Documentation"
         description="API documentation for accessing magazines, articles, leadership profiles, and press releases."
         schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        noindex
       />
       <div className="min-h-screen py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -1,6 +1,7 @@
-
-import { useQuery } from '@tanstack/react-query';
-import { newsData } from '@/data/newsData';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toCurrentStorageUrl } from "@/lib/storageUrl";
+import { isIndustryNewsCategory } from "@/lib/articleCategories";
 
 interface NewsItem {
   id: string;
@@ -9,60 +10,51 @@ interface NewsItem {
   industry: string;
   date: string;
   source: string;
-  image_url?: string;
+  image_url?: string | null;
   slug: string;
 }
 
+const mapArticleToNewsItem = (article: any): NewsItem => ({
+  id: article.id,
+  title: article.title,
+  excerpt: article.excerpt || "",
+  industry: article.category,
+  date: article.date,
+  source: article.author,
+  image_url: toCurrentStorageUrl(article.image_url),
+  slug: article.slug,
+});
+
+const fetchIndustryNews = async () => {
+  const { data, error } = await supabase
+    .from("articles")
+    .select("id, title, excerpt, category, date, author, image_url, slug")
+    .order("date", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data || [])
+    .filter((article) => isIndustryNewsCategory(article.category))
+    .map(mapArticleToNewsItem);
+};
+
 export const useIndustryNews = () => {
   return useQuery({
-    queryKey: ['industry-news'],
-    queryFn: async () => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Filter articles that are industry news (ids 22-25) and map to expected format
-      const industryNewsArticles = newsData
-        .filter(article => article.id >= 22 && article.id <= 25)
-        .map(article => ({
-          id: article.id.toString(),
-          title: article.title,
-          excerpt: article.excerpt,
-          industry: article.category,
-          date: article.date,
-          source: article.author,
-          image_url: article.image,
-          slug: article.slug
-        }));
-      
-      return industryNewsArticles;
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryKey: ["industry-news"],
+    queryFn: fetchIndustryNews,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
 export const useFeaturedNews = () => {
   return useQuery({
-    queryKey: ['featured-news'],
+    queryKey: ["featured-news"],
     queryFn: async () => {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Filter articles that are industry news (ids 22-25) and map to expected format
-      const industryNewsArticles = newsData
-        .filter(article => article.id >= 22 && article.id <= 25)
-        .map(article => ({
-          id: article.id.toString(),
-          title: article.title,
-          excerpt: article.excerpt,
-          industry: article.category,
-          date: article.date,
-          source: article.author,
-          image_url: article.image,
-          slug: article.slug
-        }));
-      
-      return industryNewsArticles.slice(0, 3);
+      const newsItems = await fetchIndustryNews();
+      return newsItems.slice(0, 3);
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 };

@@ -1,7 +1,6 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /admin/
-
-# Update this sitemap URL for your production domain.
+Disallow: /search
 Sitemap: https://theciovision.com/sitemap.xml

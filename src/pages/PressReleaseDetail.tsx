@@ -16,9 +16,13 @@ import {
 } from "@/lib/seo";
 import { toCurrentStorageUrl } from "@/lib/storageUrl";
 
+type SeoPressRelease = PressRelease & {
+  updated_at?: string | null;
+};
+
 const PressReleaseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [pressRelease, setPressRelease] = useState<PressRelease | undefined>();
+  const [pressRelease, setPressRelease] = useState<SeoPressRelease | undefined>();
   const [relatedPressReleases, setRelatedPressReleases] = useState<PressRelease[]>([]);
   const [loading, setLoading] = useState(true);
   const { settings } = useSettings();
@@ -40,7 +44,7 @@ const PressReleaseDetail = () => {
 
         if (supabaseRelease && !error) {
           // Convert Supabase data to PressRelease format
-          const convertedRelease: PressRelease = {
+          const convertedRelease: SeoPressRelease = {
             id: supabaseRelease.id, // Now both are strings (UUID)
             title: supabaseRelease.title,
             excerpt: supabaseRelease.excerpt || '',
@@ -49,7 +53,8 @@ const PressReleaseDetail = () => {
             category: 'Press Release', // Default category
             slug: supabaseRelease.slug,
             image: toCurrentStorageUrl(supabaseRelease.image_url) || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800',
-            author: supabaseRelease.author
+            author: supabaseRelease.author,
+            updated_at: supabaseRelease.updated_at,
           };
           setPressRelease(convertedRelease);
 
@@ -175,6 +180,9 @@ const PressReleaseDetail = () => {
   const baseDescription = pressRelease.excerpt || pressRelease.content || "";
   const seoDescription = truncateText(baseDescription);
   const publishedTime = pressRelease.date ? new Date(pressRelease.date).toISOString() : undefined;
+  const modifiedTime = pressRelease.updated_at
+    ? new Date(pressRelease.updated_at).toISOString()
+    : undefined;
 
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
@@ -192,6 +200,7 @@ const PressReleaseDetail = () => {
     url: canonicalUrl,
     author: pressRelease.author,
     datePublished: publishedTime,
+    dateModified: modifiedTime,
     publisherName,
     publisherLogo,
     section: pressRelease.category,
@@ -206,6 +215,7 @@ const PressReleaseDetail = () => {
         image={seoImage}
         type="article"
         publishedTime={publishedTime}
+        modifiedTime={modifiedTime}
         author={pressRelease.author}
         schema={[...(breadcrumbSchema ? [breadcrumbSchema] : []), pressReleaseSchema]}
       />

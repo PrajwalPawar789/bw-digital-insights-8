@@ -15,6 +15,7 @@ import {
   toAbsoluteUrl,
   truncateText,
 } from "@/lib/seo";
+import { normalizeCategorySlug } from "@/lib/articleCategories";
 
 const ArticleDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -107,6 +108,8 @@ const ArticleDetail = () => {
   const baseDescription = article.excerpt || article.content || "";
   const seoDescription = truncateText(baseDescription);
   const publishedTime = article.date ? new Date(article.date).toISOString() : undefined;
+  const modifiedTime = article.updated_at ? new Date(article.updated_at).toISOString() : undefined;
+  const categoryPath = normalizeCategorySlug(article.category);
 
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
@@ -124,6 +127,7 @@ const ArticleDetail = () => {
     url: canonicalUrl,
     author: article.author,
     datePublished: publishedTime,
+    dateModified: modifiedTime,
     publisherName,
     publisherLogo,
     section: article.category,
@@ -143,6 +147,7 @@ const ArticleDetail = () => {
         image={seoImage}
         type="article"
         publishedTime={publishedTime}
+        modifiedTime={modifiedTime}
         author={article.author}
         schema={schema}
       />
@@ -159,9 +164,12 @@ const ArticleDetail = () => {
         </div>
         
         <div className="mb-8 animate-fade-in">
-          <span className="inline-block px-3 py-1 text-sm font-semibold bg-insightRed text-white rounded-full mb-4">
+          <Link
+            to={`/category/${categoryPath}`}
+            className="inline-block px-3 py-1 text-sm font-semibold bg-insightRed text-white rounded-full mb-4 hover:bg-insightBlack transition-colors"
+          >
             {article.category}
-          </span>
+          </Link>
           <h1 className="text-3xl md:text-4xl font-bold text-insightBlack mb-4 leading-tight">
             {article.title}
           </h1>

@@ -23,6 +23,7 @@ const TermsOfService = () => {
         title="Terms of Service"
         description={`The terms that govern your use of ${companyName} products and services.`}
         schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        noindex
       />
       <div className="min-h-screen bg-white">
         <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-insightBlack to-insightRed py-20 text-white">

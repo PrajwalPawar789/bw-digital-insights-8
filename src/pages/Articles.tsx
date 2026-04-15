@@ -2,7 +2,15 @@ import { useArticles } from "@/hooks/useArticles";
 import { Loader2 } from "lucide-react";
 import EditorialList from "@/components/articles/EditorialList";
 import Seo from "@/components/seo/Seo";
-import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildPageSchema,
+  getLatestDate,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
 
 const Articles = () => {
   const { data: articles = [], isLoading, error } = useArticles();
@@ -42,19 +50,47 @@ const Articles = () => {
   }
 
   const siteOrigin = getSiteOrigin();
+  const pageDescription = "Insights, strategies, and leadership stories for modern executives.";
+  const modifiedTime = getLatestDate(...articles.map((article: any) => article?.updated_at || article?.date));
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
         { name: "Home", url: siteOrigin },
         { name: "Articles", url: `${siteOrigin}/articles` },
       ])
     : undefined;
+  const pageSchema = siteOrigin
+    ? buildPageSchema({
+        type: "CollectionPage",
+        name: "Articles",
+        description: pageDescription,
+        url: `${siteOrigin}/articles`,
+        dateModified: modifiedTime,
+      })
+    : undefined;
+  const itemListSchema = siteOrigin
+    ? buildItemListSchema(
+        "Article Directory",
+        articles.slice(0, 10).map((article: any, index: number) => ({
+          name: article.title,
+          url: `${siteOrigin}/article/${article.slug}`,
+          image: toAbsoluteUrl(article.image_url || "/placeholder.svg", siteOrigin),
+          description: truncateText(article.excerpt || article.title),
+          datePublished: article.date,
+          position: index + 1,
+          itemType: "Article",
+        })),
+        `${siteOrigin}/articles`
+      )
+    : undefined;
 
   return (
     <>
       <Seo
         title="Articles"
-        description="Insights, strategies, and leadership stories for modern executives."
-        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        description={pageDescription}
+        modifiedTime={modifiedTime}
+        keywords={["business articles", "executive insights", "leadership stories", "market intelligence"]}
+        schema={[breadcrumbSchema, pageSchema, itemListSchema].filter(Boolean) as Record<string, unknown>[]}
       />
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Premium hero strip */}

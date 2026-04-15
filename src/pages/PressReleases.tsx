@@ -4,7 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, Search } from "lucide-react";
 import Seo from "@/components/seo/Seo";
-import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildPageSchema,
+  getLatestDate,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
 import { usePressReleases } from "@/hooks/usePressReleases";
 
 const PAGE_SIZE = 9;
@@ -15,6 +23,7 @@ const PressReleases = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [page, setPage] = useState(1);
   const siteOrigin = getSiteOrigin();
+  const pageDescription = "Official announcements, company news, and media updates.";
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
         { name: "Home", url: siteOrigin },
@@ -54,6 +63,33 @@ const PressReleases = () => {
     const start = (currentPage - 1) * PAGE_SIZE;
     return filteredReleases.slice(start, start + PAGE_SIZE);
   }, [filteredReleases, currentPage]);
+  const modifiedTime = getLatestDate(
+    ...pressReleases.map((release) => release.updated_at || release.date)
+  );
+  const pageSchema = siteOrigin
+    ? buildPageSchema({
+        type: "CollectionPage",
+        name: "Press Releases",
+        description: pageDescription,
+        url: `${siteOrigin}/press-releases`,
+        dateModified: modifiedTime,
+      })
+    : undefined;
+  const itemListSchema = siteOrigin
+    ? buildItemListSchema(
+        "Press Release Archive",
+        pressReleases.slice(0, 10).map((release, index) => ({
+          name: release.title,
+          url: `${siteOrigin}/press-releases/${release.slug}`,
+          image: toAbsoluteUrl(release.image_url || "/placeholder.svg", siteOrigin),
+          description: truncateText(release.excerpt || release.title),
+          datePublished: release.date,
+          position: index + 1,
+          itemType: "PressRelease",
+        })),
+        `${siteOrigin}/press-releases`
+      )
+    : undefined;
 
   useEffect(() => {
     setPage(1);
@@ -97,8 +133,10 @@ const PressReleases = () => {
     <>
       <Seo
         title="Press Releases"
-        description="Official announcements, company news, and media updates."
-        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        description={pageDescription}
+        modifiedTime={modifiedTime}
+        keywords={["press releases", "company announcements", "media updates", "business press"]}
+        schema={[breadcrumbSchema, pageSchema, itemListSchema].filter(Boolean) as Record<string, unknown>[]}
       />
       <div className="min-h-screen">
         <section className="bg-white border-b">

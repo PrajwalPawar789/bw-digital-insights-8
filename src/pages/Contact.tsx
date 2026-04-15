@@ -15,7 +15,12 @@ import {
 } from 'lucide-react';
 import { useCompanyName } from '@/hooks/useDatabaseSettings';
 import Seo from "@/components/seo/Seo";
-import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildFAQSchema,
+  buildPageSchema,
+  getSiteOrigin,
+} from "@/lib/seo";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -36,6 +41,7 @@ const Contact = () => {
 
   const companyName = useCompanyName();
   const siteOrigin = getSiteOrigin();
+  const pageDescription = `Contact ${companyName} for business intelligence, partnerships, or media inquiries.`;
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
         { name: "Home", url: siteOrigin },
@@ -61,6 +67,15 @@ const Contact = () => {
       answer: "You can subscribe to our publications through the Magazine section of our website. We offer both free and premium subscription options."
     }
   ];
+  const pageSchema = siteOrigin
+    ? buildPageSchema({
+        type: "ContactPage",
+        name: `Contact ${companyName}`,
+        description: pageDescription,
+        url: `${siteOrigin}/contact`,
+      })
+    : undefined;
+  const faqSchema = buildFAQSchema(faqs);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -137,8 +152,9 @@ const Contact = () => {
     <>
       <Seo
         title="Contact"
-        description={`Contact ${companyName} for business intelligence, partnerships, or media inquiries.`}
-        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        description={pageDescription}
+        keywords={[companyName, "contact the cio vision", "business intelligence contact", "media inquiries", "partnerships"]}
+        schema={[breadcrumbSchema, pageSchema, faqSchema].filter(Boolean) as Record<string, unknown>[]}
       />
       <div className="min-h-screen">
       {/* Hero Section */}

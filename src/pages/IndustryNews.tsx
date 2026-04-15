@@ -9,18 +9,52 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, Calendar, ExternalLink, Loader2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Seo from "@/components/seo/Seo";
-import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildPageSchema,
+  getLatestDate,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
 
 const IndustryNews = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndustry, setSelectedIndustry] = useState('all');
-  const { data: newsData = [], isLoading } = useIndustryNews();
+  const { data: newsData = [], isLoading, error } = useIndustryNews();
   const siteOrigin = getSiteOrigin();
+  const pageDescription = "Latest industry news, market shifts, and executive analysis across business sectors.";
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
         { name: "Home", url: siteOrigin },
         { name: "Industry News", url: `${siteOrigin}/industry-news` },
       ])
+    : undefined;
+  const modifiedTime = getLatestDate(...newsData.map((news) => news.date));
+  const pageSchema = siteOrigin
+    ? buildPageSchema({
+        type: "CollectionPage",
+        name: "Industry News",
+        description: pageDescription,
+        url: `${siteOrigin}/industry-news`,
+        dateModified: modifiedTime,
+      })
+    : undefined;
+  const itemListSchema = siteOrigin
+    ? buildItemListSchema(
+        "Industry News Feed",
+        newsData.slice(0, 10).map((news, index) => ({
+          name: news.title,
+          url: `${siteOrigin}/article/${news.slug}`,
+          image: toAbsoluteUrl(news.image_url || "/placeholder.svg", siteOrigin),
+          description: truncateText(news.excerpt || news.title),
+          datePublished: news.date,
+          position: index + 1,
+          itemType: "NewsArticle",
+        })),
+        `${siteOrigin}/industry-news`
+      )
     : undefined;
 
   const industries = ['all', ...Array.from(new Set(newsData.map(news => news.industry)))];
@@ -49,12 +83,28 @@ const IndustryNews = () => {
     );
   }
 
+  if (error) {
+    return (
+      <>
+        <Seo title="Industry News" noindex />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-insightBlack mb-4">Industry News Unavailable</h1>
+            <p className="text-gray-600">We couldn&apos;t load the latest news right now.</p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Seo
         title="Industry News"
-        description="Latest industry news, market shifts, and executive analysis across business sectors."
-        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        description={pageDescription}
+        modifiedTime={modifiedTime}
+        keywords={["industry news", "market analysis", "business sectors", "executive news"]}
+        schema={[breadcrumbSchema, pageSchema, itemListSchema].filter(Boolean) as Record<string, unknown>[]}
       />
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}

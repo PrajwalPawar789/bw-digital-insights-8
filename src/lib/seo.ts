@@ -12,6 +12,16 @@ export type BreadcrumbItem = {
   url: string;
 };
 
+type PageSchemaOptions = {
+  type?: "WebPage" | "CollectionPage" | "AboutPage" | "ContactPage";
+  name: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  datePublished?: string;
+  dateModified?: string;
+};
+
 type ArticleSchemaOptions = {
   type?: "Article" | "NewsArticle" | "PressRelease";
   headline: string;
@@ -43,6 +53,7 @@ type PublicationIssueSchemaOptions = {
   image?: string;
   url?: string;
   datePublished?: string;
+  dateModified?: string;
   issueNumber?: string | number;
   publisherName?: string;
   publisherLogo?: string;
@@ -56,6 +67,21 @@ type OrganizationSchemaOptions = {
 type WebSiteSchemaOptions = {
   alternateName?: string[];
   searchUrl?: string;
+};
+
+type ItemListEntry = {
+  name: string;
+  url: string;
+  image?: string;
+  description?: string;
+  datePublished?: string;
+  position?: number;
+  itemType?: string;
+};
+
+type FAQEntry = {
+  question: string;
+  answer: string;
 };
 
 const assignIf = (target: Record<string, unknown>, key: string, value: unknown) => {
@@ -86,6 +112,31 @@ export const truncateText = (value: string, maxLength = 160) => {
   return `${normalized.slice(0, Math.max(0, maxLength - 3)).trim()}...`;
 };
 
+export const toIsoDateString = (value?: string | null) => {
+  if (!value) {
+    return undefined;
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return undefined;
+  }
+
+  return parsed.toISOString();
+};
+
+export const getLatestDate = (...values: Array<string | null | undefined>) =>
+  values.reduce<string | undefined>((latest, current) => {
+    const currentIso = toIsoDateString(current);
+    if (!currentIso) {
+      return latest;
+    }
+    if (!latest) {
+      return currentIso;
+    }
+    return new Date(currentIso).getTime() > new Date(latest).getTime() ? currentIso : latest;
+  }, undefined);
+
 export const toAbsoluteUrl = (url: string | null | undefined, origin?: string) => {
   if (!url) {
     return "";
@@ -113,6 +164,25 @@ export const buildBreadcrumbSchema = (items: BreadcrumbItem[]) => ({
     item: item.url,
   })),
 });
+
+export const buildPageSchema = (options: PageSchemaOptions) => {
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": options.type || "WebPage",
+    name: options.name,
+  };
+
+  assignIf(schema, "description", options.description);
+  assignIf(schema, "url", options.url);
+  assignIf(schema, "datePublished", options.datePublished);
+  assignIf(schema, "dateModified", options.dateModified);
+
+  if (options.image) {
+    schema.image = [options.image];
+  }
+
+  return schema;
+};
 
 export const buildOrganizationSchema = (
   name: string,
@@ -213,6 +283,54 @@ export const buildArticleSchema = (options: ArticleSchemaOptions) => {
   return schema;
 };
 
+export const buildItemListSchema = (
+  name: string,
+  items: ItemListEntry[],
+  url?: string
+) => {
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => {
+      const listItem: Record<string, unknown> = {
+        "@type": "ListItem",
+        position: item.position || index + 1,
+      };
+
+      const thing: Record<string, unknown> = {
+        "@type": item.itemType || "Thing",
+        name: item.name,
+        url: item.url,
+      };
+
+      assignIf(thing, "image", item.image);
+      assignIf(thing, "description", item.description);
+      assignIf(thing, "datePublished", item.datePublished);
+      listItem.item = thing;
+
+      return listItem;
+    }),
+  };
+
+  assignIf(schema, "url", url);
+  return schema;
+};
+
+export const buildFAQSchema = (entries: FAQEntry[]) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: entries.map((entry) => ({
+    "@type": "Question",
+    name: entry.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: entry.answer,
+    },
+  })),
+});
+
 export const buildProfileSchema = (options: ProfileSchemaOptions) => {
   const person: Record<string, unknown> = {
     "@type": "Person",
@@ -255,6 +373,7 @@ export const buildPublicationIssueSchema = (options: PublicationIssueSchemaOptio
   }
   assignIf(schema, "url", options.url);
   assignIf(schema, "datePublished", options.datePublished);
+  assignIf(schema, "dateModified", options.dateModified);
   assignIf(schema, "issueNumber", options.issueNumber);
 
   if (options.publisherName) {

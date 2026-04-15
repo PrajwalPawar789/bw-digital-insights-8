@@ -10,7 +10,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import Seo from "@/components/seo/Seo";
-import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
+import {
+  buildBreadcrumbSchema,
+  buildItemListSchema,
+  buildPageSchema,
+  getLatestDate,
+  getSiteOrigin,
+  toAbsoluteUrl,
+  truncateText,
+} from "@/lib/seo";
+import EditorPicks from "@/components/EditorPicks";
 
 function imgOf(a: any) { return a?.image_url || "/placeholder.svg"; }
 function titleOf(a: any) { return a?.title || "Untitled"; }
@@ -69,16 +78,67 @@ const Home = () => {
     "CIO Vision magazine",
     "CIO Vision news",
   ];
+  const homeModifiedTime = getLatestDate(
+    ...articles.map((article: any) => article?.updated_at || article?.date),
+    ...magazines.map((magazine: any) => magazine?.updated_at || magazine?.publish_date),
+    ...leadership.map((leader: any) => leader?.updated_at),
+    ...press.map((release: any) => release?.updated_at || release?.date)
+  );
+  const homeSchema = siteOrigin
+    ? buildPageSchema({
+        type: "WebPage",
+        name: settings.companyName || "The CIO Vision",
+        description: seoDescription,
+        image: toAbsoluteUrl(seoImage, siteOrigin),
+        url: siteOrigin,
+        dateModified: homeModifiedTime,
+      })
+    : undefined;
+  const latestCoverageSchema = siteOrigin
+    ? buildItemListSchema(
+        "Latest Coverage",
+        [main, ...editorPicks]
+          .filter(Boolean)
+          .slice(0, 4)
+          .map((article: any, index: number) => ({
+            name: titleOf(article),
+            url: `${siteOrigin}/article/${slugOf(article)}`,
+            image: toAbsoluteUrl(imgOf(article), siteOrigin),
+            description: truncateText(excerptOf(article) || titleOf(article)),
+            datePublished: article?.date,
+            position: index + 1,
+            itemType: "Article",
+          })),
+        `${siteOrigin}/`
+      )
+    : undefined;
+  const topStoriesSchema = siteOrigin
+    ? buildItemListSchema(
+        "Top Stories",
+        topStories.slice(0, 6).map((article: any, index: number) => ({
+          name: titleOf(article),
+          url: `${siteOrigin}/article/${slugOf(article)}`,
+          image: toAbsoluteUrl(imgOf(article), siteOrigin),
+          description: truncateText(excerptOf(article) || titleOf(article)),
+          datePublished: article?.date,
+          position: index + 1,
+          itemType: "Article",
+        })),
+        `${siteOrigin}/#top-stories`
+      )
+    : undefined;
 
   const heroLoading = isArticlesLoading;
 
   return (
     <>
       <Seo
+        title={settings.companyName}
         description={seoDescription}
         image={seoImage}
         keywords={seoKeywords}
-        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        modifiedTime={homeModifiedTime}
+        schema={[breadcrumbSchema, homeSchema, latestCoverageSchema, topStoriesSchema].filter(Boolean) as Record<string, unknown>[]}
       />
       <div className="min-h-screen bg-white">
       {/* Headline ticker */}
@@ -208,32 +268,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Redesigned Editor's Picks - horizontal scroller */}
-      <section className="py-4 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-insightBlack">Editor's Picks</h2>
-            <Link to="/articles" className="text-sm font-semibold text-insightRed hover:text-insightBlack">View all</Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {editorPicks.map((a:any,i:number)=>(
-              <Link key={slugOf(a)+i} to={`/article/${slugOf(a)}`} className="group">
-                <Card className="overflow-hidden hover:shadow-lg transition text-left">
-                  <div className="aspect-[16/9] bg-black flex items-center justify-center">
-                    <img src={imgOf(a)} alt={titleOf(a)} className="w-full h-full object-cover" />
-                  </div>
-                  <CardContent className="p-4 pt-0 text-left flex flex-col items-start">
-                    {/* <div className="text-xs text-gray-500 mb-1">{categoryOf(a)}</div> */}
-                    <h3 className="font-semibold line-clamp-2 group-hover:text-insightRed text-left">{titleOf(a)}</h3>
-                    <div className="text-xs text-gray-400 mt-2 flex items-center gap-2 justify-start"><Calendar className="h-3 w-3"/>{dateOf(a)}</div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <EditorPicks picks={editorPicks} />
 
       {/* Top Stories grid & Trending */}
       <section className="py-10 bg-gray-50">

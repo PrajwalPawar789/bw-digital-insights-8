@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useCompanyName } from '@/hooks/useDatabaseSettings';
 import Seo from "@/components/seo/Seo";
-import { buildBreadcrumbSchema, getSiteOrigin } from "@/lib/seo";
+import { buildBreadcrumbSchema, buildPageSchema, getSiteOrigin } from "@/lib/seo";
 
 const About = () => {
   const [activeTeamMember, setActiveTeamMember] = useState<number | null>(null);
@@ -47,6 +47,15 @@ const About = () => {
         { name: "About", url: `${siteOrigin}/about` },
       ])
     : undefined;
+  const pageDescription = `Learn about ${companyName}, our mission, values, and commitment to business intelligence.`;
+  const pageSchema = siteOrigin
+    ? buildPageSchema({
+        type: "AboutPage",
+        name: `About ${companyName}`,
+        description: pageDescription,
+        url: `${siteOrigin}/about`,
+      })
+    : undefined;
 
   useEffect(() => {
     // Set up intersection observer for scroll animations
@@ -74,8 +83,9 @@ const About = () => {
     <>
       <Seo
         title="About"
-        description={`Learn about ${companyName}, our mission, values, and commitment to business intelligence.`}
-        schema={breadcrumbSchema ? [breadcrumbSchema] : undefined}
+        description={pageDescription}
+        keywords={[companyName, "about the cio vision", "business intelligence company", "leadership media"]}
+        schema={[breadcrumbSchema, pageSchema].filter(Boolean) as Record<string, unknown>[]}
       />
       <div className="min-h-screen">
       {/* Hero Banner */}

@@ -86,6 +86,10 @@ const MagazineDetail = () => {
   );
   const baseDescription = magazine.description || "Explore the latest magazine issue featuring executive interviews and industry analysis.";
   const seoDescription = truncateText(baseDescription);
+  const publishedTime = magazine.publish_date
+    ? new Date(magazine.publish_date).toISOString()
+    : undefined;
+  const modifiedTime = magazine.updated_at ? new Date(magazine.updated_at).toISOString() : undefined;
 
   const breadcrumbSchema = siteOrigin
     ? buildBreadcrumbSchema([
@@ -100,7 +104,8 @@ const MagazineDetail = () => {
     description: seoDescription,
     image: seoImage,
     url: canonicalUrl,
-    datePublished: magazine.publish_date ? new Date(magazine.publish_date).toISOString() : undefined,
+    datePublished: publishedTime,
+    dateModified: modifiedTime,
     issueNumber: magazine.issue_number,
     publisherName,
     publisherLogo,
@@ -113,7 +118,8 @@ const MagazineDetail = () => {
         description={baseDescription}
         image={seoImage}
         type="article"
-        publishedTime={magazine.publish_date ? new Date(magazine.publish_date).toISOString() : undefined}
+        publishedTime={publishedTime}
+        modifiedTime={modifiedTime}
         schema={[...(breadcrumbSchema ? [breadcrumbSchema] : []), issueSchema]}
       />
       <div className="min-h-screen transition-all duration-300 bg-white py-12">
