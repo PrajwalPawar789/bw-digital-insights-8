@@ -9,7 +9,7 @@ const categories = [
   { href: '/', label: 'Home' },
   { href: '/magazine', label: 'Magazine' },
   { href: '/leadership', label: 'Leadership' },
-  { href: '/press-releases', label: 'Press Releases' },
+  // { href: '/press-releases', label: 'Press Releases' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
@@ -19,6 +19,7 @@ function slugOf(a: any) { return a?.slug || ''; }
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { settings } = useSettings();
   const { data: rawArticles = [] } = useArticles();
   const articles = Array.isArray(rawArticles) ? rawArticles : [];
@@ -39,7 +40,9 @@ const Navbar = () => {
     if (!q) return;
     navigate(`/search?q=${encodeURIComponent(q)}`);
     setIsMenuOpen(false);
-  }; 
+    setIsSearchOpen(false);
+    setSearchQuery('');
+  };
 
   return (
     <header className="top-0 z-[1000] shadow-sm">
@@ -68,7 +71,7 @@ const Navbar = () => {
           <div className="flex items-center gap-4 shrink-0">
             {/* <a href="#" className="opacity-80 hover:opacity-100 transition"><Facebook size={16} /></a>
             <a href="#" className="opacity-80 hover:opacity-100 transition"><Twitter size={16} /></a> */}
-            <a href="https://www.instagram.com/theciovision/" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Instagram size={16} /></a>
+            <a href="https://www.instagram.com/theciovisionmagazine" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Instagram size={16} /></a>
             <a href="https://www.linkedin.com/company/theciovision" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Linkedin size={16} /></a>
             <Link to="/contact" className="ml-4 inline-flex items-center px-3 py-1 rounded-full bg-insightRed hover:bg-insightRed/90 text-white font-medium">Subscribe</Link>
           </div>
@@ -80,7 +83,7 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-20 flex items-center gap-8">
             {/* Logo */}
-            <Link to="/" className="flex items-center group">
+            <Link to="/" className="flex items-center group shrink-0">
               <div className="relative">
                 {settings.siteLogo ? (
                   <img src={settings.siteLogo} alt={settings.companyName} className="w-12 h-12 rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300" />
@@ -104,21 +107,44 @@ const Navbar = () => {
               </div>
             </Link>
 
+            {/* Inline Category Nav */}
+            <nav className="hidden lg:block min-w-0">
+              <ul className="flex items-center gap-5 xl:gap-6">
+                {categories.map((c) => (
+                  <li key={c.href}>
+                    <Link to={c.href} className="px-1 py-1 text-sm font-semibold tracking-wide uppercase whitespace-nowrap text-insightBlack/80 hover:text-insightRed relative group">
+                      {c.label}
+                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
             {/* Actions */}
-            <div className="hidden lg:flex items-center gap-4 ml-auto">
-              <form onSubmit={onSubmitSearch} className="relative">
-                <input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-10 w-56 xl:w-64 pl-10 pr-3 rounded-md border border-gray-200 bg-gray-50 focus:bg-white focus:border-insightRed outline-none transition"
-                  placeholder="Search"
-                  aria-label="Search articles"
-                />
-                <button type="submit" aria-label="Submit search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Search size={18} />
-                </button>
-              </form>
-              <Link to="/magazine" className="inline-flex items-center h-10 px-4 rounded-md bg-insightRed text-white hover:bg-insightRed/90 transition">Read Latest</Link>
+            <div className="hidden lg:flex items-center ml-auto relative">
+              <button
+                type="button"
+                onClick={() => setIsSearchOpen((v) => !v)}
+                aria-label={isSearchOpen ? 'Close search' : 'Open search'}
+                className="inline-flex items-center justify-center h-10 w-10 rounded-md text-insightBlack hover:text-insightRed hover:bg-gray-100 transition"
+              >
+                {isSearchOpen ? <X size={20} /> : <Search size={20} />}
+              </button>
+              {isSearchOpen && (
+                <form onSubmit={onSubmitSearch} className="absolute right-full top-1/2 -translate-y-1/2 mr-2">
+                  <input
+                    autoFocus
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onBlur={() => { if (!searchQuery) setIsSearchOpen(false); }}
+                    onKeyDown={(e) => { if (e.key === 'Escape') { setIsSearchOpen(false); setSearchQuery(''); } }}
+                    className="h-10 w-56 xl:w-64 px-3 rounded-md border border-gray-200 bg-gray-50 focus:bg-white focus:border-insightRed outline-none transition shadow-sm"
+                    placeholder="Search"
+                    aria-label="Search articles"
+                  />
+                </form>
+              )}
             </div>
             <button className="lg:hidden inline-flex items-center justify-center p-3 rounded-md text-insightBlack hover:text-insightRed hover:bg-gray-100 focus:outline-none transition-colors duration-200 ml-auto" onClick={toggleMenu}>
               <span className="sr-only">Open main menu</span>
@@ -127,22 +153,6 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
-      {/* Category Nav */}
-      <nav className="hidden lg:block bg-white/90 backdrop-blur border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ul className="flex items-center gap-6 h-12">
-            {categories.map((c) => (
-              <li key={c.href}>
-                <Link to={c.href} className="px-2 py-1 text-sm font-semibold tracking-wide uppercase text-insightBlack/80 hover:text-insightRed relative group">
-                  {c.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </nav>
 
       {/* Mobile menu */}
       {isMenuOpen && (

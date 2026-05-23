@@ -53,6 +53,8 @@ export type Database = {
           date: string
           excerpt: string | null
           featured: boolean | null
+          home_order: number | null
+          home_placement: string | null
           id: string
           image_url: string | null
           slug: string
@@ -67,6 +69,8 @@ export type Database = {
           date?: string
           excerpt?: string | null
           featured?: boolean | null
+          home_order?: number | null
+          home_placement?: string | null
           id?: string
           image_url?: string | null
           slug: string
@@ -81,6 +85,8 @@ export type Database = {
           date?: string
           excerpt?: string | null
           featured?: boolean | null
+          home_order?: number | null
+          home_placement?: string | null
           id?: string
           image_url?: string | null
           slug?: string
@@ -121,6 +127,33 @@ export type Database = {
           name?: string
           order_index?: number
           slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      case_studies: {
+        Row: {
+          created_at: string | null
+          display_order: number
+          id: string
+          image_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string | null
+          title?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -298,6 +331,8 @@ export type Database = {
           company: string | null
           created_at: string | null
           featured: boolean | null
+          home_order: number | null
+          home_sections: string[] | null
           id: string
           image_url: string | null
           industry_impact: string | null
@@ -314,6 +349,8 @@ export type Database = {
           company?: string | null
           created_at?: string | null
           featured?: boolean | null
+          home_order?: number | null
+          home_sections?: string[] | null
           id?: string
           image_url?: string | null
           industry_impact?: string | null
@@ -330,6 +367,8 @@ export type Database = {
           company?: string | null
           created_at?: string | null
           featured?: boolean | null
+          home_order?: number | null
+          home_sections?: string[] | null
           id?: string
           image_url?: string | null
           industry_impact?: string | null
@@ -402,6 +441,7 @@ export type Database = {
           issue_number: number | null
           pdf_url: string | null
           publish_date: string
+          region: string | null
           slug: string
           title: string
           updated_at: string | null
@@ -416,6 +456,7 @@ export type Database = {
           issue_number?: number | null
           pdf_url?: string | null
           publish_date: string
+          region?: string | null
           slug: string
           title: string
           updated_at?: string | null
@@ -430,6 +471,7 @@ export type Database = {
           issue_number?: number | null
           pdf_url?: string | null
           publish_date?: string
+          region?: string | null
           slug?: string
           title?: string
           updated_at?: string | null

@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { toast } from 'sonner';
 import { slugify } from '@/lib/slugify';
 import { Upload, X } from 'lucide-react';
+import { LEADER_HOME_SECTIONS } from '@/lib/home-placements';
 
 interface CreateLeaderFormProps {
   open: boolean;
@@ -32,7 +33,14 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
   const [areasOfExpertise, setAreasOfExpertise] = useState('');
   const [industryImpact, setIndustryImpact] = useState('');
   const [featured, setFeatured] = useState(false);
+  const [homeSections, setHomeSections] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const toggleHomeSection = (value: string) => {
+    setHomeSections((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]
+    );
+  };
 
   const handleImageUpload = async (file: File) => {
     try {
@@ -87,6 +95,7 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
       areas_of_expertise: areasOfExpertise,
       industry_impact: industryImpact,
       featured,
+      home_sections: homeSections.length ? homeSections : null,
     };
 
     console.log('Creating leader with data:', leaderData);
@@ -115,6 +124,7 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
     setAreasOfExpertise('');
     setIndustryImpact('');
     setFeatured(false);
+    setHomeSections([]);
     setSelectedFile(null);
   };
 
@@ -279,6 +289,26 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
                 onChange={(e) => setTwitterUrl(e.target.value)}
                 placeholder="https://twitter.com/username"
               />
+            </div>
+          </div>
+
+          <div>
+            <Label>Home Page Sections</Label>
+            <p className="text-xs text-muted-foreground mb-2">
+              Choose which Home page sections this profile appears in.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {LEADER_HOME_SECTIONS.map((opt) => (
+                <label key={opt.value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={homeSections.includes(opt.value)}
+                    onChange={() => toggleHomeSection(opt.value)}
+                    className="h-4 w-4"
+                  />
+                  {opt.label}
+                </label>
+              ))}
             </div>
           </div>
 

@@ -1,237 +1,135 @@
-﻿import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Link } from 'react-router-dom';
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Youtube,
+  Mail,
+  Phone,
+  MapPin,
+  ShieldCheck,
+} from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from "@/hooks/use-toast";
-import React, { useRef, useState } from "react";
 
 const Footer = () => {
   const { settings } = useSettings();
   const year = new Date().getFullYear();
 
-  // Newsletter subscription states
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Newsletter subscription handler
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) {
-      toast({
-        title: "Email is required",
-        description: "Please enter a valid email address.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { error } = await supabase.from("newsletter_subscribers").insert([{ email: email.trim() }]);
-      if (error) {
-        if (error.code === '23505') {
-          toast({
-            title: "Already Subscribed",
-            description: "This email is already subscribed to the newsletter.",
-            variant: "default",
-          });
-        } else {
-          toast({
-            title: "Subscription failed",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-      } else {
-        toast({
-          title: "Thank you for subscribing!",
-          description: "You have been added to our newsletter.",
-          variant: "default",
-        });
-        setEmail('');
-        if (inputRef.current) {
-          inputRef.current.value = '';
-        }
-      }
-    } catch (err: any) {
-      toast({
-        title: "Subscription failed",
-        description: err.message,
-        variant: "destructive",
-      });
-    }
-    setLoading(false);
-  };
+  const socialLinks: Array<{ Icon: typeof Facebook; href: string; label: string; external?: boolean }> = [
+    { Icon: Facebook, href: '#', label: 'Facebook' },
+    { Icon: Twitter, href: '#', label: 'Twitter' },
+    { Icon: Linkedin, href: 'https://www.linkedin.com/company/theciovision', label: 'LinkedIn', external: true },
+    { Icon: Instagram, href: 'https://www.instagram.com/theciovisionmagazine', label: 'Instagram', external: true },
+    { Icon: Youtube, href: '#', label: 'YouTube' },
+  ];
 
   return (
     <footer className="bg-insightBlack text-white">
-      {/* Newsletter Section */}
-      <div className="border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
-            <div>
-              <h3 className="text-3xl font-bold">Subscribe to Our Newsletter</h3>
-              <p className="text-gray-400 mt-3 text-lg">Stay updated with the latest business insights and executive news</p>
+      {/* Main Footer */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-8 text-sm">
+          {/* Brand */}
+          <div className="col-span-2 md:col-span-4">
+            <Link to="/" className="inline-flex items-center group">
+              <div className="relative">
+                {settings.siteLogo ? (
+                  <img src={settings.siteLogo} alt={settings.companyName} className="w-12 h-12 rounded-lg shadow-lg" />
+                ) : (
+                  <div className="w-12 h-12 bg-gradient-to-br from-insightRed to-red-700 rounded-lg flex items-center justify-center shadow-lg">
+                    <div className="w-8 h-8 relative">
+                      <div className="absolute inset-0 bg-white rounded-sm opacity-90" />
+                      <div className="absolute top-1 left-1 right-1 h-1 bg-insightRed rounded-full" />
+                      <div className="absolute top-3 left-1 right-2 h-0.5 bg-gray-400 rounded-full" />
+                      <div className="absolute top-[18px] left-1 right-3 h-0.5 bg-gray-400 rounded-full" />
+                      <div className="absolute top-6 left-1 right-1.5 h-0.5 bg-gray-400 rounded-full" />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="ml-4">
+                <span className="text-2xl font-bold font-premium tracking-tight text-white group-hover:text-insightRed transition-colors duration-300">
+                  {settings.companyName}
+                </span>
+                <div className="text-xs font-semibold text-gray-400 uppercase tracking-[0.2em] -mt-1">Business Magazine</div>
+              </div>
+            </Link>
+            <p className="text-gray-400 leading-relaxed mt-4">
+              CIO Vision is a business magazine — a platform for business leaders to share their stories, strategies, and insights. We aim to be the source of inspiration for executives across the globe.
+            </p>
+            <div className="flex gap-2 mt-5">
+              {socialLinks.map(({ Icon, href, label, external }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="w-9 h-9 flex items-center justify-center bg-insightRed hover:bg-insightRed/80 transition-colors"
+                >
+                  <Icon className="h-4 w-4 text-white" />
+                </a>
+              ))}
             </div>
-            <form className="flex w-full max-w-lg space-x-3" onSubmit={handleSubscribe}>
-              <Input
-                ref={inputRef}
-                type="email"
-                placeholder="Enter your email address"
-                className="bg-gray-800 border-gray-700 placeholder-gray-500 text-white h-12 text-base"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                disabled={loading}
-                required
-              />
-              <Button
-                size="lg"
-                className="bg-insightRed hover:bg-insightRed/90 text-white border-insightRed px-8"
-                disabled={loading}
-                type="submit"
-              >
-                {loading ? "Subscribing..." : "Subscribe"}
-              </Button>
-            </form>
+          </div>
+
+          {/* Quick Links */}
+          <div className="col-span-1 md:col-span-2">
+            <p className="text-white font-bold mb-4">Quick Links</p>
+            <ul className="space-y-2">
+              <li><Link to="/newsroom" className="text-gray-400 hover:text-white transition-colors">Newsroom</Link></li>
+              <li><Link to="/magazine" className="text-gray-400 hover:text-white transition-colors">Magazines</Link></li>
+              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
+              <li><Link to="/press-releases" className="text-gray-400 hover:text-white transition-colors">Press Release</Link></li>
+              <li><Link to="/become-an-author" className="text-gray-400 hover:text-white transition-colors">Become an Author</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
+              <li><Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link></li>
+            </ul>
+          </div>
+
+          {/* Contact Us */}
+          <div className="col-span-1 md:col-span-3">
+            <p className="text-white font-bold mb-4">Contact Us</p>
+            <p className="text-gray-400">Phone:</p>
+            <a href="tel:+14152261149" className="flex items-center gap-2 mb-3 text-gray-200 hover:text-white transition-colors">
+              <Phone className="h-3.5 w-3.5" />+1 (415) 226-1149
+            </a>
+            <p className="text-gray-400">Email:</p>
+            <a href="mailto:info@theciovision.com" className="flex items-center gap-2 mb-3 text-gray-200 hover:text-white transition-colors">
+              <Mail className="h-3.5 w-3.5" />info@theciovision.com
+            </a>
+            <p className="text-gray-400">Address:</p>
+            <p className="flex items-start gap-2 text-gray-200">
+              <MapPin className="h-3.5 w-3.5 mt-0.5" />Columbus, Ohio, USA
+            </p>
+          </div>
+
+          {/* Outreach Partner */}
+          <div className="col-span-2 md:col-span-3">
+            <p className="text-white font-bold mb-4">Outreach Partner</p>
+            <div className="bg-white px-3 py-2 inline-flex items-center gap-2 mb-3 rounded-sm">
+              <span className="text-xl leading-none" style={{ color: '#7E57C2' }}>◆</span>
+              <div>
+                <p className="text-black text-sm font-extrabold leading-none">GlobeNewswire</p>
+                <p className="text-neutral-500 text-[10px] mt-0.5">by notified</p>
+              </div>
+            </div>
+            <div className="bg-white text-black px-3 py-2 inline-flex items-center gap-2 border border-neutral-300 rounded-sm">
+              <ShieldCheck className="h-7 w-7 text-insightRed" />
+              <div>
+                <p className="text-sm font-extrabold leading-none text-insightRed">SAFE!</p>
+                <p className="text-[9px] text-neutral-600 leading-tight mt-0.5">
+                  Verified Site<br />2024
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      {/* Footer Links */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
-            <h4 className="text-xl font-semibold mb-6">About</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Our Story
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Team
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link to="/documentation" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Documentation
-                </Link>
-              </li>
-            </ul>
-          </div>
 
-          <div>
-            <h4 className="text-xl font-semibold mb-6">Content</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/magazine" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Magazine
-                </Link>
-              </li>
-              <li>
-                <Link to="/leadership" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Leadership
-                </Link>
-              </li>
-              <li>
-                <Link to="/press-releases" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Press Releases
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xl font-semibold mb-6">Legal</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms-of-service" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link to="/cookie-policy" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Cookie Policy
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xl font-semibold mb-6">Connect</h4>
-            <ul className="space-y-3">
-              <li>
-                <Link to="/contact" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/partner-with-us" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Partner With Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/advertise" className="text-gray-400 hover:text-white transition-colors text-base">
-                  Advertise
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="mt-16 border-t border-gray-700 pt-10">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center">
-              <Link to="/" className="flex items-center group">
-                <div className="w-10 h-10 bg-gradient-to-br from-insightRed to-red-700 rounded-lg flex items-center justify-center shadow-lg mr-3">
-                  <div className="w-6 h-6 relative">
-                    <div className="absolute inset-0 bg-white rounded-sm opacity-90"></div>
-                    <div className="absolute top-0.5 left-0.5 right-0.5 h-0.5 bg-insightRed rounded-full"></div>
-                    <div className="absolute top-2 left-0.5 right-1 h-0.5 bg-gray-400 rounded-full"></div>
-                    <div className="absolute top-3 left-0.5 right-1.5 h-0.5 bg-gray-400 rounded-full"></div>
-                    <div className="absolute top-4 left-0.5 right-1 h-0.5 bg-gray-400 rounded-full"></div>
-                  </div>
-                </div>
-                <div>
-                  <span className="text-xl font-bold text-white">{settings.companyName}</span>
-                  <div className="text-xs font-semibold text-gray-400 -mt-1">BUSINESS MAGAZINE</div>
-                  <div className="text-xs text-gray-500 mt-1">theciovision.com</div>
-                </div>
-              </Link>
-              <span className="text-gray-400 ml-6 text-base">(c) {year} {settings.companyName}. All rights reserved.</span>
-            </div>
-            
-            <div className="flex space-x-6 mt-6 md:mt-0">
-              {/* <a href="#" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
-                <Facebook size={22} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
-                <Twitter size={22} />
-              </a> */}
-              <a href="https://www.instagram.com/theciovision/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
-                <Instagram size={22} />
-              </a>
-              <a href="https://www.linkedin.com/company/theciovision" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
-                <Linkedin size={22} />
-              </a>
-              <a href="info@theciovision.com" className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-gray-800">
-                <Mail size={22} />
-              </a>
-            </div>
-          </div>
+      {/* Bottom Copyright Bar */}
+      <div className="border-t border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-xs text-gray-500">
+          Copyright © {year} {settings.companyName}. All Rights Reserved.
         </div>
       </div>
     </footer>

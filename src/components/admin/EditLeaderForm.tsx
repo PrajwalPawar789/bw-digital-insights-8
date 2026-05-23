@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Upload, X } from 'lucide-react';
+import { LEADER_HOME_SECTIONS } from '@/lib/home-placements';
 
 interface EditLeaderFormProps {
   leader: any;
@@ -29,8 +30,18 @@ const EditLeaderForm = ({ leader, open, onOpenChange }: EditLeaderFormProps) => 
     twitter_url: leader?.twitter_url || '',
     areas_of_expertise: leader?.areas_of_expertise || '',
     industry_impact: leader?.industry_impact || '',
-    featured: leader?.featured || false
+    featured: leader?.featured || false,
+    home_sections: Array.isArray(leader?.home_sections) ? leader.home_sections : []
   });
+
+  const toggleHomeSection = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      home_sections: prev.home_sections.includes(value)
+        ? prev.home_sections.filter((s: string) => s !== value)
+        : [...prev.home_sections, value],
+    }));
+  };
 
   const handleImageUpload = async (file: File) => {
     try {
@@ -70,7 +81,8 @@ const EditLeaderForm = ({ leader, open, onOpenChange }: EditLeaderFormProps) => 
     try {
       await updateLeader.mutateAsync({
         id: leader.id,
-        ...formData
+        ...formData,
+        home_sections: formData.home_sections.length ? formData.home_sections : null
       });
       onOpenChange(false);
     } catch (error) {
@@ -237,6 +249,26 @@ const EditLeaderForm = ({ leader, open, onOpenChange }: EditLeaderFormProps) => 
                 onChange={(e) => setFormData({ ...formData, twitter_url: e.target.value })}
                 placeholder="https://twitter.com/username"
               />
+            </div>
+          </div>
+
+          <div>
+            <Label>Home Page Sections</Label>
+            <p className="text-xs text-muted-foreground mb-2">
+              Choose which Home page sections this profile appears in.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {LEADER_HOME_SECTIONS.map((opt) => (
+                <label key={opt.value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.home_sections.includes(opt.value)}
+                    onChange={() => toggleHomeSection(opt.value)}
+                    className="h-4 w-4"
+                  />
+                  {opt.label}
+                </label>
+              ))}
             </div>
           </div>
 

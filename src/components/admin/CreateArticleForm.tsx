@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { slugify } from '@/lib/slugify';
 import { Upload, X } from 'lucide-react';
 import { articleCategories } from '@/lib/articleCategories';
+import { ARTICLE_HOME_PLACEMENTS } from '@/lib/home-placements';
 
 interface CreateArticleFormProps {
   open: boolean;
@@ -31,6 +32,7 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
   const [category, setCategory] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [featured, setFeatured] = useState(false);
+  const [homePlacement, setHomePlacement] = useState('none');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const categories = articleCategories;
@@ -85,6 +87,7 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
       category,
       image_url: imageUrl,
       featured,
+      home_placement: homePlacement === 'none' ? null : homePlacement,
       date: new Date().toISOString(),
     };
 
@@ -111,6 +114,7 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
     setCategory('');
     setImageUrl('');
     setFeatured(false);
+    setHomePlacement('none');
     setSelectedFile(null);
   };
 
@@ -194,6 +198,20 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="homePlacement">Home Page Placement</Label>
+            <Select value={homePlacement} onValueChange={setHomePlacement}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select where this appears on Home" />
+              </SelectTrigger>
+              <SelectContent>
+                {ARTICLE_HOME_PLACEMENTS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>

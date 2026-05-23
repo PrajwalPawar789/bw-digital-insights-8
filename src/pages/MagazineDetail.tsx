@@ -180,56 +180,7 @@ const MagazineDetail = () => {
               </div>
             </div>
 
-            {/* Magazine Articles Section */}
-            {!articlesLoading && magazineArticles.length > 0 && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-insightBlack mb-6">Featured Articles in This Issue</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {magazineArticles.map((magazineArticle) => (
-                    <div key={magazineArticle.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                      <div className="aspect-video bg-gray-200 overflow-hidden">
-                        <img
-                          src={magazineArticle.articles.image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
-                          alt={magazineArticle.articles.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium text-insightRed">
-                            Page {magazineArticle.page_number}
-                          </span>
-                          {magazineArticle.featured && (
-                            <span className="text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                              Featured
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">{magazineArticle.articles.title}</h3>
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{magazineArticle.articles.excerpt}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">By {magazineArticle.articles.author}</span>
-                          <div className="flex items-center gap-3">
-                            <Button size="sm" onClick={() => {
-                              const page = magazineArticle.page_number || 1;
-                              setInitialPage(page);
-                              document.getElementById('pdf-viewer')?.scrollIntoView({ behavior: 'smooth' });
-                            }} className="bg-insightBlack text-white hover:bg-black/90">Preview</Button>
-
-                            <Link
-                              to={`/article/${magazineArticle.articles.slug}`}
-                              className="text-insightRed hover:text-insightBlack font-medium text-sm flex items-center"
-                            >
-                              Read Article <ArrowRight className="ml-1 h-3 w-3" />
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            
           </>
         </div>
 
@@ -291,6 +242,56 @@ const MagazineDetail = () => {
         </section>
 
         <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+          {/* Magazine Articles Section */}
+            {!articlesLoading && magazineArticles.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold text-insightBlack mb-6">Featured Articles in This Issue</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {magazineArticles.map((magazineArticle) => (
+                    <div key={magazineArticle.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                      <div className="aspect-video bg-gray-200 overflow-hidden">
+                        <img
+                          src={magazineArticle.articles.image_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'}
+                          alt={magazineArticle.articles.title}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-insightRed">
+                            Page {magazineArticle.page_number}
+                          </span>
+                          {magazineArticle.featured && (
+                            <span className="text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="font-semibold text-lg mb-2 line-clamp-2">{magazineArticle.articles.title}</h3>
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{magazineArticle.articles.excerpt}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-500">By {magazineArticle.articles.author}</span>
+                          <div className="flex items-center gap-3">
+                            <Button size="sm" onClick={() => {
+                              const page = magazineArticle.page_number || 1;
+                              setInitialPage(page);
+                              document.getElementById('pdf-viewer')?.scrollIntoView({ behavior: 'smooth' });
+                            }} className="bg-insightBlack text-white hover:bg-black/90">Preview</Button>
+
+                            <Link
+                              to={`/article/${magazineArticle.articles.slug}`}
+                              className="text-insightRed hover:text-insightBlack font-medium text-sm flex items-center"
+                            >
+                              Read Article <ArrowRight className="ml-1 h-3 w-3" />
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           {/* Magazine Information */}
           {/* <div>
             <h2 className="text-2xl font-bold text-insightBlack mb-6">About This Issue</h2>

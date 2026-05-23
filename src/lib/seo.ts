@@ -4,7 +4,7 @@ export const DEFAULT_DESCRIPTION =
 export const BRAND_ALIASES = ["TheCIOVision", "theciovision", "theciovision.com"];
 export const BRAND_SOCIALS = [
   "https://www.linkedin.com/company/theciovision",
-  "https://www.instagram.com/theciovision/",
+  "https://www.instagram.com/theciovisionmagazine",
 ];
 
 export type BreadcrumbItem = {

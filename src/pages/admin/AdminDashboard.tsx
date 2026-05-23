@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { Users, FileText, BookOpen, Megaphone, BarChart3, Loader2, LogOut } from 'lucide-react';
+import { Users, FileText, BookOpen, Megaphone, BarChart3, Briefcase, Loader2, LogOut } from 'lucide-react';
 import ArticleManager from '@/components/admin/ArticleManager';
 import MagazineManager from '@/components/admin/MagazineManager';
 import LeaderManager from '@/components/admin/LeaderManager';
@@ -12,6 +12,7 @@ import SettingsManager from '@/components/admin/SettingsManager';
 import PressReleaseManager from '@/components/admin/PressReleaseManager';
 import TestimonialManager from '@/components/admin/TestimonialManager';
 import ClientLogosManager from "@/pages/admin/ClientLogosManager";
+import CaseStudyManager from "@/components/admin/CaseStudyManager";
 import { useAdminAuth } from "@/components/admin/AdminAuthProvider";
 import Seo from "@/components/seo/Seo";
 
@@ -117,7 +118,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="articles" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="articles" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Articles
@@ -141,6 +142,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="client-logos" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Client Logos
+            </TabsTrigger>
+            <TabsTrigger value="case-studies" className="flex items-center gap-2">
+              <Briefcase className="h-4 w-4" />
+              Case Studies
             </TabsTrigger>
             <TabsTrigger value="documentation" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -174,6 +179,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="client-logos" className="space-y-6">
             <ClientLogosManager />
+          </TabsContent>
+
+          <TabsContent value="case-studies" className="space-y-6">
+            <CaseStudyManager />
           </TabsContent>
 
           <TabsContent value="documentation" className="space-y-6">

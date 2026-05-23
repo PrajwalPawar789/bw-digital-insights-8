@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(& \"D:\\\\C Data\\\\Desktop\\\\bw-digital-insights-7\\\\node_modules\\\\@esbuild\\\\win32-x64\\\\esbuild.exe\" --version)",
+      "Bash(ls -la \"d:\\\\C Data\\\\Desktop\\\\bw-digital-insights-7\\\\\" | head -20)",
+      "Read(//d/C Data/Desktop/**)",
+      "Bash(dir \"d:\\\\C Data\\\\Desktop\\\\bw-digital-insights-7\\\\src\" /s /b)",
+      "PowerShell(Get-ChildItem -Path \"d:\\\\C Data\\\\Desktop\\\\bw-digital-insights-7\\\\src\" -Recurse | Where-Object { $_.Name -match \"leadership|team|about|Leadership|Team|About\" } | Select-Object -ExpandProperty FullName)"
+    ]
+  }
+}

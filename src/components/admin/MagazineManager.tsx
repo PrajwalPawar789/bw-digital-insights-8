@@ -27,7 +27,18 @@ interface Magazine {
   issue_number: number | null;
   featured: boolean;
   featured_article_id: string | null;
+  region: string | null;
 }
+
+// Which Home page region tab a magazine appears under. "global" => every tab.
+const REGION_OPTIONS = [
+  { value: 'global', label: 'Global (all tabs)' },
+  { value: 'americas', label: 'Americas Editions' },
+  { value: 'europe', label: 'Europe Editions' },
+  { value: 'mea', label: 'MEA Editions' },
+  { value: 'apac', label: 'APAC Editions' },
+  { value: 'hall', label: 'Hall of Fame' },
+];
 
 const MagazineManager = () => {
   const { data: magazines, isLoading } = useMagazines();
@@ -50,6 +61,7 @@ const MagazineManager = () => {
   const [issueNumber, setIssueNumber] = useState('');
   const [featured, setFeatured] = useState(false);
   const [featuredArticleId, setFeaturedArticleId] = useState<string | null>(null);
+  const [region, setRegion] = useState<string>('global');
   const [uploadingFile, setUploadingFile] = useState<'image' | 'pdf' | null>(null);
 
   useEffect(() => {
@@ -64,6 +76,7 @@ const MagazineManager = () => {
       setIssueNumber(selectedMagazine.issue_number?.toString() ?? '');
       setFeatured(selectedMagazine.featured);
       setFeaturedArticleId(selectedMagazine.featured_article_id);
+      setRegion(selectedMagazine.region || 'global');
       setOpen(true);
     } else {
       resetForm();
@@ -82,6 +95,7 @@ const MagazineManager = () => {
     setIssueNumber('');
     setFeatured(false);
     setFeaturedArticleId(null);
+    setRegion('global');
     setUploadingFile(null);
   };
 
@@ -110,6 +124,7 @@ const MagazineManager = () => {
       issue_number: issueNumber ? parseInt(issueNumber, 10) : null,
       featured,
       featured_article_id: featuredArticleId,
+      region: region === 'global' ? null : region,
     };
     
     const handleSuccess = (magazine: Magazine) => {
@@ -304,6 +319,23 @@ const MagazineManager = () => {
                     {articles?.map((article) => (
                       <SelectItem key={article.id} value={article.id}>
                         {article.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="region" className="text-right">
+                  Home Region Tab
+                </Label>
+                <Select value={region} onValueChange={setRegion}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select region tab" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {REGION_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

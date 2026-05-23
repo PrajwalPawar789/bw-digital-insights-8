@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, X } from 'lucide-react';
 import { articleCategories } from '@/lib/articleCategories';
+import { ARTICLE_HOME_PLACEMENTS } from '@/lib/home-placements';
 
 interface EditArticleFormProps {
   article: any;
@@ -29,7 +30,8 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
     author: article?.author || '',
     category: article?.category || '',
     featured: article?.featured || false,
-    image_url: article?.image_url || ''
+    image_url: article?.image_url || '',
+    home_placement: article?.home_placement || 'none'
   });
 
   const handleImageUpload = async (file: File) => {
@@ -70,7 +72,8 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
     try {
       await updateArticle.mutateAsync({
         id: article.id,
-        ...formData
+        ...formData,
+        home_placement: formData.home_placement === 'none' ? null : formData.home_placement
       });
       onOpenChange(false);
     } catch (error) {
@@ -148,6 +151,25 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="home_placement">Home Page Placement</Label>
+            <Select
+              value={formData.home_placement}
+              onValueChange={(value) => setFormData({ ...formData, home_placement: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select where this appears on Home" />
+              </SelectTrigger>
+              <SelectContent>
+                {ARTICLE_HOME_PLACEMENTS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
