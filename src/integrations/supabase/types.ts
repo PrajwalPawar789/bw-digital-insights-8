@@ -381,6 +381,42 @@ export type Database = {
         }
         Relationships: []
       }
+      linkedin_posts: {
+        Row: {
+          body: string
+          created_at: string | null
+          display_order: number
+          embed_url: string | null
+          href: string | null
+          id: string
+          image_url: string | null
+          likes: number
+          updated_at: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          display_order?: number
+          embed_url?: string | null
+          href?: string | null
+          id?: string
+          image_url?: string | null
+          likes?: number
+          updated_at?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          display_order?: number
+          embed_url?: string | null
+          href?: string | null
+          id?: string
+          image_url?: string | null
+          likes?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       magazine_articles: {
         Row: {
           article_id: string

@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom';
 import {
   Facebook,
-  Twitter,
   Instagram,
   Linkedin,
-  Youtube,
   Mail,
   Phone,
   MapPin,
@@ -17,11 +15,11 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   const socialLinks: Array<{ Icon: typeof Facebook; href: string; label: string; external?: boolean }> = [
-    { Icon: Facebook, href: '#', label: 'Facebook' },
-    { Icon: Twitter, href: '#', label: 'Twitter' },
+    // { Icon: Facebook, href: '#', label: 'Facebook' },
+    // { Icon: Twitter, href: '#', label: 'Twitter' },
     { Icon: Linkedin, href: 'https://www.linkedin.com/company/theciovision', label: 'LinkedIn', external: true },
     { Icon: Instagram, href: 'https://www.instagram.com/theciovisionmagazine', label: 'Instagram', external: true },
-    { Icon: Youtube, href: '#', label: 'YouTube' },
+    // { Icon: Youtube, href: '#', label: 'YouTube' },
   ];
 
   return (
@@ -106,20 +104,22 @@ const Footer = () => {
           {/* Outreach Partner */}
           <div className="col-span-2 md:col-span-3">
             <p className="text-white font-bold mb-4">Outreach Partner</p>
-            <div className="bg-white px-3 py-2 inline-flex items-center gap-2 mb-3 rounded-sm">
-              <span className="text-xl leading-none" style={{ color: '#7E57C2' }}>◆</span>
-              <div>
-                <p className="text-black text-sm font-extrabold leading-none">GlobeNewswire</p>
-                <p className="text-neutral-500 text-[10px] mt-0.5">by notified</p>
+            <div className="flex flex-col items-start gap-3">
+              <div className="bg-white px-3 py-2 flex items-center gap-2 rounded-sm">
+                <span className="text-xl leading-none" style={{ color: '#7E57C2' }}>◆</span>
+                <div>
+                  <p className="text-black text-sm font-extrabold leading-none">GlobeNewswire</p>
+                  <p className="text-neutral-500 text-[10px] mt-0.5">by notified</p>
+                </div>
               </div>
-            </div>
-            <div className="bg-white text-black px-3 py-2 inline-flex items-center gap-2 border border-neutral-300 rounded-sm">
-              <ShieldCheck className="h-7 w-7 text-insightRed" />
-              <div>
-                <p className="text-sm font-extrabold leading-none text-insightRed">SAFE!</p>
-                <p className="text-[9px] text-neutral-600 leading-tight mt-0.5">
-                  Verified Site<br />2024
-                </p>
+              <div className="bg-white text-black px-3 py-2 flex items-center gap-2 border border-neutral-300 rounded-sm">
+                <ShieldCheck className="h-7 w-7 text-insightRed" />
+                <div>
+                  <p className="text-sm font-extrabold leading-none text-insightRed">SAFE!</p>
+                  <p className="text-[9px] text-neutral-600 leading-tight mt-0.5">
+                    Verified Site<br />2024
+                  </p>
+                </div>
               </div>
             </div>
           </div>

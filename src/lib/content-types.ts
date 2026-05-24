@@ -1,4 +1,4 @@
-export type HomePlacement = "grid" | "cxo" | "bizhot_metro" | "business_bulletin";
+export type HomePlacement = "grid" | "cxo" | "bizhot_metro" | "business_bulletin" | "cover_story";
 export type HomeLeaderSection =
   | "cover_story"
   | "magazine_profile"

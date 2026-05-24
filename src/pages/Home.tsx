@@ -29,6 +29,7 @@ import { usePressReleases } from "@/hooks/usePressReleases";
 import { useSettings } from "@/hooks/useSettings";
 import { useUpcomingEditions } from "@/hooks/useUpcomingEditions";
 import { useCaseStudies } from "@/hooks/useCaseStudies";
+import { useLinkedinPosts } from "@/hooks/useLinkedinPosts";
 import { mapMagazine, type Issue } from "@/lib/magazines-map";
 import type { Article, Leader, PressRelease, Upcoming } from "@/lib/content-types";
 import {
@@ -74,29 +75,6 @@ const COL_LABELS = [
   ["Technology", "Healthcare", "Finance"],
   ["Marketing", "Education", "Manufacturing"],
   ["Consulting", "Real Estate", "Legal"],
-];
-
-const LINKEDIN_POSTS = [
-  {
-    body: "Inside the boardroom: why CIOs are now the chief storytellers of digital transformation.",
-    image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=600&q=70",
-    likes: 142,
-  },
-  {
-    body: "Cover story: the leaders rewriting the AI playbook in regulated industries.",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=70",
-    likes: 98,
-  },
-  {
-    body: "Sustainability in the cloud — 7 CTOs share blueprints they wish they had 5 years ago.",
-    image: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=600&q=70",
-    likes: 211,
-  },
-  {
-    body: "Hall of Fame announcement Friday. Hint: she rebuilt a Fortune 100 stack in 18 months.",
-    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=600&q=70",
-    likes: 67,
-  },
 ];
 
 const CITY_REPORTS_DEFAULT = [
@@ -163,6 +141,7 @@ const Home = () => {
   const { data: rawPress = [] } = usePressReleases();
   const { data: rawUpcoming = [] } = useUpcomingEditions();
   const { data: caseStudies = [] } = useCaseStudies();
+  const { data: linkedinPosts = [] } = useLinkedinPosts();
   const { settings } = useSettings();
 
   const companyName = settings?.companyName || "CIO Vision";
@@ -273,16 +252,40 @@ const Home = () => {
     return cols;
   }, [gridArticles]);
 
-  // ---- Cover stories carousel — leaders tagged "cover_story" ----
+  // ---- Cover stories carousel — leaders tagged "cover_story" + articles tagged "cover_story" ----
   const coverStoryItems = useMemo(() => {
-    const tagged = leaders
+    const leaderItems = leaders
       .filter((l) => l.home_sections?.includes("cover_story"))
-      .sort((a, b) => (a.home_order ?? 0) - (b.home_order ?? 0));
-    const pool = tagged.length ? tagged : leaders;
-    return pool
+      .map((l) => ({
+        id: `l-${l.id}`,
+        title: l.name,
+        image: l.image_url as string,
+        link: "/leadership",
+        order: l.home_order ?? 0,
+      }));
+    const articleItems = articles
+      .filter((a) => a.home_placement === "cover_story")
+      .map((a) => ({
+        id: `a-${a.id}`,
+        title: a.title,
+        image: (a.image_url as string) || "",
+        link: a.slug ? `/article/${a.slug}` : "/articles",
+        order: a.home_order ?? 0,
+      }));
+    const combined = [...leaderItems, ...articleItems]
+      .filter((it) => !!it.image)
+      .sort((a, b) => a.order - b.order);
+    if (combined.length) return combined;
+    return leaders
       .filter((l) => !!l?.image_url)
-      .map((l) => ({ id: l.id, title: l.name, image: l.image_url as string }));
-  }, [leaders]);
+      .map((l) => ({
+        id: `l-${l.id}`,
+        title: l.name,
+        image: l.image_url as string,
+        link: "/leadership",
+        order: 0,
+      }));
+  }, [leaders, articles]);
   const [coverIndex, setCoverIndex] = useState(0);
   useEffect(() => {
     if (coverStoryItems.length < 2) return;
@@ -295,13 +298,39 @@ const Home = () => {
     if (coverIndex >= coverStoryItems.length) setCoverIndex(0);
   }, [coverStoryItems.length, coverIndex]);
 
-  // ---- CXO Articles — articles tagged "cxo" ----
+  // ---- CXO Articles — articles tagged "cxo" + leaders tagged "cxo_article" ----
   const cxoArticles = useMemo(() => {
-    const tagged = articles
+    const taggedArticles = articles
       .filter((a) => a.home_placement === "cxo")
-      .sort((a, b) => (a.home_order ?? 0) - (b.home_order ?? 0));
-    return (tagged.length ? tagged : articles).slice(0, 4);
-  }, [articles]);
+      .map((a: any) => ({
+        id: `a-${a.id}`,
+        title: a.title,
+        image_url: a.image_url,
+        slug: a.slug || "",
+        kind: "article" as const,
+        order: a.home_order ?? 0,
+      }));
+    const taggedLeaders = leaders
+      .filter((l) => l.home_sections?.includes("cxo_article"))
+      .map((l: any) => ({
+        id: `l-${l.id}`,
+        title: l.name,
+        image_url: l.image_url,
+        slug: l.slug || "",
+        kind: "leader" as const,
+        order: l.home_order ?? 0,
+      }));
+    const tagged = [...taggedArticles, ...taggedLeaders].sort((a, b) => a.order - b.order);
+    if (tagged.length) return tagged.slice(0, 4);
+    return articles.slice(0, 4).map((a: any) => ({
+      id: `a-${a.id}`,
+      title: a.title,
+      image_url: a.image_url,
+      slug: a.slug || "",
+      kind: "article" as const,
+      order: 0,
+    }));
+  }, [articles, leaders]);
 
   // ---- Magazine Profiles — leaders tagged "magazine_profile" ----
   const magProfiles = useMemo(() => {
@@ -548,9 +577,9 @@ const Home = () => {
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-1.5">
                   {[
                     { icon: Linkedin, bg: "#0A66C2", href: "https://www.linkedin.com/company/theciovision", external: true },
-                    { icon: Twitter, bg: "#000", href: "#", external: false },
-                    { icon: Facebook, bg: "#1877F2", href: "#", external: false },
-                    { icon: Youtube, bg: "#FF0000", href: "#", external: false },
+                    // { icon: Twitter, bg: "#000", href: "#", external: false },
+                    // { icon: Facebook, bg: "#1877F2", href: "#", external: false },
+                    // { icon: Youtube, bg: "#FF0000", href: "#", external: false },
                     { icon: Instagram, bg: "#E1306C", href: "https://www.instagram.com/theciovisionmagazine", external: true },
                   ].map(({ icon: Icon, bg, href, external }, i) => (
                     <a
@@ -698,7 +727,7 @@ const Home = () => {
                     {coverStoryItems.map((item, i) => (
                       <Link
                         key={`cs-hero-${item.id}-${i}`}
-                        to="/leadership"
+                        to={item.link}
                         aria-hidden={i !== coverIndex}
                         tabIndex={i === coverIndex ? 0 : -1}
                         className="absolute inset-0 block"
@@ -785,31 +814,35 @@ const Home = () => {
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-x-5 gap-y-6">
-                {cxoArticles.map((a) => (
-                  <Link key={a.id} to={`/article/${a.slug || ""}`} className="group block">
-                    <div className="relative aspect-[3/2] overflow-hidden bg-neutral-900 ring-1 ring-neutral-200">
-                      <img
-                        src={sharpen(a.image_url, 800)}
-                        alt={a.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                      />
-                    </div>
-                    <h3
-                      className="mt-2 text-[13px] font-bold leading-snug line-clamp-2 group-hover:underline text-neutral-900"
-                      style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-                    >
-                      {a.title}
-                    </h3>
-                  </Link>
-                ))}
+                {cxoArticles.map((a) => {
+                  const href = a.kind === "leader" ? `/leadership/${a.slug}` : `/article/${a.slug}`;
+                  return (
+                    <Link key={a.id} to={href} className="group block">
+                      <div className="relative aspect-[3/2] overflow-hidden bg-neutral-900 ring-1 ring-neutral-200">
+                        <img
+                          src={sharpen(a.image_url, 800)}
+                          alt={a.title}
+                          loading="lazy"
+                          decoding="async"
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                        />
+                      </div>
+                      <h3
+                        className="mt-2 text-[13px] font-bold leading-snug line-clamp-2 group-hover:underline text-neutral-900"
+                        style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                      >
+                        {a.title}
+                      </h3>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
         </section>
 
-        {/* ============== MEDIA PARTNERSHIPS ============== */}
+        {/* ============== MEDIA PARTNERSHIPS (commented out) ============== */}
+        {/*
         <section className="bg-white py-5 border-b border-neutral-200">
           <div className="max-w-[1200px] mx-auto px-4">
             <p className="text-[13px] font-bold mb-3" style={{ color: RED }}>
@@ -831,6 +864,7 @@ const Home = () => {
             </div>
           </div>
         </section>
+        */}
 
         {/* ============== CASE STUDIES + MAGAZINE PROFILES ============== */}
         <section className="bg-white py-6 border-b border-neutral-200">
@@ -846,10 +880,10 @@ const Home = () => {
               <div className="space-y-5">
                 {caseStudies.map((cs) => (
                   <div key={cs.id}>
-                    <div className="aspect-[3/2] overflow-hidden bg-neutral-100 shadow-sm">
+                    <div className="aspect-[16/9] overflow-hidden bg-neutral-100 shadow-sm">
                       {cs.image_url ? (
                         <img
-                          src={sharpen(cs.image_url, 900)}
+                          src={sharpen(cs.image_url, 700)}
                           alt={cs.title}
                           loading="lazy"
                           decoding="async"
@@ -861,7 +895,7 @@ const Home = () => {
                         </div>
                       )}
                     </div>
-                    <p className="text-[12px] font-bold mt-2.5 leading-snug text-neutral-900 line-clamp-2">
+                    <p className="text-[12px] font-bold mt-2 leading-snug text-neutral-900 line-clamp-2">
                       {cs.title}
                     </p>
                   </div>
@@ -950,7 +984,8 @@ const Home = () => {
           </div>
         </section>
 
-        {/* ============== VIDEO INTERVIEWS ============== */}
+        {/* ============== VIDEO INTERVIEWS (commented out) ============== */}
+        {/*
         <section className="bg-white py-6 border-b border-neutral-200">
           <div className="max-w-[1200px] mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
@@ -1001,13 +1036,14 @@ const Home = () => {
             </div>
           </div>
         </section>
+        */}
 
         {/* ============== LEADERSHIP TALKS + LINKEDIN ============== */}
         <section className="bg-white py-6 border-b border-neutral-200">
           <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <span className="w-3 h-3" style={{ backgroundColor: RED }} />
+                {/* <span className="w-3 h-3" style={{ backgroundColor: RED }} /> */}
                 <h2 className="text-[14px] font-extrabold uppercase tracking-wider">Leadership Talks</h2>
               </div>
               {talkLeaders[0] && (
@@ -1087,38 +1123,54 @@ const Home = () => {
                   Follow on LinkedIn
                 </h2>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                {LINKEDIN_POSTS.map((p, i) => (
+              <div className="flex flex-col gap-3">
+                {linkedinPosts.map((p) => (
                   <a
-                    key={i}
-                    href="https://www.linkedin.com/"
+                    key={p.id}
+                    href={p.href || p.embed_url || "#"}
                     target="_blank"
                     rel="noreferrer"
                     className="block bg-white border border-neutral-200 hover:shadow-md transition"
                   >
-                    <div className="px-2 py-1.5 flex items-center gap-1.5 border-b border-neutral-100">
-                      <div className="w-5 h-5 rounded-full bg-black flex items-center justify-center">
+                    <div className="px-2.5 py-1.5 flex items-center gap-2 border-b border-neutral-100">
+                      <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center shrink-0">
                         <span
-                          className="text-[7px] italic font-extrabold text-white"
+                          className="text-[8px] italic font-extrabold text-white"
                           style={{ fontFamily: "Georgia, serif" }}
                         >
                           E<span style={{ color: RED }}>.</span>W
                         </span>
                       </div>
-                      <span className="text-[9px] font-bold text-neutral-700">{companyName}</span>
+                      <span className="text-[10px] font-bold text-neutral-700 truncate">
+                        {companyName}
+                      </span>
                     </div>
-                    <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
-                      <img src={p.image} alt="" loading="lazy" className="w-full h-full object-cover" />
-                    </div>
-                    <p className="px-2 pt-1.5 text-[9px] text-neutral-700 line-clamp-2">{p.body}</p>
-                    <div className="px-2 py-1 flex items-center gap-2 text-neutral-500">
-                      <Heart className="h-2.5 w-2.5" />
-                      <span className="text-[8px]">{p.likes}</span>
-                      <MessageCircle className="h-2.5 w-2.5" />
-                      <Share2 className="h-2.5 w-2.5 ml-auto" />
+                    {p.image_url && (
+                      <div className="aspect-[16/9] overflow-hidden bg-neutral-100">
+                        <img
+                          src={p.image_url}
+                          alt=""
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <p className="px-2.5 pt-2 text-[11px] text-neutral-700 leading-snug line-clamp-3">
+                      {p.body}
+                    </p>
+                    <div className="px-2.5 py-1.5 flex items-center gap-2 text-neutral-500">
+                      <Heart className="h-3 w-3" />
+                      <span className="text-[10px]">{p.likes}</span>
+                      <MessageCircle className="h-3 w-3" />
+                      <Share2 className="h-3 w-3 ml-auto" />
                     </div>
                   </a>
                 ))}
+                {linkedinPosts.length === 0 && (
+                  <div className="text-[11px] text-neutral-400 border border-dashed rounded p-4 text-center">
+                    No LinkedIn posts yet. Add some from the admin panel.
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -1128,7 +1180,7 @@ const Home = () => {
         <section className="bg-white py-6 border-b border-neutral-200">
           <div className="max-w-[1200px] mx-auto px-4">
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-3 h-3" style={{ backgroundColor: RED }} />
+              {/* <span className="w-3 h-3" style={{ backgroundColor: RED }} /> */}
               <h2 className="text-[14px] font-extrabold uppercase tracking-wider">Bizhot Metros</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -1141,14 +1193,6 @@ const Home = () => {
                       loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-2 left-2 bg-white/90 px-2 py-0.5">
-                      <span
-                        className="text-[18px] font-extrabold italic tracking-tight"
-                        style={{ color: RED, fontFamily: "Georgia, serif" }}
-                      >
-                        {c.city}
-                      </span>
-                    </div>
                   </div>
                   <h3 className="mt-2 text-[12px] font-bold leading-snug line-clamp-2 group-hover:underline">
                     {c.title}
@@ -1167,7 +1211,7 @@ const Home = () => {
           <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <span className="w-3 h-3" style={{ backgroundColor: RED }} />
+                {/* <span className="w-3 h-3" style={{ backgroundColor: RED }} /> */}
                 <h2 className="text-[14px] font-extrabold uppercase tracking-wider">Business Bulletin</h2>
               </div>
               <div className="grid grid-cols-2 gap-4">

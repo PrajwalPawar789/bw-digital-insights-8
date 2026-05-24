@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { Users, FileText, BookOpen, Megaphone, BarChart3, Briefcase, Loader2, LogOut } from 'lucide-react';
+import { Users, FileText, BookOpen, Megaphone, BarChart3, Briefcase, Linkedin, Loader2, LogOut } from 'lucide-react';
 import ArticleManager from '@/components/admin/ArticleManager';
 import MagazineManager from '@/components/admin/MagazineManager';
 import LeaderManager from '@/components/admin/LeaderManager';
@@ -13,6 +13,7 @@ import PressReleaseManager from '@/components/admin/PressReleaseManager';
 import TestimonialManager from '@/components/admin/TestimonialManager';
 import ClientLogosManager from "@/pages/admin/ClientLogosManager";
 import CaseStudyManager from "@/components/admin/CaseStudyManager";
+import LinkedinPostsManager from "@/components/admin/LinkedinPostsManager";
 import { useAdminAuth } from "@/components/admin/AdminAuthProvider";
 import Seo from "@/components/seo/Seo";
 
@@ -118,7 +119,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="articles" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="articles" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Articles
@@ -146,6 +147,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="case-studies" className="flex items-center gap-2">
               <Briefcase className="h-4 w-4" />
               Case Studies
+            </TabsTrigger>
+            <TabsTrigger value="linkedin-posts" className="flex items-center gap-2">
+              <Linkedin className="h-4 w-4" />
+              LinkedIn
             </TabsTrigger>
             <TabsTrigger value="documentation" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
@@ -183,6 +188,10 @@ const AdminDashboard = () => {
 
           <TabsContent value="case-studies" className="space-y-6">
             <CaseStudyManager />
+          </TabsContent>
+
+          <TabsContent value="linkedin-posts" className="space-y-6">
+            <LinkedinPostsManager />
           </TabsContent>
 
           <TabsContent value="documentation" className="space-y-6">

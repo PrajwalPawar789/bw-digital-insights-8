@@ -25,8 +25,7 @@ export const useCaseStudies = () => {
         display_order: c.display_order,
       }));
     },
-    // Defensive: never undefined
-    initialData: [],
+    placeholderData: [],
     staleTime: 5 * 60 * 1000,
   });
 };

@@ -314,9 +314,9 @@ const Magazine = () => {
             </div>
 
             <div className="w-full lg:w-1/2">
-              <div className="relative overflow-visible rounded-xl">
-                <div ref={scrollerRef} onMouseMove={onScrollerMouseMove} onMouseLeave={onScrollerLeave} onScroll={() => updateScales()} className="scroller-strip flex gap-6 overflow-x-auto py-6 px-6 no-scrollbar">
-                  {(featuredMagazines.length ? featuredMagazines : allMagazines.slice(0,6)).map((m: any, idx:number) => (
+              <div className="relative overflow-hidden rounded-xl">
+                <div ref={scrollerRef} onMouseMove={onScrollerMouseMove} onMouseLeave={onScrollerLeave} onScroll={() => updateScales()} className="scroller-strip flex justify-center gap-6 overflow-x-hidden py-6 px-6 no-scrollbar">
+                  {(featuredMagazines.length ? featuredMagazines : allMagazines).slice(0, 3).map((m: any, idx:number) => (
                     <Link key={m.id} to={`/magazine/${m.slug}`} className="mag-scroller-item relative min-w-[220px] w-[220px] shrink-0 group rounded-lg overflow-visible bg-transparent">
                       <div className="aspect-[3/4] cover-wrapper bg-transparent flex items-center justify-center transform transition-transform duration-500 will-change-transform overflow-visible">
                         <img src={m.cover_image_url || '/placeholder.svg'} alt={m.title} className="w-full h-full object-contain p-2 rounded-lg bg-transparent drop-shadow-lg" />
