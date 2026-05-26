@@ -14,6 +14,7 @@ import Articles from "@/pages/Articles";
 import Search from "@/pages/Search";
 import Leadership from "@/pages/Leadership";
 import LeadershipProfile from "@/pages/LeadershipProfile";
+import LeadershipPreview from "@/pages/LeadershipPreview";
 import PressReleases from "@/pages/PressReleases";
 import PressReleaseDetail from "@/pages/PressReleaseDetail";
 import ArticleDetail from "@/pages/ArticleDetail";
@@ -67,6 +68,7 @@ const App = () => (
                     <Route path="/search" element={<Search />} />
                     <Route path="/industry-news" element={<IndustryNews />} />
                     <Route path="/leadership" element={<Leadership />} />
+                    <Route path="/leadership-preview" element={<LeadershipPreview />} />
                     <Route path="/leadership/:slug" element={<LeadershipProfile />} />
                     <Route path="/press-releases" element={<PressReleases />} />
                     <Route path="/press-releases/:slug" element={<PressReleaseDetail />} />

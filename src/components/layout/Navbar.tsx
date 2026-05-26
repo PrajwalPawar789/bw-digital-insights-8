@@ -100,10 +100,10 @@ const Navbar = () => {
                 )}
               </div>
               <div className="ml-4">
-                <span className="text-3xl font-bold font-premium tracking-tight text-insightBlack group-hover:text-insightRed transition-colors duration-300">
+                <span className="block -ml-1 text-3xl font-bold font-premium tracking-tight text-neutral-900 transition-colors duration-300">
                   {settings.companyName}
                 </span>
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-[0.2em] -mt-1">Business Magazine</div>
+                <div className="text-xs font-semibold text-insightRed uppercase tracking-[0.2em] -mt-1">Business Magazine</div>
               </div>
             </Link>
 

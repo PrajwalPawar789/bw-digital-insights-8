@@ -309,13 +309,13 @@ const Magazine = () => {
               <p className="text-gray-600 mb-6 max-w-2xl">Explore our curated issues — deep-dive interviews, long-form features, and analysis from industry leaders. Subscribe for full access to archives and exclusive content.</p>
               <div className="flex items-center gap-3">
                 <Link to="/contact" className="inline-flex items-center px-4 py-2 rounded-md bg-insightRed text-white font-medium hover:bg-insightRed/90">Subscribe</Link>
-                <Link to="/contact" className="text-sm text-gray-600 hover:text-insightBlack">Request a Corporate License</Link>
+                {/* <Link to="/contact" className="text-sm text-gray-600 hover:text-insightBlack">Request a Corporate License</Link> */}
               </div>
             </div>
 
             <div className="w-full lg:w-1/2">
-              <div className="relative overflow-hidden rounded-xl">
-                <div ref={scrollerRef} onMouseMove={onScrollerMouseMove} onMouseLeave={onScrollerLeave} onScroll={() => updateScales()} className="scroller-strip flex justify-center gap-6 overflow-x-hidden py-6 px-6 no-scrollbar">
+              <div className="relative rounded-xl" style={{ overflowX: 'clip', overflowY: 'visible' }}>
+                <div ref={scrollerRef} onMouseMove={onScrollerMouseMove} onMouseLeave={onScrollerLeave} onScroll={() => updateScales()} className="scroller-strip flex justify-center gap-6 py-16 px-6 no-scrollbar" style={{ overflowX: 'clip', overflowY: 'visible' }}>
                   {(featuredMagazines.length ? featuredMagazines : allMagazines).slice(0, 3).map((m: any, idx:number) => (
                     <Link key={m.id} to={`/magazine/${m.slug}`} className="mag-scroller-item relative min-w-[220px] w-[220px] shrink-0 group rounded-lg overflow-visible bg-transparent">
                       <div className="aspect-[3/4] cover-wrapper bg-transparent flex items-center justify-center transform transition-transform duration-500 will-change-transform overflow-visible">

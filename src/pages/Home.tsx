@@ -298,6 +298,31 @@ const Home = () => {
     if (coverIndex >= coverStoryItems.length) setCoverIndex(0);
   }, [coverStoryItems.length, coverIndex]);
 
+  // ---- LinkedIn carousel: 2 cards at a time, auto-cycle ----
+  const LINKEDIN_PAGE_SIZE = 2;
+  const [linkedinPage, setLinkedinPage] = useState(0);
+  const linkedinPageCount = Math.max(
+    1,
+    Math.ceil(linkedinPosts.length / LINKEDIN_PAGE_SIZE)
+  );
+  useEffect(() => {
+    if (linkedinPosts.length <= LINKEDIN_PAGE_SIZE) return;
+    const t = setInterval(() => {
+      setLinkedinPage((i) => (i + 1) % linkedinPageCount);
+    }, 4500);
+    return () => clearInterval(t);
+  }, [linkedinPosts.length, linkedinPageCount]);
+  useEffect(() => {
+    if (linkedinPage >= linkedinPageCount) setLinkedinPage(0);
+  }, [linkedinPage, linkedinPageCount]);
+  const linkedinPages = useMemo(() => {
+    const pages: typeof linkedinPosts[] = [];
+    for (let i = 0; i < linkedinPosts.length; i += LINKEDIN_PAGE_SIZE) {
+      pages.push(linkedinPosts.slice(i, i + LINKEDIN_PAGE_SIZE));
+    }
+    return pages;
+  }, [linkedinPosts]);
+
   // ---- CXO Articles — articles tagged "cxo" + leaders tagged "cxo_article" ----
   const cxoArticles = useMemo(() => {
     const taggedArticles = articles
@@ -365,7 +390,9 @@ const Home = () => {
       .sort((a, b) => (a.home_order ?? 0) - (b.home_order ?? 0));
     return CITY_REPORTS_DEFAULT.map((c, i) => {
       const t = tagged[i];
-      return t ? { city: c.city, title: t.title, img: t.image_url || c.img } : c;
+      return t
+        ? { city: c.city, title: t.title, img: t.image_url || c.img, slug: t.slug || "" }
+        : { ...c, slug: "" };
     });
   }, [articles]);
 
@@ -374,7 +401,7 @@ const Home = () => {
     const tagged = articles
       .filter((a) => a.home_placement === "business_bulletin")
       .sort((a, b) => (a.home_order ?? 0) - (b.home_order ?? 0));
-    return (tagged.length ? tagged : articles).slice(0, 2);
+    return (tagged.length ? tagged : articles).slice(0, 4);
   }, [articles]);
 
   // ---- SEO ----
@@ -655,7 +682,7 @@ const Home = () => {
                       return (
                         <div key={`${rowIdx}-${colIdx}`} className="flex flex-col">
                           <span className="self-start bg-black text-white px-3 py-1 text-[11px] font-semibold tracking-wide">
-                            {label}
+                            {a.category || label}
                           </span>
                           <Link to={`/article/${a.slug || ""}`} className="group block">
                             <div className="aspect-[16/10] overflow-hidden bg-neutral-100">
@@ -681,9 +708,6 @@ const Home = () => {
               {/* Newsletter card */}
               <div className="col-span-12 md:col-span-3">
                 <div className="bg-black text-white p-6 h-full flex flex-col">
-                  <div className="self-start bg-white text-black px-4 py-1.5 mb-6 text-[12px] font-semibold" style={{ fontFamily: "Georgia, serif" }}>
-                    Subscribe
-                  </div>
                   <h3 className="text-[34px] font-extrabold leading-[1.05] mb-5 text-white" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
                     Join The<br />Newsletter
                   </h3>
@@ -697,12 +721,26 @@ const Home = () => {
                   <p className="text-[13px] text-white/90 mb-5 text-center leading-relaxed flex-1" style={{ fontFamily: "Georgia, serif" }}>
                     Subscribe to our newsletter now<br />and stay informed!
                   </p>
-                  <input
-                    type="email"
-                    placeholder="Email Address"
-                    className="bg-transparent border border-white/70 px-3 py-3 text-[13px] text-white placeholder-white/60 focus:outline-none focus:border-white"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  />
+                  <form onSubmit={handleNewsletterSubscribe} className="flex flex-col gap-3">
+                    <input
+                      type="email"
+                      placeholder="Email Address"
+                      className="bg-transparent border border-white/70 px-3 py-3 text-[13px] text-white placeholder-white/60 focus:outline-none focus:border-white disabled:opacity-60"
+                      style={{ fontFamily: "Georgia, serif" }}
+                      value={newsletterEmail}
+                      onChange={(e) => setNewsletterEmail(e.target.value)}
+                      disabled={newsletterLoading}
+                      required
+                    />
+                    <button
+                      type="submit"
+                      disabled={newsletterLoading}
+                      className="bg-white text-black px-4 py-2.5 text-[12px] font-semibold uppercase tracking-wider hover:bg-neutral-200 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                      style={{ fontFamily: "Georgia, serif" }}
+                    >
+                      {newsletterLoading ? "Subscribing..." : "Subscribe"}
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
@@ -713,12 +751,17 @@ const Home = () => {
         <section className="bg-white py-8 border-b border-neutral-200">
           <div className="max-w-[1280px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Cover Story */}
-            <div>
-              <div className="relative mb-3 flex items-center">
-                <div className="absolute inset-x-0 top-1/2 h-px bg-neutral-300" />
-                <span className="relative bg-white pr-3 text-[13px] font-semibold text-neutral-900">
-                  Cover Story
-                </span>
+            <div className="flex flex-col h-full">
+              <div className="flex items-end mb-4">
+                <div className="bg-black text-white px-4 py-2">
+                  <h2
+                    className="text-[14px] font-bold tracking-wide"
+                    style={{ fontFamily: "Georgia, serif" }}
+                  >
+                    Cover Story
+                  </h2>
+                </div>
+                <div className="flex-1 h-px bg-neutral-300" />
               </div>
 
               {coverStoryItems.length > 0 && (
@@ -806,19 +849,24 @@ const Home = () => {
             </div>
 
             {/* CXO Articles */}
-            <div>
-              <div className="relative mb-3 flex items-center">
-                <div className="absolute inset-x-0 top-1/2 h-px bg-neutral-300" />
-                <span className="relative bg-white pr-3 text-[13px] font-semibold text-neutral-900">
-                  CXO Articles
-                </span>
+            <div className="flex flex-col h-full">
+              <div className="flex items-end mb-4">
+                <div className="bg-black text-white px-4 py-2">
+                  <h2
+                    className="text-[14px] font-bold tracking-wide"
+                    style={{ fontFamily: "Georgia, serif" }}
+                  >
+                    CXO Articles
+                  </h2>
+                </div>
+                <div className="flex-1 h-px bg-neutral-300" />
               </div>
-              <div className="grid grid-cols-2 gap-x-5 gap-y-6">
+              <div className="grid grid-cols-2 grid-rows-2 gap-x-5 gap-y-6 flex-1 min-h-0">
                 {cxoArticles.map((a) => {
                   const href = a.kind === "leader" ? `/leadership/${a.slug}` : `/article/${a.slug}`;
                   return (
-                    <Link key={a.id} to={href} className="group block">
-                      <div className="relative aspect-[3/2] overflow-hidden bg-neutral-900 ring-1 ring-neutral-200">
+                    <Link key={a.id} to={href} className="group flex flex-col min-h-0">
+                      <div className="relative flex-1 min-h-0 overflow-hidden bg-neutral-900 ring-1 ring-neutral-200">
                         <img
                           src={sharpen(a.image_url, 800)}
                           alt={a.title}
@@ -871,10 +919,13 @@ const Home = () => {
           <div className="max-w-[1280px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-8">
             {/* Case Studies */}
             <div>
-              <div className="bg-black text-white inline-block px-3 py-1.5 mb-3">
-                <h2 className="text-[13px] font-semibold tracking-wide" style={{ fontFamily: "Georgia, serif" }}>
-                  Case Studies
-                </h2>
+              <div className="flex items-end mb-4">
+                <div className="bg-black text-white px-4 py-2">
+                  <h2 className="text-[14px] font-bold tracking-wide" style={{ fontFamily: "Georgia, serif" }}>
+                    Case Studies
+                  </h2>
+                </div>
+                <div className="flex-1 h-px bg-neutral-300" />
               </div>
               {/* Cards managed from the admin panel (Case Studies tab) */}
               <div className="space-y-5">
@@ -904,7 +955,7 @@ const Home = () => {
             </div>
 
             {/* Magazine Profiles */}
-            <div>
+            <div className="flex flex-col h-full">
               <div className="flex items-end mb-4">
                 <div className="bg-black text-white px-4 py-2">
                   <h2
@@ -1040,31 +1091,40 @@ const Home = () => {
 
         {/* ============== LEADERSHIP TALKS + LINKEDIN ============== */}
         <section className="bg-white py-6 border-b border-neutral-200">
-          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-6">
+            {/* Leadership Talks */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                {/* <span className="w-3 h-3" style={{ backgroundColor: RED }} /> */}
-                <h2 className="text-[14px] font-extrabold uppercase tracking-wider">Leadership Talks</h2>
+              <div className="flex items-end mb-4">
+                <div className="bg-black text-white px-4 py-2">
+                  <h2 className="text-[14px] font-bold tracking-wide" style={{ fontFamily: "Georgia, serif" }}>
+                    Leadership Talks
+                  </h2>
+                </div>
+                <div className="flex-1 h-px bg-neutral-300" />
               </div>
+
               {talkLeaders[0] && (
-                <div className="border border-neutral-200 p-5 flex gap-5 items-center bg-white relative overflow-hidden">
+                <Link
+                  to={`/leadership/${talkLeaders[0].slug || ""}`}
+                  className="block border border-neutral-200 p-5 flex gap-5 items-center bg-white relative overflow-hidden"
+                >
                   <div
-                    className="absolute left-0 top-0 bottom-0 w-[180px]"
+                    className="absolute left-0 top-0 bottom-0 w-[210px]"
                     style={{ backgroundColor: RED, clipPath: "polygon(0 0, 100% 0, 60% 100%, 0 100%)" }}
                   />
-                  <div className="relative w-32 flex flex-col items-center text-white z-10">
+                  <div className="relative w-32 flex flex-col items-center text-white z-10 shrink-0">
                     <span
-                      className="text-[9px] italic font-extrabold mb-1"
+                      className="text-[10px] italic font-extrabold mb-1 whitespace-nowrap"
                       style={{ fontFamily: "Georgia, serif" }}
                     >
                       {companyName.split(" ")[0]}
                       <span style={{ color: "#fff" }}>.</span>
                       {companyName.split(" ").slice(1).join(" ")}
                     </span>
-                    <p className="text-[10px] font-extrabold uppercase mt-2 text-center leading-tight">
+                    <p className="text-[12px] font-extrabold uppercase mt-2 text-center leading-tight">
                       {talkLeaders[0].name?.split(" ").slice(0, 2).join(" ").toUpperCase()}
                     </p>
-                    <p className="text-[8px] uppercase mt-1 text-center opacity-80 leading-tight">
+                    <p className="text-[8px] uppercase mt-1 text-center opacity-90 leading-tight">
                       {talkLeaders[0].title?.slice(0, 30)}
                     </p>
                   </div>
@@ -1086,14 +1146,39 @@ const Home = () => {
                       {talkLeaders[0].bio || "An exclusive feature on a leader redefining the boundaries of impact and capital."}
                     </p>
                   </div>
-                </div>
+                </Link>
               )}
-              <div className="grid grid-cols-2 gap-x-4 gap-y-3 mt-4">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                 {talkLeaders.slice(1, 5).map((l) => (
-                  <Link key={l.id} to={`/leadership/${l.slug || ""}`} className="flex gap-3 group">
+                  <Link
+                    key={l.id}
+                    to={`/leadership/${l.slug || ""}`}
+                    className="border border-neutral-200 bg-white relative overflow-hidden flex gap-3 items-center p-3 pr-3 group"
+                  >
                     <div
-                      className="w-12 h-12 rounded-full overflow-hidden shrink-0"
-                      style={{ boxShadow: `0 0 0 2px ${RED}` }}
+                      className="absolute left-0 top-0 bottom-0 w-[120px]"
+                      style={{ backgroundColor: RED, clipPath: "polygon(0 0, 100% 0, 55% 100%, 0 100%)" }}
+                    />
+                    <div className="relative w-[78px] flex flex-col items-center text-white z-10 shrink-0">
+                      <span
+                        className="text-[7px] italic font-extrabold whitespace-nowrap"
+                        style={{ fontFamily: "Georgia, serif" }}
+                      >
+                        {companyName.split(" ")[0]}
+                        <span style={{ color: "#fff" }}>.</span>
+                        {companyName.split(" ").slice(1).join(" ")}
+                      </span>
+                      <p className="text-[9px] font-extrabold uppercase mt-1 text-center leading-tight">
+                        {l.name?.split(" ").slice(0, 2).join(" ").toUpperCase()}
+                      </p>
+                      <p className="text-[6px] uppercase mt-0.5 text-center opacity-90 leading-tight px-1">
+                        {l.title?.slice(0, 24)}
+                      </p>
+                    </div>
+                    <div
+                      className="w-16 h-16 rounded-full overflow-hidden shrink-0 z-10"
+                      style={{ boxShadow: `0 0 0 2px ${RED}, 0 0 0 4px white` }}
                     >
                       <img
                         src={l.image_url || ""}
@@ -1101,77 +1186,139 @@ const Home = () => {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-[11px] font-bold line-clamp-2 group-hover:underline leading-tight">
+                    <div className="flex-1 min-w-0 z-10">
+                      <h4 className="text-[11px] font-extrabold leading-snug line-clamp-2 group-hover:underline">
                         {l.name}: {l.title}
                       </h4>
-                      <p className="text-[10px] text-neutral-500 line-clamp-2 mt-0.5">{l.company}</p>
+                      <p className="text-[10px] text-neutral-600 leading-snug line-clamp-2 mt-1">
+                        {l.bio || l.company}
+                      </p>
                     </div>
                   </Link>
                 ))}
               </div>
             </div>
 
-            {/* LinkedIn */}
+            {/* Follow on LinkedIn */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Linkedin className="h-4 w-4" style={{ color: "#0A66C2" }} />
-                <h2
-                  className="text-[14px] font-extrabold uppercase tracking-wider"
-                  style={{ color: "#0A66C2" }}
-                >
-                  Follow on LinkedIn
-                </h2>
+              <div
+                className="w-full text-center py-2 mb-3 text-white text-[14px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-2"
+                style={{ backgroundColor: "#0A66C2" }}
+              >
+                <Linkedin className="h-4 w-4" />
+                Follow on LinkedIn
               </div>
-              <div className="flex flex-col gap-3">
-                {linkedinPosts.map((p) => (
-                  <a
-                    key={p.id}
-                    href={p.href || p.embed_url || "#"}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block bg-white border border-neutral-200 hover:shadow-md transition"
+
+              {linkedinPosts.length === 0 ? (
+                <div className="text-[11px] text-neutral-400 border border-dashed rounded p-4 text-center">
+                  No LinkedIn posts yet. Add some from the admin panel.
+                </div>
+              ) : (
+                <div className="overflow-hidden">
+                  <div
+                    className="flex"
+                    style={{
+                      transform: `translateX(-${linkedinPage * 100}%)`,
+                      transition: "transform 700ms cubic-bezier(0.22, 1, 0.36, 1)",
+                      willChange: "transform",
+                    }}
                   >
-                    <div className="px-2.5 py-1.5 flex items-center gap-2 border-b border-neutral-100">
-                      <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center shrink-0">
-                        <span
-                          className="text-[8px] italic font-extrabold text-white"
-                          style={{ fontFamily: "Georgia, serif" }}
-                        >
-                          E<span style={{ color: RED }}>.</span>W
-                        </span>
+                    {linkedinPages.map((page, pageIdx) => (
+                      <div
+                        key={pageIdx}
+                        className="w-full shrink-0 grid grid-cols-1 sm:grid-cols-2 gap-3"
+                      >
+                        {page.map((p) => {
+                          const postUrl = p.href || p.embed_url || null;
+                          return (
+                            <div
+                              key={p.id}
+                              className="flex flex-col bg-white border border-neutral-200 hover:shadow-md transition overflow-hidden"
+                            >
+                              <div className="px-2.5 py-1.5 flex items-center gap-1.5 border-b border-neutral-100">
+                                <div className="w-7 h-7 flex items-center justify-center shrink-0 bg-white">
+                                  <img
+                                    src="/favicon.svg"
+                                    alt={`${companyName} logo`}
+                                    loading="lazy"
+                                    decoding="async"
+                                    className="w-full h-full object-contain"
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0 flex items-center gap-1">
+                                  <span className="text-[10px] font-bold text-neutral-800 truncate">
+                                    {companyName}
+                                  </span>
+                                  <ShieldCheck
+                                    className="h-3 w-3 shrink-0"
+                                    style={{ color: "#0A66C2" }}
+                                  />
+                                </div>
+                                <Linkedin className="h-3.5 w-3.5 shrink-0" style={{ color: "#0A66C2" }} />
+                              </div>
+
+                              {p.image_url && (
+                                <div className="bg-neutral-100 overflow-hidden">
+                                  <img
+                                    src={p.image_url}
+                                    alt=""
+                                    loading="lazy"
+                                    className="w-full h-[160px] object-cover"
+                                  />
+                                </div>
+                              )}
+
+                              <div className="px-2.5 pt-2 pb-1 flex-1">
+                                <p className="text-[11px] text-neutral-800 leading-snug line-clamp-4">
+                                  {p.body}
+                                </p>
+                                {postUrl ? (
+                                  <a
+                                    href={postUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-[10px] text-neutral-500 hover:underline hover:text-[#0A66C2]"
+                                  >
+                                    ...Read more
+                                  </a>
+                                ) : (
+                                  <span className="text-[10px] text-neutral-400">
+                                    ...Read more
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="px-2.5 py-1.5 flex items-center gap-2 text-neutral-500 border-t border-neutral-100 mt-auto">
+                                <Heart className="h-3.5 w-3.5" style={{ color: RED }} />
+                                <span className="text-[10px]">{p.likes}</span>
+                                <MessageCircle className="h-3.5 w-3.5" />
+                                <Share2 className="h-3.5 w-3.5 ml-auto" />
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                      <span className="text-[10px] font-bold text-neutral-700 truncate">
-                        {companyName}
-                      </span>
-                    </div>
-                    {p.image_url && (
-                      <div className="aspect-[16/9] overflow-hidden bg-neutral-100">
-                        <img
-                          src={p.image_url}
-                          alt=""
-                          loading="lazy"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    )}
-                    <p className="px-2.5 pt-2 text-[11px] text-neutral-700 leading-snug line-clamp-3">
-                      {p.body}
-                    </p>
-                    <div className="px-2.5 py-1.5 flex items-center gap-2 text-neutral-500">
-                      <Heart className="h-3 w-3" />
-                      <span className="text-[10px]">{p.likes}</span>
-                      <MessageCircle className="h-3 w-3" />
-                      <Share2 className="h-3 w-3 ml-auto" />
-                    </div>
-                  </a>
-                ))}
-                {linkedinPosts.length === 0 && (
-                  <div className="text-[11px] text-neutral-400 border border-dashed rounded p-4 text-center">
-                    No LinkedIn posts yet. Add some from the admin panel.
+                    ))}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+              {linkedinPageCount > 1 && (
+                <div className="flex justify-center gap-1.5 mt-3">
+                  {Array.from({ length: linkedinPageCount }).map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setLinkedinPage(i)}
+                      aria-label={`Show LinkedIn page ${i + 1}`}
+                      className="h-1.5 rounded-full transition-all"
+                      style={{
+                        width: i === linkedinPage ? 22 : 6,
+                        backgroundColor: i === linkedinPage ? "#0A66C2" : "#d4d4d4",
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -1179,13 +1326,17 @@ const Home = () => {
         {/* ============== CITY REPORTS ============== */}
         <section className="bg-white py-6 border-b border-neutral-200">
           <div className="max-w-[1200px] mx-auto px-4">
-            <div className="flex items-center gap-2 mb-3">
-              {/* <span className="w-3 h-3" style={{ backgroundColor: RED }} /> */}
-              <h2 className="text-[14px] font-extrabold uppercase tracking-wider">Bizhot Metros</h2>
+            <div className="flex items-end mb-4">
+              <div className="bg-black text-white px-4 py-2">
+                <h2 className="text-[14px] font-bold tracking-wide" style={{ fontFamily: "Georgia, serif" }}>
+                  Bizhot Metros
+                </h2>
+              </div>
+              <div className="flex-1 h-px bg-neutral-300" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {cityReports.map((c, i) => (
-                <Link key={i} to="/articles" className="group block">
+                <Link key={i} to={c.slug ? `/article/${c.slug}` : "/articles"} className="group block">
                   <div className="aspect-[4/3] overflow-hidden bg-neutral-100 relative">
                     <img
                       src={c.img}
@@ -1208,15 +1359,19 @@ const Home = () => {
 
         {/* ============== BUSINESS BULLETIN + PRESS RELEASE ============== */}
         <section className="bg-white py-6 border-b border-neutral-200">
-          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="max-w-[1200px] mx-auto px-4">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                {/* <span className="w-3 h-3" style={{ backgroundColor: RED }} /> */}
-                <h2 className="text-[14px] font-extrabold uppercase tracking-wider">Business Bulletin</h2>
+              <div className="flex items-end mb-4">
+                <div className="bg-black text-white px-4 py-2">
+                  <h2 className="text-[14px] font-bold tracking-wide" style={{ fontFamily: "Georgia, serif" }}>
+                    Business Bulletin
+                  </h2>
+                </div>
+                <div className="flex-1 h-px bg-neutral-300" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {businessBulletin.map((t) => (
-                  <Link key={t.id} to="/articles" className="group block">
+                  <Link key={t.id} to={t.slug ? `/article/${t.slug}` : "/articles"} className="group block">
                     <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
                       <img
                         src={t.image_url || ""}

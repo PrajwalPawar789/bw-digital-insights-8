@@ -46,14 +46,14 @@ const Footer = () => {
                 )}
               </div>
               <div className="ml-4">
-                <span className="text-2xl font-bold font-premium tracking-tight text-white group-hover:text-insightRed transition-colors duration-300">
+                <span className="text-2xl font-bold font-premium tracking-tight text-white">
                   {settings.companyName}
                 </span>
-                <div className="text-xs font-semibold text-gray-400 uppercase tracking-[0.2em] -mt-1">Business Magazine</div>
+                <div className="text-xs font-semibold text-insightRed uppercase tracking-[0.2em] -mt-1">Business Magazine</div>
               </div>
             </Link>
             <p className="text-gray-400 leading-relaxed mt-4">
-              CIO Vision is a business magazine — a platform for business leaders to share their stories, strategies, and insights. We aim to be the source of inspiration for executives across the globe.
+              The CIO Vision is a business magazine a platform for business leaders to share their stories, strategies, and insights. We aim to be the source of inspiration for executives across the globe.
             </p>
             <div className="flex gap-2 mt-5">
               {socialLinks.map(({ Icon, href, label, external }) => (
@@ -78,7 +78,7 @@ const Footer = () => {
               <li><Link to="/magazine" className="text-gray-400 hover:text-white transition-colors">Magazines</Link></li>
               <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
               <li><Link to="/press-releases" className="text-gray-400 hover:text-white transition-colors">Press Release</Link></li>
-              <li><Link to="/become-an-author" className="text-gray-400 hover:text-white transition-colors">Become an Author</Link></li>
+              {/* <li><Link to="/become-an-author" className="text-gray-400 hover:text-white transition-colors">Become an Author</Link></li> */}
               <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
               <li><Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link></li>
             </ul>

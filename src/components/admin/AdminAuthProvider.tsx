@@ -98,13 +98,18 @@ export const AdminAuthProvider = ({ children }: { children: ReactNode }) => {
     } = supabase.auth.onAuthStateChange((event, nextSession) => {
       if (!isMounted) return;
 
-      setIsLoading(true);
+      // Token refreshes (including the ones Supabase fires when the tab regains
+      // focus) don't change admin status — just keep the session reference fresh
+      // so we don't unmount the admin tree mid-edit.
+      if (event === "TOKEN_REFRESHED" || event === "USER_UPDATED") {
+        setSession(nextSession);
+        return;
+      }
 
-      void evaluateAdminAccess(nextSession, event !== "SIGNED_OUT").finally(() => {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      });
+      // For SIGNED_IN / SIGNED_OUT, update state in the background without
+      // flipping isLoading — that would unmount RequireAdminAuth's children
+      // (open dialogs, form state) on every visibility change.
+      void evaluateAdminAccess(nextSession, event !== "SIGNED_OUT");
     });
 
     return () => {

@@ -93,9 +93,15 @@ const About = () => {
         <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">About {companyName}</h1>
-            <p className="max-w-3xl mx-auto text-lg text-gray-200 mb-8">
-              Transforming complex business data into actionable intelligence for forward-thinking leaders.
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">About The CIO Vision</h1>
+            <p className="max-w-3xl mx-auto text-lg text-gray-200 mb-4">
+              The CIO Vision (theciovision.com) is a global business and technology publication delivering
+              executive insights, leadership interviews, digital transformation trends, and enterprise
+              innovation coverage for modern business leaders.
+            </p>
+            <p className="max-w-3xl mx-auto text-base text-gray-300 mb-8">
+              Through our magazine, news desk, and CXO interviews, The CIO Vision helps CIOs, CTOs, and
+              senior executives navigate complexity, foster innovation, and drive sustainable growth.
             </p>
             <Button className="bg-insightRed hover:bg-red-700 text-white">
               <Link to="/contact">Connect With Us</Link>
@@ -140,9 +146,9 @@ const About = () => {
       <section id="values" className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-insight The CIO Vision Black mb-4">Our Core Values</h2>
+            <h2 className="text-3xl font-bold text-insightBlack mb-4">Our Core Values</h2>
             <p className="max-w-3xl mx-auto text-gray-600">
-              These principles guide everything we do at .
+              These principles guide everything we do at The CIO Vision.
             </p>
           </div>
           
@@ -219,7 +225,7 @@ const About = () => {
             <Button className="bg-insightRed hover:bg-red-700 text-white">
               <Link to="/contact">Contact Us</Link>
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white hover:text-insightBlack">
+            <Button variant="outline" className="bg-transparent border-white text-white hover:bg-transparent hover:text-white">
               <Link to="/magazine">Explore Our Magazine</Link>
             </Button>
           </div>
