@@ -88,8 +88,8 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-3">
             <p className="text-white font-bold mb-4">Contact Us</p>
             <p className="text-gray-400">Phone:</p>
-            <a href="tel:+14152261149" className="flex items-center gap-2 mb-3 text-gray-200 hover:text-white transition-colors">
-              <Phone className="h-3.5 w-3.5" />+1 (415) 226-1149
+            <a href="tel:+14843312864" className="flex items-center gap-2 mb-3 text-gray-200 hover:text-white transition-colors">
+              <Phone className="h-3.5 w-3.5" />+1 (484) 331-2864
             </a>
             <p className="text-gray-400">Email:</p>
             <a href="mailto:info@theciovision.com" className="flex items-center gap-2 mb-3 text-gray-200 hover:text-white transition-colors">

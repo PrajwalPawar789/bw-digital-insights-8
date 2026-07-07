@@ -14,7 +14,7 @@
     },
     {
       "src": "/supabase/(.*)",
-      "dest": "https://elrnafeyidalkswgdqvx.supabase.co/$1"
+      "dest": "https://atosvqrnlmmlljygfvdf.supabase.co/$1"
     },
     { "handle": "filesystem" },
     { "src": "/.*", "dest": "/index.html" }

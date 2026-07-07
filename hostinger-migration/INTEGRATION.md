@@ -8,7 +8,7 @@ unaffected — the contents of this folder are dormant.
 
 ## Pre-flight checklist (before touching anything)
 
-- [ ] You have access to the Supabase Dashboard for project `elrnafeyidalkswgdqvx` (to copy the JWT secret)
+- [ ] You have access to the Supabase Dashboard for the active Supabase project (to copy the JWT secret)
 - [ ] You have **GitHub repo Settings → Secrets and variables → Actions** write access
 - [ ] You can run Node 18+ locally and have this repo checked out
 - [ ] Existing FTP secrets (`FTP_HOST`, `FTP_USERNAME`, `FTP_PASSWORD`, `FTP_REMOTE_DIR`) are already configured — the deploy workflow already uses them

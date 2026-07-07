@@ -3,8 +3,9 @@
 // We hit the PostgREST endpoint directly with fetch so we don't need the
 // @supabase/supabase-js SDK as a dependency.
 
-const SUPABASE_URL = "https://elrnafeyidalkswgdqvx.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_BrARkeKvbHQIhIylLCFMgA_Z9k-ckDF";
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
+const SUPABASE_ANON_KEY =
+  import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
 
 export type RemoteMagazine = {
   id: string;
@@ -80,14 +81,9 @@ function readTimeFromText(t: string | null): string {
   return `${minutes} min`;
 }
 
-// Storage host stored in the DB (xafgvakclkwjivgfzljq.supabase.co) is dead.
-// theciovision.com proxies the same /storage/v1/... paths and works.
 function rewriteImageUrl(url: string | null | undefined): string {
   if (!url) return FALLBACK_COVER;
-  return url.replace(
-    /^https?:\/\/[^/]+\.supabase\.co\/storage\/v1\//i,
-    "https://theciovision.com/supabase-proxy.php/storage/v1/",
-  );
+  return url;
 }
 
 export function mapMagazine(m: RemoteMagazine, index: number): Issue {
@@ -112,6 +108,10 @@ export function mapMagazine(m: RemoteMagazine, index: number): Issue {
 }
 
 export async function fetchMagazines(): Promise<Issue[]> {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    throw new Error("Supabase environment variables are missing");
+  }
+
   const url = `${SUPABASE_URL}/rest/v1/magazines?select=*&order=publish_date.desc.nullslast`;
   const res = await fetch(url, {
     headers: {

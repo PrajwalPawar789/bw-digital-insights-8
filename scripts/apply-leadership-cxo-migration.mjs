@@ -15,6 +15,8 @@ const env = Object.fromEntries(
 
 const password = env.VITE_DB_PASSWORD;
 if (!password) throw new Error("VITE_DB_PASSWORD missing from .env");
+const projectId = env.VITE_SUPABASE_PROJECT_ID;
+if (!projectId) throw new Error("VITE_SUPABASE_PROJECT_ID missing from .env");
 
 const sql = readFileSync(
   resolve(process.cwd(), "supabase/migrations/20260525120000_leadership_home_sections_add_cxo.sql"),
@@ -22,7 +24,7 @@ const sql = readFileSync(
 );
 
 const client = new pg.Client({
-  host: "db.elrnafeyidalkswgdqvx.supabase.co",
+  host: `db.${projectId}.supabase.co`,
   port: 5432,
   user: "postgres",
   database: "postgres",

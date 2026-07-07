@@ -20,6 +20,18 @@ if (!dbPassword) {
   process.exit(1);
 }
 
+const projectId = envText
+  .split(/\r?\n/)
+  .map((l) => l.trim())
+  .filter((l) => l && !l.startsWith("#"))
+  .map((l) => l.match(/^VITE_SUPABASE_PROJECT_ID\s*=\s*"?([^"\n]+)"?$/))
+  .find(Boolean)?.[1];
+
+if (!projectId) {
+  console.error("VITE_SUPABASE_PROJECT_ID not found in .env");
+  process.exit(1);
+}
+
 const migrationSql = readFileSync(
   resolve(repoRoot, "supabase/migrations/20260523120000_repair_localhost_storage_urls.sql"),
   "utf8",
@@ -41,7 +53,7 @@ const targets = [
 ];
 
 const client = new pg.Client({
-  host: "db.elrnafeyidalkswgdqvx.supabase.co",
+  host: `db.${projectId}.supabase.co`,
   port: 5432,
   user: "postgres",
   database: "postgres",
@@ -105,9 +117,9 @@ try {
     for (const col of cols) {
       await client.query(
         `update public.${table}
-            set ${col} = regexp_replace(${col}, $1, 'https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/')
-          where ${col} ~ $1`,
-        [localhostRe],
+            set ${col} = regexp_replace(${col}, $1, $2)
+            where ${col} ~ $1`,
+          [localhostRe, `https://${projectId}.supabase.co/storage/v1/object/public/`],
       );
     }
   }

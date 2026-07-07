@@ -6,7 +6,7 @@
 
 do $$
 declare
-  canonical text := 'https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/';
+  canonical text := 'https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/';
   localhost_re text := '^https?://(localhost|127\.0\.0\.1|\[?::1\]?)(:\d+)?/supabase/storage/v1/object/public/';
 begin
   update public.magazines

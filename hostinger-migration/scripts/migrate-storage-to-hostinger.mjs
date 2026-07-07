@@ -17,7 +17,7 @@
 //     the buckets from the Supabase dashboard yourself.
 //
 // Required environment variables (loaded from .env at repo root):
-//   VITE_SUPABASE_URL            e.g. https://elrnafeyidalkswgdqvx.supabase.co
+//   VITE_SUPABASE_URL            e.g. https://<project-ref>.supabase.co
 //   VITE_SERVICE_ROLE_KEY        service role JWT (NOT the anon key)
 //   HOSTINGER_UPLOAD_URL         e.g. https://theciovision.com/upload.php
 //   HOSTINGER_MIGRATION_TOKEN    must match upload-config.php migration_token

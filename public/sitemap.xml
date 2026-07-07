@@ -2,27 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://theciovision.com/</loc>
-    <lastmod>2026-03-12T00:32:45.704Z</lastmod>
+    <lastmod>2026-07-05T22:27:42.526Z</lastmod>
   </url>
   <url>
     <loc>https://theciovision.com/articles</loc>
-    <lastmod>2026-03-12T00:32:45.704Z</lastmod>
+    <lastmod>2026-07-05T22:27:42.526Z</lastmod>
   </url>
   <url>
     <loc>https://theciovision.com/industry-news</loc>
-    <lastmod>2026-03-12T00:32:45.704Z</lastmod>
+    <lastmod>2026-07-05T22:27:42.526Z</lastmod>
   </url>
   <url>
     <loc>https://theciovision.com/magazine</loc>
-    <lastmod>2026-01-26T03:47:52.605Z</lastmod>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
   </url>
   <url>
     <loc>https://theciovision.com/leadership</loc>
-    <lastmod>2026-03-11T08:03:31.653Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
   </url>
   <url>
     <loc>https://theciovision.com/press-releases</loc>
-    <lastmod>2026-01-24T13:57:55.890Z</lastmod>
+    <lastmod>2026-06-24T00:53:12.561Z</lastmod>
   </url>
   <url>
     <loc>https://theciovision.com/about</loc>
@@ -38,360 +38,597 @@
   </url>
   <url>
     <loc>https://theciovision.com/category/news</loc>
-    <lastmod>2026-03-12T00:32:45.704Z</lastmod>
+    <lastmod>2026-07-05T22:27:42.526Z</lastmod>
   </url>
   <url>
-    <loc>https://theciovision.com/category/leadership</loc>
-    <lastmod>2026-02-13T19:03:28.501Z</lastmod>
-  </url>
-  <url>
-    <loc>https://theciovision.com/category/editors-picks</loc>
-    <lastmod>2026-02-02T23:07:05.070Z</lastmod>
+    <loc>https://theciovision.com/category/healthcare</loc>
+    <lastmod>2026-07-05T22:25:11.040Z</lastmod>
   </url>
   <url>
     <loc>https://theciovision.com/category/top-stories</loc>
-    <lastmod>2026-01-26T01:33:24.877Z</lastmod>
+    <lastmod>2026-07-05T22:26:03.896Z</lastmod>
+  </url>
+  <url>
+    <loc>https://theciovision.com/category/business</loc>
+    <lastmod>2026-07-05T22:15:08.966Z</lastmod>
+  </url>
+  <url>
+    <loc>https://theciovision.com/category/top-trending-news</loc>
+    <lastmod>2026-07-05T22:27:28.677Z</lastmod>
+  </url>
+  <url>
+    <loc>https://theciovision.com/category/editors-picks</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+  </url>
+  <url>
+    <loc>https://theciovision.com/category/energy</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+  </url>
+  <url>
+    <loc>https://theciovision.com/category/technology</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+  </url>
+  <url>
+    <loc>https://theciovision.com/category/leadership</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/shelter-in-place-order-at-azteca-over-severe-weather-before-mexico-england</loc>
+    <lastmod>2026-07-05T22:24:25.354Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_1_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/reform-denies-rules-broken-by-farage-after-benefits-from-ally-not-declared</loc>
+    <lastmod>2026-07-05T22:24:48.426Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_3_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/benedicts-law-to-overhaul-school-allergy-training</loc>
+    <lastmod>2026-07-05T22:25:11.040Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_8_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/catherine-shares-photos-reuniting-with-family-after-three-peaks-challenge</loc>
+    <lastmod>2026-07-05T22:25:40.526Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_5_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/trump-thanks-fifa-after-usa-striker-baloguns-ban-suspended</loc>
+    <lastmod>2026-07-05T22:26:03.896Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_6_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/young-woman-dies-in-skydiving-incident-near-airfield</loc>
+    <lastmod>2026-07-05T22:26:57.210Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_7_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/emotion-and-politics-merge-in-tehran-at-funeral-of-former-supreme-leader</loc>
+    <lastmod>2026-07-05T22:27:09.556Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_4_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/easyjet-reaches-agreement-in-principle-over-potential-takeover</loc>
+    <lastmod>2026-07-05T22:15:08.966Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_2_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/guests-react-to-taylor-swift-and-travis-kelces-wedding-in-new-york</loc>
+    <lastmod>2026-07-05T22:27:28.677Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_10_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/australia-probes-mystery-space-balls-that-washed-up-on-beach</loc>
+    <lastmod>2026-07-05T22:27:42.526Z</lastmod>
+    <image:image>
+      <image:loc>/images/news/news_image_9_big.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/breaking-barriers-building-futures-how-dalbin-osorio-is-redefining-literacy-through-purpose-driven-leadership</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1780917321257-1xq4cwgmpya.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/dr-sujit-paul-redefining-healthcare-access-by-turning-affordability-into-a-national-mission</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1780915976605-h9y6mnuuiba.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/shirish-nimgaonkar-architecting-the-future-of-autonomous-enterprises</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1780916213649-fg9shmanlso.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/laurence-loxam-redefining-leadership-through-clarity-courage-and-conscious-thinking</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1780838071997-ukia61lurpa.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/shahrzad-atai-bridging-jurisdictions-cultures-and-generations-in-global-law</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1780836706444-f8acth7mzj9.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/rising-energy-prices-and-data-centers-are-at-center-of-a-utility-deal</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1779753679574-ryast935rpt.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/meta-lays-off-8000-employees-as-ai-casualties-mount</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1779753515143-2iegg7pwowt.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/openai-prepares-to-file-to-go-public-in-coming-weeks</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1779753356228-61n0o1z3ubm.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/meta-settles-a-school-districts-social-media-addiction-lawsuit</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1779753178295-izzauhweynj.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/sundar-pichai-understands-why-people-are-anxious-about-ai</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1779753049099-pzu2v7aylr9.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/inside-the-british-lab-hunting-for-dangers-lurking-in-ai</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1779752501223-hpj8kd4irdk.jpg</image:loc>
+    </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/iranian-military-shows-it-knows-how-to-adapt-us-officials-say</loc>
-    <lastmod>2026-03-12T00:32:45.704Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1773216365173-32jp1g3z1oq.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1773216365173-32jp1g3z1oq.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/goldmans-top-lawyer-departs-amid-revelations-about-her-ties-to-epstein</loc>
-    <lastmod>2026-02-14T14:57:09.585Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1771081014934-v06uh6ixkh.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1771081014934-v06uh6ixkh.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/homeland-security-wants-social-media-sites-to-expose-anti-ice-accounts</loc>
-    <lastmod>2026-02-14T14:54:31.120Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1771080857689-axkzjnsusg.webp</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://theciovision.com/article/inside-the-debacle-that-led-to-the-closure-of-el-pasos-airspace</loc>
-    <lastmod>2026-02-14T14:50:34.190Z</lastmod>
-    <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1771080628816-w4dvjpcq3d.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1771080857689-axkzjnsusg.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/navalny-was-poisoned-with-frog-toxin-european-governments-say</loc>
-    <lastmod>2026-02-14T14:48:21.822Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1771080041392-4zhd6b3ejnu.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1771080041392-4zhd6b3ejnu.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/inside-the-debacle-that-led-to-the-closure-of-el-pasos-airspace</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1771080628816-w4dvjpcq3d.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/empowering-cx-leaders-for-a-human-centric-future</loc>
-    <lastmod>2026-02-13T19:03:28.501Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1771009428078-3mtbv44z1rm.jpeg</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://theciovision.com/article/madeleine-jarl-leading-with-heart-creating-with-purpose</loc>
-    <lastmod>2026-02-02T23:07:05.070Z</lastmod>
-    <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769396793519-cb0f3udrzeg.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://theciovision.com/article/zelenskyy-flags-european-inaction-on-ukraine-seeks-more-us-backing-after-meeting-trump</loc>
-    <lastmod>2026-01-26T01:33:24.877Z</lastmod>
-    <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769391199461-puz5m63bjh.webp</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://theciovision.com/article/modi-lula-stress-global-south-ties-in-phone-call</loc>
-    <lastmod>2026-01-26T01:32:09.227Z</lastmod>
-    <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769391123879-vc8ks91evn.webp</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://theciovision.com/article/wef-ends-in-davos-with-global-warnings-india-as-bright-spot</loc>
-    <lastmod>2026-01-26T01:30:31.427Z</lastmod>
-    <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769390815587-60a9l73266b.webp</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://theciovision.com/article/trump-warns-iran-as-reports-emerge-of-rising-death-toll-from-protest-crackdown</loc>
-    <lastmod>2026-01-26T01:30:44.413Z</lastmod>
-    <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769390881254-ch8andnhhab.webp</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://theciovision.com/article/french-government-survives-no-confidence-votes-to-push-through-2026-budget</loc>
-    <lastmod>2026-01-26T01:30:21.313Z</lastmod>
-    <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769391013003-k255z3mpoms.webp</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://theciovision.com/article/russian-air-attacks-hit-ukraines-power-grid-leaving-12-million-without-electricity</loc>
-    <lastmod>2026-01-26T01:24:53.973Z</lastmod>
-    <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769390680693-jcis8314jtg.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1771009428078-3mtbv44z1rm.jpeg</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/danish-pm-says-trump-comments-on-nato-role-in-afghanistan-unacceptable</loc>
-    <lastmod>2026-01-26T01:22:04.874Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769390518704-kkerytj7das.avif</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769390518704-kkerytj7das.avif</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/zelenskyy-flags-european-inaction-on-ukraine-seeks-more-us-backing-after-meeting-trump</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769391199461-puz5m63bjh.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/wef-ends-in-davos-with-global-warnings-india-as-bright-spot</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769390815587-60a9l73266b.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/us-sees-path-to-lift-india-tariffs-as-russian-oil-buys-drop</loc>
-    <lastmod>2026-01-26T01:17:42.521Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769390187760-ffx8umlz1b5.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769390187760-ffx8umlz1b5.webp</image:loc>
     </image:image>
   </url>
   <url>
-    <loc>https://theciovision.com/article/crafting-the-future-of-home-samuel-collett-and-the-house-of-willow-alexander-revolution</loc>
-    <lastmod>2026-01-26T01:45:32.602Z</lastmod>
+    <loc>https://theciovision.com/article/russian-air-attacks-hit-ukraines-power-grid-leaving-12-million-without-electricity</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769289930824-3a3h14wgz69.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769390680693-jcis8314jtg.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/modi-lula-stress-global-south-ties-in-phone-call</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769391123879-vc8ks91evn.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/french-government-survives-no-confidence-votes-to-push-through-2026-budget</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769391013003-k255z3mpoms.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/madeleine-jarl-leading-with-heart-creating-with-purpose</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769396793519-cb0f3udrzeg.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/trump-warns-iran-as-reports-emerge-of-rising-death-toll-from-protest-crackdown</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769390881254-ch8andnhhab.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/leading-with-soul-dr-ignacio-bonasas-vision-to-transform-latin-america-from-survivalto-leadership</loc>
-    <lastmod>2026-01-24T21:45:26.995Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1769290729325-tl8gj7g2skc.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769290729325-tl8gj7g2skc.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/crafting-the-future-of-home-samuel-collett-and-the-house-of-willow-alexander-revolution</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1769289930824-3a3h14wgz69.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/walking-between-worlds-jessica-huttons-mission-to-redefine-systems-through-healing-leadership</loc>
-    <lastmod>2026-02-02T23:00:32.583Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1768777476010-arp9z19f6z.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://theciovision.com/article/rebecca-murray-the-relentless-advocate-reshaping-the-legal-landscape</loc>
-    <lastmod>2026-01-24T14:15:03.423Z</lastmod>
-    <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1768773472970-0qlm81hg57xk.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1768777476010-arp9z19f6z.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/how-a-boutique-coaching-brand-is-redefining-career-transitions-through-strategy-storytelling-and-purpose</loc>
-    <lastmod>2026-01-24T14:15:14.692Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1768726259475-lg5kogfqv4.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1768726259475-lg5kogfqv4.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/article/rebecca-murray-the-relentless-advocate-reshaping-the-legal-landscape</loc>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1768773472970-0qlm81hg57xk.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/after-venezuela-trump-offers-hints-about-what-could-be-next</loc>
-    <lastmod>2026-01-24T14:14:10.874Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1767615898746-mkuvvev0hc.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1767615898746-mkuvvev0hc.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/chinas-byd-surpasses-tesla-as-world-leader-in-electric-car-sales</loc>
-    <lastmod>2026-01-24T14:13:47.693Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1767620905018-s75r6vrx2m.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1767620905018-s75r6vrx2m.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/saks-ceo-steps-down-as-company-struggles-to-pay-down-debt</loc>
-    <lastmod>2026-01-24T14:14:25.273Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1767621072463-fqxpxq37yda.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1767621072463-fqxpxq37yda.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/dimons-770-million-windfall-shows-how-banking-is-great-again</loc>
-    <lastmod>2026-01-24T14:13:56.088Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1767616870694-05bgenarqmma.webp</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1767616870694-05bgenarqmma.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/kati-hvidtfeldt-leading-the-charge-on-practical-erp-strategy</loc>
-    <lastmod>2026-01-24T14:15:32.518Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1764664985553-6tnpzu0kfjq.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1764664985553-6tnpzu0kfjq.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/fenix-engineering-redefining-industrial-maintenance-with-innovation-and-integrity</loc>
-    <lastmod>2026-01-24T14:21:47.100Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/articles/1751320226777-0kt1k3ol25o9.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/articles/1751320226777-0kt1k3ol25o9.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/article/cybersecurity-challenges-digital-age</loc>
-    <lastmod>2026-01-24T14:22:02.243Z</lastmod>
+    <lastmod>2026-06-24T00:53:03.946Z</lastmod>
     <image:image>
       <image:loc>https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800</image:loc>
     </image:image>
   </url>
   <url>
-    <loc>https://theciovision.com/magazine/spains-most-inspirational-business-leaders-to-follow-in-2025</loc>
-    <lastmod>2026-01-24T21:42:54.615Z</lastmod>
+    <loc>https://theciovision.com/magazine/the-most-influential-entrepreneur-shaping-the-future-of-autonomous-ai-platforms-in-2026</loc>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/magazines/1769290897443-kvf49tw4wzd.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1780916322335-w0ebqfg6q5d.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/magazine/the-most-visionary-leaders-transforming-the-future-in-2026</loc>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1780914295987-e3odpfnblt.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/magazine/the-most-inspiring-leader-in-the-educational-sector-to-follow-in-2026</loc>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1780915414256-s7uswl3wdgm.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/magazine/the-most-influential-legal-minds-to-follow-in-2026</loc>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1780836573455-kxvx6gltkmk.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/magazine/the-most-innovative-business-leaders-to-watch-in-2026</loc>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1780916849094-weyk3ppgyb.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/magazine/spains-most-inspirational-business-leaders-to-follow-in-2025</loc>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1769290897443-kvf49tw4wzd.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/magazine/the-most-influential-career-coach-inspiring-women-leaders-in-2025</loc>
-    <lastmod>2026-01-18T21:09:22.898Z</lastmod>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/magazines/1768769989701-nuepswf0spd.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1768769989701-nuepswf0spd.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/magazine/most-trusted-environmental-steward-and-industry-trailblazer-in-2025</loc>
-    <lastmod>2026-01-24T21:36:27.482Z</lastmod>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/magazines/1769290139882-rgj00tdheco.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1769290139882-rgj00tdheco.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/magazine/the-most-trailblazing-women-leaders-to-watch-out-in-2025</loc>
-    <lastmod>2026-01-19T00:10:22.230Z</lastmod>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/magazines/1768781416355-dnjlbwray2u.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1768781416355-dnjlbwray2u.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/magazine/the-most-innovative-leaders-to-watch-in-2025</loc>
-    <lastmod>2026-01-18T21:24:46.487Z</lastmod>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/magazines/1768771476719-vq5dz3q6tc.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1768771476719-vq5dz3q6tc.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/magazine/the-most-pioneering-business-leader-to-watch-in-2025</loc>
-    <lastmod>2026-01-26T03:47:52.605Z</lastmod>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/magazines/1769399206520-4wediaiizcv.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1769399206520-4wediaiizcv.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/magazine/the-most-powerful-legal-minds-redefining-justice-in-2025</loc>
-    <lastmod>2026-01-18T22:29:53.106Z</lastmod>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/magazines/1768775292333-llaeqtizx1.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1768775292333-llaeqtizx1.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/magazine/the-startup-setting-a-new-standard-in-industrial-engineering-automation-2025</loc>
-    <lastmod>2026-01-26T03:24:18.711Z</lastmod>
+    <lastmod>2026-06-24T00:53:11.351Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/magazines/1768772498779-bcyqg6u0pnh.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/magazines/1768772498779-bcyqg6u0pnh.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/dino-portelli</loc>
-    <lastmod>2026-03-11T08:02:27.008Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1773216142728-w232bbhk6ga.jpeg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1773216142728-w232bbhk6ga.jpeg</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/dr-lisa-riegel</loc>
-    <lastmod>2026-03-11T08:01:34.057Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1773216076052-hf22r18459w.jpeg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1773216076052-hf22r18459w.jpeg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/leadership/gonzalo-esquitino</loc>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1780812470925-to7bw55k1es.jpg</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/empowering-cx-leaders-for-a-human-centric-future</loc>
-    <lastmod>2026-02-15T11:19:18.650Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1771083325204-e2h1a7tcjp6.jpeg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1771083325204-e2h1a7tcjp6.jpeg</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/iwona-hojol</loc>
-    <lastmod>2026-03-11T07:26:22.411Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1773213929923-tdb04n391pi.jpeg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1773213929923-tdb04n391pi.jpeg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/leadership/james-thompson</loc>
+    <lastmod>2025-05-28T01:09:30.206Z</lastmod>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/karen-gray</loc>
-    <lastmod>2026-02-02T22:28:11.389Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1770071252086-d39znu1zrwq.jpg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1770071252086-d39znu1zrwq.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/leadership/laurence-loxam</loc>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
+    <image:image>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1780914966725-tum7okeasco.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/leadership/maria-rodriguez</loc>
+    <lastmod>2025-05-28T01:09:30.206Z</lastmod>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/mark-eisenstadt</loc>
-    <lastmod>2026-03-11T08:03:31.653Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1773216207003-jif1iu6y2te.jpeg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1773216207003-jif1iu6y2te.jpeg</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/michael-bell</loc>
-    <lastmod>2026-03-11T07:23:44.904Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1773213753797-dpt4y5cvcz.jpg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1773213753797-dpt4y5cvcz.jpg</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/richard-jacik</loc>
-    <lastmod>2026-02-02T22:42:09.581Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1770072123678-gsgafh16a2.jpg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1770072123678-gsgafh16a2.jpg</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://theciovision.com/leadership/robert-chen</loc>
+    <lastmod>2025-05-28T01:09:30.206Z</lastmod>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/silvia-borzini</loc>
-    <lastmod>2026-02-02T22:21:40.834Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1770070872400-zb2v70wdt1.jpg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1770070872400-zb2v70wdt1.jpg</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/leadership/stephen-sunstrom</loc>
-    <lastmod>2026-02-02T22:25:11.513Z</lastmod>
+    <lastmod>2026-06-24T00:53:08.607Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/leadership/1770071099626-8tfo7fw9q8d.jpg</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/leadership/1770071099626-8tfo7fw9q8d.jpg</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/press-releases/techcorp-announces-150m-series-c-funding</loc>
-    <lastmod>2026-01-24T13:57:55.890Z</lastmod>
+    <lastmod>2026-06-24T00:53:12.561Z</lastmod>
     <image:image>
-      <image:loc>https://elrnafeyidalkswgdqvx.supabase.co/storage/v1/object/public/website-images/press-releases/1769263069721-kpccavkqs1m.png</image:loc>
+      <image:loc>https://atosvqrnlmmlljygfvdf.supabase.co/storage/v1/object/public/website-images/press-releases/1769263069721-kpccavkqs1m.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/press-releases/global-manufacturing-leader-acquires-robotics-startup</loc>
-    <lastmod>2025-06-05T02:04:06.651Z</lastmod>
+    <lastmod>2026-06-24T00:53:12.561Z</lastmod>
   </url>
   <url>
     <loc>https://theciovision.com/press-releases/renewable-energy-firm-reports-300-percent-growth-q4</loc>
-    <lastmod>2025-06-05T02:04:06.651Z</lastmod>
+    <lastmod>2026-06-24T00:53:12.561Z</lastmod>
   </url>
   <url>
     <loc>https://theciovision.com/press-releases/global-cybersecurity-initiative-50m-investment</loc>
-    <lastmod>2025-05-28T01:09:30.206Z</lastmod>
+    <lastmod>2026-06-24T00:53:12.561Z</lastmod>
     <image:image>
       <image:loc>https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://theciovision.com/press-releases/techcorp-revolutionary-ai-platform-launch</loc>
-    <lastmod>2025-06-15T16:34:47.783Z</lastmod>
+    <lastmod>2026-06-24T00:53:12.561Z</lastmod>
     <image:image>
       <image:loc>https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800</image:loc>
     </image:image>

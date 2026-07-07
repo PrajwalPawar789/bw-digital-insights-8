@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // Fixed upstream target; avoids open-proxy behavior.
-$upstreamBase = 'https://elrnafeyidalkswgdqvx.supabase.co';
+$upstreamBase = 'https://atosvqrnlmmlljygfvdf.supabase.co';
 
 if (!function_exists('curl_init')) {
     http_response_code(500);
