@@ -9,6 +9,10 @@ import {
   ArrowUpRight,
   Quote,
   Sparkles,
+  Search,
+  Users,
+  Building2,
+  BriefcaseBusiness,
 } from "lucide-react";
 
 /**
@@ -90,8 +94,8 @@ function facetOf(l: any): string {
 
 // Section header — black pill + hairline, identical to the Home idiom.
 const SectionLabel = ({ label, kicker }: { label: string; kicker?: string }) => (
-  <div className="flex items-end mb-5">
-    <div className="bg-black text-white px-4 py-2">
+  <div className="flex items-center gap-4 mb-6">
+    <div className="bg-black text-white px-4 py-2 shadow-[8px_8px_0_0_rgba(225,29,42,0.14)]">
       <h2 className="text-[14px] font-bold tracking-wide" style={{ fontFamily: GEORGIA }}>
         {label}
       </h2>
@@ -101,7 +105,7 @@ const SectionLabel = ({ label, kicker }: { label: string; kicker?: string }) => 
         {kicker}
       </span>
     )}
-    <div className="flex-1 h-px bg-neutral-300" />
+    <div className="flex-1 h-px bg-gradient-to-r from-neutral-300 to-transparent" />
   </div>
 );
 
@@ -191,6 +195,7 @@ const LeadershipPreview = () => {
   }, [all]);
 
   const [activeIndustry, setActiveIndustry] = useState<string>("All");
+  const [query, setQuery] = useState("");
 
   const indexIds = useMemo(() => new Set(powerIndex.map((l: any) => l.id)), [powerIndex]);
   // Roster = everyone not on the cover and not in the Power Index.
@@ -200,9 +205,17 @@ const LeadershipPreview = () => {
   );
 
   const filteredRoster = useMemo(() => {
-    if (activeIndustry === "All") return rosterPool;
-    return rosterPool.filter((l: any) => facetOf(l) === activeIndustry);
-  }, [rosterPool, activeIndustry]);
+    const normalizedQuery = query.trim().toLowerCase();
+    return rosterPool.filter((l: any) => {
+      if (activeIndustry !== "All" && facetOf(l) !== activeIndustry) return false;
+      if (!normalizedQuery) return true;
+      return [l.name, l.title, l.company, l.bio, facetOf(l)]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedQuery);
+    });
+  }, [rosterPool, activeIndustry, query]);
 
   const talksMain = rosterPool[0] || all[0];
   const talksRest = rosterPool.slice(1, 5);
@@ -217,10 +230,10 @@ const LeadershipPreview = () => {
       if (l.company) companies.add(String(l.company).trim());
     });
     return [
-      { value: all.length, label: "Leaders Profiled" },
-      { value: all.filter((l: any) => l.featured).length, label: "Featured Voices" },
-      { value: sectors.size, label: "Sectors Covered" },
-      { value: companies.size, label: "Companies Represented" },
+      { value: all.length, label: "Leaders Profiled", icon: Users },
+      { value: all.filter((l: any) => l.featured).length, label: "Featured Voices", icon: Sparkles },
+      { value: sectors.size, label: "Sectors Covered", icon: BriefcaseBusiness },
+      { value: companies.size, label: "Companies Represented", icon: Building2 },
     ];
   }, [all]);
 
@@ -247,32 +260,34 @@ const LeadershipPreview = () => {
   return (
     <div className="min-h-screen bg-white text-neutral-900">
       {/* ============== EDITORIAL MASTHEAD ============== */}
-      <section className="bg-white">
-        <div className="max-w-[1280px] mx-auto px-4 pt-8 pb-7">
+      <section className="relative overflow-hidden bg-neutral-950 text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(225,29,42,0.28),transparent_30%),linear-gradient(135deg,#050505_0%,#151515_52%,#27070a_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white to-transparent" />
+        <div className="relative max-w-[1280px] mx-auto px-4 pt-8 pb-14 md:pb-20">
           {/* Dateline rule */}
-          <div className="flex items-center justify-between border-t-[3px] border-black pt-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-white/25 pt-4">
             <span
-              className="text-[11px] font-bold uppercase tracking-[0.3em] text-neutral-900"
+              className="text-[11px] font-bold uppercase tracking-[0.3em] text-white/80"
               style={{ fontFamily: GEORGIA }}
             >
               {companyName} · Leadership
             </span>
-            <span className="text-[11px] font-bold uppercase tracking-[0.3em]" style={{ color: RED }}>
+            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-white/70">
               The Power Index · {dateline}
             </span>
           </div>
 
           <Reveal>
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-x-12 gap-y-6 items-end mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_420px] gap-x-14 gap-y-10 items-center mt-12">
               <div>
                 <p
-                  className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.25em] text-neutral-500 mb-4"
+                  className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.25em] text-white/65 mb-5"
                 >
                   <Sparkles className="h-3.5 w-3.5" style={{ color: RED }} />
                   The leaders setting the agenda
                 </p>
                 <h1
-                  className="text-[40px] sm:text-[56px] lg:text-[66px] font-extrabold leading-[0.98] tracking-tight text-neutral-900"
+                  className="text-[42px] sm:text-[60px] lg:text-[76px] font-extrabold leading-[0.94] tracking-tight"
                   style={{ fontFamily: GEORGIA }}
                 >
                   Leaders Defining
@@ -281,7 +296,7 @@ const LeadershipPreview = () => {
                 </h1>
               </div>
               <p
-                className="text-[15px] leading-relaxed text-neutral-700 border-l-2 pl-5"
+                className="text-[15px] leading-relaxed text-white/76 border-l-2 pl-5"
                 style={{ fontFamily: GEORGIA, borderColor: RED }}
               >
                 Each edition, {companyName} sits down with the executives, founders and
@@ -374,25 +389,31 @@ const LeadershipPreview = () => {
       )}
 
       {/* ============== BY THE NUMBERS ============== */}
-      <section className="bg-black text-white">
-        <div className="max-w-[1280px] mx-auto px-4 py-9">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-y divide-x divide-neutral-800 lg:divide-y-0 [&>*]:py-5 lg:[&>*]:py-0">
-            {stats.map((s, i) => (
-              <Reveal key={s.label} delay={i * 90} className="px-2 lg:px-8 first:pl-0">
-                <div className="flex flex-col">
+      <section className="bg-white">
+        <div className="max-w-[1280px] mx-auto px-4 -mt-8 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {stats.map((s, i) => {
+              const Icon = s.icon;
+              return (
+              <Reveal key={s.label} delay={i * 90}>
+                <div className="h-full border border-neutral-200 bg-white p-6 shadow-[0_20px_60px_-35px_rgba(0,0,0,0.45)]">
+                  <div className="mb-5 flex h-10 w-10 items-center justify-center bg-neutral-950 text-white">
+                    <Icon className="h-4 w-4" />
+                  </div>
                   <span
-                    className="text-[44px] md:text-[54px] font-extrabold leading-none tracking-tight"
-                    style={{ fontFamily: GEORGIA, color: i === 1 ? RED : "#fff" }}
+                    className="text-[42px] md:text-[50px] font-extrabold leading-none tracking-tight text-neutral-950"
+                    style={{ fontFamily: GEORGIA, color: i === 1 ? RED : undefined }}
                   >
                     {s.value}
                     {i === 1 ? "" : "+"}
                   </span>
-                  <span className="text-[11px] uppercase tracking-[0.2em] text-neutral-400 mt-3">
+                  <span className="block text-[11px] uppercase tracking-[0.2em] text-neutral-500 mt-3">
                     {s.label}
                   </span>
                 </div>
               </Reveal>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -475,14 +496,24 @@ const LeadershipPreview = () => {
 
       {/* ============== INDUSTRY FILTER ============== */}
       {industries.length > 1 && (
-        <section className="bg-white border-b border-neutral-200 sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-white/85">
-          <div className="max-w-[1280px] mx-auto px-4 py-3">
-            <div className="flex items-center gap-5 overflow-x-auto no-scrollbar">
+        <section className="bg-white/92 border-y border-neutral-200 sticky top-0 z-20 backdrop-blur supports-[backdrop-filter]:bg-white/85">
+          <div className="max-w-[1280px] mx-auto px-4 py-4">
+            <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 items-center">
+              <label className="relative block">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search leaders, companies, sectors"
+                  className="h-11 w-full border border-neutral-300 bg-white pl-10 pr-3 text-[13px] outline-none transition focus:border-neutral-950 focus:ring-2 focus:ring-neutral-950/10"
+                />
+              </label>
+              <div className="flex items-center gap-5 overflow-x-auto no-scrollbar">
               <span
                 className="text-[11px] font-bold uppercase tracking-[0.25em] text-neutral-400 shrink-0"
                 style={{ fontFamily: GEORGIA }}
               >
-                Browse by sector —
+                Browse by sector
               </span>
               <div className="flex gap-1">
                 {industries.map((ind) => {
@@ -505,11 +536,12 @@ const LeadershipPreview = () => {
               </div>
             </div>
           </div>
+        </div>
         </section>
       )}
 
       {/* ============== THE ROSTER + LEADERSHIP TALKS ============== */}
-      <section className="bg-white py-10 border-b border-neutral-200">
+      <section id="leadership-roster" className="bg-white py-12 border-b border-neutral-200 scroll-mt-24">
         <div className="max-w-[1280px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10 items-start">
           {/* MAIN: Roster grid */}
           <div>
@@ -519,16 +551,16 @@ const LeadershipPreview = () => {
                 className="border border-dashed border-neutral-300 p-12 text-center text-[13px] text-neutral-500"
                 style={{ fontFamily: GEORGIA }}
               >
-                No leaders in this sector yet.
+                No leaders match your current search or sector filter.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-5 gap-y-9">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {filteredRoster.map((l: any, i: number) => (
                   <Reveal key={l.id} delay={(i % 3) * 70}>
                     <Link to={`/leadership/${l.slug}`} className="group block h-full">
-                      <div className="flex flex-col h-full">
+                      <div className="flex h-full flex-col border border-neutral-200 bg-white p-3 shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_24px_55px_-35px_rgba(0,0,0,0.65)]">
                         {facetOf(l) && (
-                          <span className="self-start bg-black text-white px-3 py-1 text-[10px] font-semibold tracking-wider uppercase">
+                          <span className="mb-3 self-start bg-black text-white px-3 py-1 text-[10px] font-semibold tracking-wider uppercase">
                             {facetOf(l)}
                           </span>
                         )}
@@ -542,22 +574,22 @@ const LeadershipPreview = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                         <h3
-                          className="mt-3 text-[16px] font-extrabold leading-snug text-neutral-900 group-hover:underline line-clamp-2"
+                          className="mt-4 px-1 text-[18px] font-extrabold leading-snug text-neutral-900 group-hover:underline line-clamp-2"
                           style={{ fontFamily: GEORGIA }}
                         >
                           {l.name}
                         </h3>
-                        <p className="text-[10px] text-neutral-600 uppercase tracking-[0.15em] mt-1 line-clamp-1">
+                        <p className="px-1 text-[10px] text-neutral-600 uppercase tracking-[0.15em] mt-1 line-clamp-1">
                           {l.title}
                           {l.company ? ` · ${l.company}` : ""}
                         </p>
                         <p
-                          className="text-[12px] text-neutral-700 mt-2 leading-relaxed line-clamp-2"
+                          className="px-1 text-[13px] text-neutral-700 mt-3 leading-relaxed line-clamp-3"
                           style={{ fontFamily: GEORGIA }}
                         >
                           {l.bio}
                         </p>
-                        <div className="mt-auto pt-3 flex items-center justify-between">
+                        <div className="mt-auto flex items-center justify-between border-t border-neutral-200 px-1 pt-4">
                           <div className="flex items-center gap-2 text-neutral-400">
                             {l.linkedin_url && <Linkedin className="h-3.5 w-3.5 hover:text-[#0A66C2]" />}
                             {l.twitter_url && <Twitter className="h-3.5 w-3.5 hover:text-sky-500" />}
