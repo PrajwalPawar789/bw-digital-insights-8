@@ -49,10 +49,10 @@ export const useArticleBySlug = (slug: string) => {
         .from("articles")
         .select("*")
         .eq("slug", slug)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
-      return normalizeArticleImageUrl(data);
+      return data ? normalizeArticleImageUrl(data) : null;
     },
     enabled: !!slug,
   });

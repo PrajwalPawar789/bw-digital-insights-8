@@ -20,8 +20,9 @@ import { normalizeCategorySlug } from "@/lib/articleCategories";
 const ArticleDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { data: article, isLoading, error } = useArticleBySlug(slug || '');
-  const { data: allArticles = [] } = useArticles();
+  const { data: slugArticle, isLoading: slugLoading } = useArticleBySlug(slug || '');
+  const { data: allArticles = [], isLoading: articlesLoading } = useArticles();
+  const article = slugArticle || allArticles.find((item: any) => item.slug === slug);
   const [relatedArticles, setRelatedArticles] = useState<any[]>([]);
   const { settings } = useSettings();
 
@@ -66,7 +67,7 @@ const ArticleDetail = () => {
     navigate(`/article/${articleSlug}`);
   };
 
-  if (isLoading) {
+  if (!article && (slugLoading || articlesLoading)) {
     return (
       <>
         <Seo title="Loading article" noindex />
@@ -77,7 +78,7 @@ const ArticleDetail = () => {
     );
   }
 
-  if (error || !article) {
+  if (!article) {
     return (
       <>
         <Seo title="Article not found" noindex />
