@@ -1,179 +1,110 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { Menu, X, Facebook, Twitter, Instagram, Linkedin, Search, Newspaper } from 'lucide-react';
-import { useSettings } from '@/hooks/useSettings';
-import { useArticles } from '@/hooks/useArticles';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, Search, X } from "lucide-react";
 
-const categories = [
-  { href: '/', label: 'Home' },
-  { href: '/magazine', label: 'Magazine' },
-  { href: '/leadership', label: 'Leadership' },
-  // { href: '/press-releases', label: 'Press Releases' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+const navLinks = [
+  { href: "/magazine", label: "NEXT2026", accent: true },
+  { href: "/articles", label: "The CIO Diary" },
+  { href: "/leadership", label: "Reviews" },
+  { href: "/#subscribe", label: "Subscribe" },
 ];
-
-function titleOf(a: any) { return a?.title || 'Untitled'; }
-function slugOf(a: any) { return a?.slug || ''; }
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { settings } = useSettings();
-  const { data: rawArticles = [] } = useArticles();
-  const articles = Array.isArray(rawArticles) ? rawArticles : [];
-  const headlines = useMemo(() => {
-    return [...articles]
-      .filter(Boolean)
-      .sort((a, b) => new Date(b?.date || 0).getTime() - new Date(a?.date || 0).getTime())
-      .slice(0, 8);
-  }, [articles]);
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
 
-  const onSubmitSearch = (e: any) => {
-    e.preventDefault();
-    const q = String(searchQuery || '').trim();
-    if (!q) return;
-    navigate(`/search?q=${encodeURIComponent(q)}`);
-    setIsMenuOpen(false);
+  const submitSearch = (event: React.FormEvent) => {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (!query) return;
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+    setSearchQuery("");
     setIsSearchOpen(false);
-    setSearchQuery('');
+    setIsMenuOpen(false);
   };
 
   return (
-    <header className="top-0 z-[1000] shadow-sm">
-      {/* Top Bar */}
-      <div className="hidden md:block bg-insightBlack text-white text-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-10 flex items-center gap-4">
-          <div className="flex items-center gap-4 shrink-0">
-            <span className="opacity-80">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex items-center px-3 py-1 rounded-full bg-insightRed text-white text-xs font-bold uppercase tracking-wide shrink-0">
-                <Newspaper className="w-3 h-3 mr-1" /> Latest
-              </span>
-              <div className="relative flex-1 overflow-hidden">
-                <div className="whitespace-nowrap animate-marquee">
-                  {headlines.map((a: any, i: number) => (
-                    <Link key={slugOf(a) + i} to={`/article/${slugOf(a)}`} className="inline-flex items-center text-sm text-white/90 hover:text-white mx-6">
-                      {titleOf(a)}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 shrink-0">
-            {/* <a href="#" className="opacity-80 hover:opacity-100 transition"><Facebook size={16} /></a>
-            <a href="#" className="opacity-80 hover:opacity-100 transition"><Twitter size={16} /></a> */}
-            <a href="https://www.instagram.com/theciovisionmagazine" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Instagram size={16} /></a>
-            <a href="https://www.linkedin.com/company/theciovision" target="_blank" rel="noopener noreferrer" className="opacity-80 hover:opacity-100 transition"><Linkedin size={16} /></a>
-            <Link to="/contact" className="ml-4 inline-flex items-center px-3 py-1 rounded-full bg-insightRed hover:bg-insightRed/90 text-white font-medium">Subscribe</Link>
-          </div>
-        </div>
-      </div>
+    <header className="relative z-[1000] bg-black text-white border-b border-white/10">
+      <div className="max-w-[1360px] mx-auto px-3 sm:px-5">
+        <div className="h-[64px] flex items-center gap-6">
+          <Link to="/" className="shrink-0" aria-label="The CIO Vision home">
+            <img
+              src="/ciovision-logo-cropped.png"
+              alt="The CIO Vision Business Magazine"
+              width="1680"
+              height="385"
+              className="w-[215px] sm:w-[260px] h-auto object-contain"
+            />
+          </Link>
 
-      {/* Masthead */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="h-20 flex items-center gap-8">
-            {/* Logo */}
-            <Link to="/" className="flex items-center group shrink-0">
-              <div className="relative">
-                {settings.siteLogo ? (
-                  <img src={settings.siteLogo} alt={settings.companyName} className="w-12 h-12 rounded-lg shadow-lg group-hover:shadow-xl transition-all duration-300" />
-                ) : (
-                  <div className="w-12 h-12 bg-gradient-to-br from-insightRed to-red-700 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                    <div className="w-8 h-8 relative">
-                      <div className="absolute inset-0 bg-white rounded-sm opacity-90" />
-                      <div className="absolute top-1 left-1 right-1 h-1 bg-insightRed rounded-full" />
-                      <div className="absolute top-3 left-1 right-2 h-0.5 bg-gray-400 rounded-full" />
-                      <div className="absolute top-[18px] left-1 right-3 h-0.5 bg-gray-400 rounded-full" />
-                      <div className="absolute top-6 left-1 right-1.5 h-0.5 bg-gray-400 rounded-full" />
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="ml-4">
-                <span className="block -ml-1 text-3xl font-bold font-premium tracking-tight text-neutral-900 transition-colors duration-300">
-                  {settings.companyName}
-                </span>
-                <div className="text-xs font-semibold text-insightRed uppercase tracking-[0.2em] -mt-1">Business Magazine</div>
-              </div>
-            </Link>
-
-            {/* Inline Category Nav */}
-            <nav className="hidden lg:block min-w-0">
-              <ul className="flex items-center gap-5 xl:gap-6">
-                {categories.map((c) => (
-                  <li key={c.href}>
-                    <Link to={c.href} className="px-1 py-1 text-sm font-semibold tracking-wide uppercase whitespace-nowrap text-insightBlack/80 hover:text-insightRed relative group">
-                      {c.label}
-                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-insightRed transition-all duration-300 group-hover:w-full" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-
-            {/* Actions */}
-            <div className="hidden lg:flex items-center ml-auto relative">
-              <button
-                type="button"
-                onClick={() => setIsSearchOpen((v) => !v)}
-                aria-label={isSearchOpen ? 'Close search' : 'Open search'}
-                className="inline-flex items-center justify-center h-10 w-10 rounded-md text-insightBlack hover:text-insightRed hover:bg-gray-100 transition"
+          <nav className="hidden lg:flex items-center gap-6 ml-auto">
+            {navLinks.map((item) => (
+              <Link
+                key={item.label}
+                to={item.href}
+                className={`text-[13px] font-bold whitespace-nowrap transition-colors ${
+                  item.accent ? "text-[#ff3b19] hover:text-white" : "text-white hover:text-[#ef3340]"
+                }`}
               >
-                {isSearchOpen ? <X size={20} /> : <Search size={20} />}
-              </button>
-              {isSearchOpen && (
-                <form onSubmit={onSubmitSearch} className="absolute right-full top-1/2 -translate-y-1/2 mr-2">
-                  <input
-                    autoFocus
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onBlur={() => { if (!searchQuery) setIsSearchOpen(false); }}
-                    onKeyDown={(e) => { if (e.key === 'Escape') { setIsSearchOpen(false); setSearchQuery(''); } }}
-                    className="h-10 w-56 xl:w-64 px-3 rounded-md border border-gray-200 bg-gray-50 focus:bg-white focus:border-insightRed outline-none transition shadow-sm"
-                    placeholder="Search"
-                    aria-label="Search articles"
-                  />
-                </form>
-              )}
-            </div>
-            <button className="lg:hidden inline-flex items-center justify-center p-3 rounded-md text-insightBlack hover:text-insightRed hover:bg-gray-100 focus:outline-none transition-colors duration-200 ml-auto" onClick={toggleMenu}>
-              <span className="sr-only">Open main menu</span>
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="ml-auto lg:ml-2 flex items-center gap-1 relative">
+            {isSearchOpen && (
+              <form onSubmit={submitSearch} className="absolute right-[76px] top-1/2 -translate-y-1/2">
+                <input
+                  autoFocus
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Escape") setIsSearchOpen(false);
+                  }}
+                  placeholder="Search"
+                  aria-label="Search articles"
+                  className="h-9 w-48 sm:w-60 bg-white text-black px-3 text-sm outline-none border border-neutral-300"
+                />
+              </form>
+            )}
+            <button
+              type="button"
+              onClick={() => setIsSearchOpen((open) => !open)}
+              aria-label={isSearchOpen ? "Close search" : "Open search"}
+              className="w-9 h-9 inline-flex items-center justify-center hover:text-[#ef3340] transition-colors"
+            >
+              {isSearchOpen ? <X size={20} /> : <Search size={20} strokeWidth={3} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen((open) => !open)}
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              className="w-9 h-9 inline-flex items-center justify-center hover:text-[#ef3340] transition-colors"
+            >
+              {isMenuOpen ? <X size={22} /> : <Menu size={22} strokeWidth={3} />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-gray-100 shadow-lg">
-          <div className="px-4 pb-4 pt-2 space-y-1">
-            {categories.map((c) => (
+        <div className="absolute top-full inset-x-0 bg-black border-t border-white/10 shadow-xl lg:hidden">
+          <nav className="px-4 py-3">
+            {navLinks.map((item) => (
               <Link
-                key={c.href}
-                to={c.href}
-                className="block px-4 py-3 text-base font-medium text-insightBlack hover:text-insightRed hover:bg-gray-50 rounded-lg transition-colors"
-                onClick={toggleMenu}
+                key={item.label}
+                to={item.href}
+                onClick={() => setIsMenuOpen(false)}
+                className={`block py-3 border-b border-white/10 text-sm font-bold ${item.accent ? "text-[#ff3b19]" : "text-white"}`}
               >
-                {c.label}
+                {item.label}
               </Link>
             ))}
-          </div>
-          <div className="px-4 pb-4">
-            <Link to="/contact" className="inline-flex w-full items-center justify-center h-11 rounded-md bg-insightRed text-white font-medium hover:bg-insightRed/90">
-              Subscribe
-            </Link>
-          </div>
+            <Link to="/about" onClick={() => setIsMenuOpen(false)} className="block py-3 border-b border-white/10 text-sm font-bold">About</Link>
+            <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="block py-3 text-sm font-bold">Contact</Link>
+          </nav>
         </div>
       )}
     </header>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Loader2,
@@ -46,7 +46,7 @@ const REGIONS = [
   { id: "europe", label: "EUROPE EDITIONS" },
   { id: "mea", label: "MEA EDITIONS" },
   { id: "apac", label: "APAC EDITIONS" },
-  // { id: "hall", label: "HALL OF FAME" },
+  { id: "hall", label: "HALL OF FAME" },
 ] as const;
 
 const REGION_IMAGES: Record<string, string> = {
@@ -54,7 +54,7 @@ const REGION_IMAGES: Record<string, string> = {
   europe: "/Europe-MAP-Black.webp",
   mea: "/MEA-MAP-Black.webp",
   apac: "/APAC-MAP-Black.webp",
-  // hall: "/region-hall.png",
+  hall: "/region-hall.png",
 };
 
 const TRUSTED = [
@@ -228,14 +228,17 @@ const Home = () => {
 
   // ---- Coverflow state ----
   const [activeIdx, setActiveIdx] = useState(0);
+  const [isDraggingCovers, setIsDraggingCovers] = useState(false);
+  const coverDragStart = useRef(0);
+  const coverDidDrag = useRef(false);
   useEffect(() => { setActiveIdx(0); }, [activeRegion]);
   useEffect(() => {
-    if (visibleMags.length < 2) return;
+    if (visibleMags.length < 2 || isDraggingCovers) return;
     const t = setInterval(() => {
       setActiveIdx((i) => (i + 1) % visibleMags.length);
     }, 3500);
     return () => clearInterval(t);
-  }, [visibleMags.length]);
+  }, [visibleMags.length, isDraggingCovers]);
 
   // ---- Articles grid (3×3) — only articles tagged "grid" ----
   const gridArticles = useMemo(() => {
@@ -388,12 +391,18 @@ const Home = () => {
     const tagged = articles
       .filter((a) => a.home_placement === "bizhot_metro")
       .sort((a, b) => (a.home_order ?? 0) - (b.home_order ?? 0));
-    return CITY_REPORTS_DEFAULT.map((c, i) => {
-      const t = tagged[i];
-      return t
-        ? { city: c.city, title: t.title, img: t.image_url || c.img, slug: t.slug || "" }
-        : { ...c, slug: "" };
-    });
+    if (tagged.length > 0) {
+      return tagged.map((a, i) => {
+        const fallback = CITY_REPORTS_DEFAULT[i % CITY_REPORTS_DEFAULT.length];
+        return {
+          city: fallback.city,
+          title: a.title,
+          img: a.image_url || fallback.img,
+          slug: a.slug || "",
+        };
+      });
+    }
+    return CITY_REPORTS_DEFAULT.map((c) => ({ ...c, slug: "" }));
   }, [articles]);
 
   // ---- Business Bulletin — articles tagged "business_bulletin" ----
@@ -441,10 +450,11 @@ const Home = () => {
       />
       <div className="min-h-screen bg-white text-neutral-900 font-sans">
 
-        {/* ============== REGION TABS ============== */}
-        <div className="bg-white">
-          <div className="max-w-[1280px] mx-auto px-4 pt-4">
-            <div className="grid grid-cols-4 gap-0">
+        {/* ============== TABBED MAGAZINE HERO ============== */}
+        <section className="bg-white py-3 sm:py-5">
+          <div className="max-w-[1200px] mx-auto px-4">
+            <div className="overflow-hidden rounded-[12px] border border-black bg-white">
+            <div className="grid grid-cols-5 gap-0" role="tablist" aria-label="Magazine editions">
               {REGIONS.map((r) => {
                 const active = activeRegion === r.id;
                 const label = r.id === "hall" ? "Hall of Fame" : r.label.replace(" EDITIONS", " Editions");
@@ -452,16 +462,15 @@ const Home = () => {
                   <button
                     key={r.id}
                     onClick={() => setActiveRegion(r.id)}
-                    className={`relative h-[52px] text-[13px] md:text-[15px] font-semibold whitespace-nowrap transition-colors border border-neutral-300 ${
+                    role="tab"
+                    aria-selected={active}
+                    className={`relative min-h-[42px] px-1 text-[9px] sm:text-[11px] md:text-[13px] font-semibold whitespace-normal sm:whitespace-nowrap transition-colors border-b border-l border-black first:border-l-0 ${
                       active
                         ? "bg-white border-b-white z-10"
-                        : "bg-neutral-100 text-neutral-800 hover:bg-neutral-50 border-b-neutral-300"
+                        : "bg-neutral-200 text-neutral-900 hover:bg-neutral-100"
                     }`}
                     style={{
                       color: active ? RED : undefined,
-                      borderTopLeftRadius: 8,
-                      borderTopRightRadius: 8,
-                      marginLeft: -1,
                     }}
                   >
                     {label}
@@ -469,23 +478,16 @@ const Home = () => {
                 );
               })}
             </div>
-            <div className="border-b border-neutral-300 -mt-px" />
-          </div>
-        </div>
-
-        {/* ============== HERO ============== */}
-        <section className="bg-white">
-          <div className="max-w-[1280px] mx-auto px-4 pt-6 pb-2">
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_330px] gap-2 lg:gap-5 items-center px-3 sm:px-5 py-4">
               {/* LEFT */}
               <div>
-                <div className="grid grid-cols-[200px_1fr] gap-6 items-start mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-[190px_1fr] gap-2 sm:gap-5 items-center mb-2">
                   <div>
-                    <h1 className="text-[18px] font-extrabold tracking-wide text-neutral-900 pb-2 border-b-2 border-neutral-800">
+                    <h1 className="text-[14px] font-extrabold tracking-wide text-neutral-900 pb-1 border-b border-neutral-800 text-center sm:text-right">
                       {REGIONS.find((r) => r.id === activeRegion)?.label}
                     </h1>
                   </div>
-                  <p className="text-[13px] text-neutral-800 leading-relaxed" style={{ fontFamily: "Georgia, serif" }}>
+                  <p className="text-[11px] sm:text-[12px] text-neutral-800 leading-relaxed" style={{ fontFamily: "Georgia, serif" }}>
                     {activeRegion === "americas"
                       ? "The Americas is home to some of the world's most influential business minds and groundbreaking companies. Our Americas edition showcases their journeys, ideas, and impact on the global business landscape."
                       : activeRegion === "europe"
@@ -500,8 +502,31 @@ const Home = () => {
 
                 {/* Coverflow */}
                 <div
-                  className="relative h-[400px] flex items-center justify-center select-none"
+                  className={`relative h-[245px] sm:h-[270px] flex items-center justify-center select-none overflow-hidden touch-pan-y ${isDraggingCovers ? "cursor-grabbing" : "cursor-grab"}`}
                   style={{ perspective: "1600px" }}
+                  onPointerDown={(event) => {
+                    coverDragStart.current = event.clientX;
+                    coverDidDrag.current = false;
+                    setIsDraggingCovers(true);
+                    event.currentTarget.setPointerCapture(event.pointerId);
+                  }}
+                  onPointerMove={(event) => {
+                    if (!isDraggingCovers) return;
+                    if (Math.abs(event.clientX - coverDragStart.current) > 8) coverDidDrag.current = true;
+                  }}
+                  onPointerUp={(event) => {
+                    const distance = event.clientX - coverDragStart.current;
+                    if (Math.abs(distance) >= 45 && visibleMags.length > 1) {
+                      setActiveIdx((index) =>
+                        distance < 0
+                          ? (index + 1) % visibleMags.length
+                          : (index - 1 + visibleMags.length) % visibleMags.length
+                      );
+                    }
+                    setIsDraggingCovers(false);
+                    event.currentTarget.releasePointerCapture(event.pointerId);
+                  }}
+                  onPointerCancel={() => setIsDraggingCovers(false)}
                 >
                   {visibleMags.map((m, i) => {
                     const len = visibleMags.length;
@@ -510,13 +535,13 @@ const Home = () => {
                     if (offset < -len / 2) offset += len;
                     const abs = Math.abs(offset);
                     if (abs > 3) return null;
-                    const scale = abs === 0 ? 1 : abs === 1 ? 0.82 : abs === 2 ? 0.66 : 0.52;
+                    const scale = abs === 0 ? 1 : abs === 1 ? 0.86 : abs === 2 ? 0.72 : 0.6;
                     // Per-depth offsets tuned so each magazine in the fan stays
                     // visibly separated (~75% of every outer cover stays visible).
                     const translateX =
                       offset === 0
                         ? 0
-                        : Math.sign(offset) * [0, 156, 286, 388][abs];
+                        : Math.sign(offset) * [0, 112, 205, 280][abs];
                     const z = 30 - abs;
                     const opacity = 1;
                     const sharpCover = sharpen(m.cover, 1400);
@@ -526,6 +551,10 @@ const Home = () => {
                         key={`${m.id}-${i}`}
                         type="button"
                         onClick={() => {
+                          if (coverDidDrag.current) {
+                            coverDidDrag.current = false;
+                            return;
+                          }
                           if (isActive && m.slug) {
                             navigate(`/magazine/${m.slug}`);
                           } else {
@@ -545,12 +574,12 @@ const Home = () => {
                         }}
                       >
                         <div
-                          className="relative w-[224px] aspect-[3/4] overflow-hidden bg-neutral-100 rounded-sm"
+                          className="relative w-[142px] sm:w-[158px] aspect-[3/4] overflow-hidden bg-neutral-100 rounded-sm"
                           style={{
                             boxShadow:
                               abs === 0
-                                ? "0 35px 70px -20px rgba(0,0,0,0.55), 0 12px 30px -12px rgba(0,0,0,0.45)"
-                                : "0 20px 40px -18px rgba(0,0,0,0.4)",
+                                ? "0 18px 30px -12px rgba(0,0,0,0.55), 0 5px 12px -7px rgba(0,0,0,0.45)"
+                                : "0 12px 22px -14px rgba(0,0,0,0.45)",
                           }}
                         >
                           <img
@@ -569,7 +598,7 @@ const Home = () => {
                 </div>
 
                 {/* Pagination dots */}
-                <div className="flex justify-center gap-1.5 mt-4">
+                <div className="flex justify-center gap-1.5 mt-1">
                   {visibleMags.slice(0, Math.min(10, visibleMags.length)).map((_, i) => (
                     <button
                       key={i}
@@ -586,10 +615,10 @@ const Home = () => {
                   ))}
                 </div>
 
-                <div className="flex justify-center mt-8">
+                <div className="flex justify-center mt-3">
                   <Link
                     to="/magazine"
-                    className="px-8 py-3 bg-black text-white text-[13px] font-bold tracking-wide hover:bg-neutral-800 transition"
+                    className="px-5 py-2 bg-black text-white text-[11px] font-bold hover:bg-neutral-800 transition"
                   >
                     Read All Magazines
                   </Link>
@@ -598,7 +627,7 @@ const Home = () => {
 
               {/* RIGHT: continent map */}
               <div className="hidden lg:block relative">
-                <div className="h-[420px] flex items-center justify-center">
+                <div className="h-[330px] flex items-center justify-center">
                   <ContinentMap region={activeRegion} />
                 </div>
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-1.5">
@@ -621,6 +650,7 @@ const Home = () => {
                   ))}
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </section>
@@ -749,7 +779,7 @@ const Home = () => {
 
         {/* ============== COVER STORIES + CXO ARTICLES ============== */}
         <section className="bg-white py-8 border-b border-neutral-200">
-          <div className="max-w-[1280px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Cover Story */}
             <div className="flex flex-col h-full">
               <div className="flex items-end mb-4">
@@ -916,29 +946,30 @@ const Home = () => {
 
         {/* ============== CASE STUDIES + MAGAZINE PROFILES ============== */}
         <section className="bg-white py-6 border-b border-neutral-200">
-          <div className="max-w-[1280px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-8">
+          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[3fr_7fr] gap-5 items-start">
             {/* Case Studies */}
-            <div>
-              <div className="flex items-end mb-4">
-                <div className="bg-black text-white px-4 py-2">
-                  <h2 className="text-[14px] font-bold tracking-wide" style={{ fontFamily: "Georgia, serif" }}>
-                    Case Studies
-                  </h2>
-                </div>
-                <div className="flex-1 h-px bg-neutral-300" />
+            <div className="flex flex-col min-w-0">
+              <div className="border-t-2 border-black mb-4">
+                <Link
+                  to="/articles"
+                  className="inline-block pt-2 text-[17px] font-bold hover:text-[#E11D2A] transition-colors"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  Case Studies
+                </Link>
               </div>
               {/* Cards managed from the admin panel (Case Studies tab) */}
-              <div className="space-y-5">
-                {caseStudies.map((cs) => (
-                  <div key={cs.id}>
-                    <div className="aspect-[16/9] overflow-hidden bg-neutral-100 shadow-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-5">
+                {caseStudies.slice(0, 2).map((cs) => (
+                  <article key={cs.id} className="group">
+                    <div className="aspect-[3/2] overflow-hidden bg-neutral-100">
                       {cs.image_url ? (
                         <img
                           src={sharpen(cs.image_url, 700)}
                           alt={cs.title}
                           loading="lazy"
                           decoding="async"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
@@ -946,50 +977,47 @@ const Home = () => {
                         </div>
                       )}
                     </div>
-                    <p className="text-[12px] font-bold mt-2 leading-snug text-neutral-900 line-clamp-2">
+                    <h3 className="text-[13px] font-bold mt-2 leading-snug text-neutral-900 line-clamp-2 group-hover:text-[#E11D2A] transition-colors" style={{ fontFamily: "Georgia, serif" }}>
                       {cs.title}
-                    </p>
-                  </div>
+                    </h3>
+                  </article>
                 ))}
               </div>
             </div>
 
             {/* Magazine Profiles */}
-            <div className="flex flex-col h-full">
-              <div className="flex items-end mb-4">
-                <div className="bg-black text-white px-4 py-2">
-                  <h2
-                    className="text-[14px] font-bold tracking-wide"
-                    style={{ fontFamily: "Georgia, serif" }}
-                  >
-                    Magazine Profiles
-                  </h2>
-                </div>
-                <div className="flex-1 h-px bg-neutral-300" />
+            <div className="flex flex-col min-w-0">
+              <div className="border-t-2 border-black mb-4">
+                <Link
+                  to="/leadership"
+                  className="inline-block pt-2 text-[17px] font-bold hover:text-[#E11D2A] transition-colors"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  Magazine Profiles
+                </Link>
               </div>
               {magProfileLead && (
                 <Link
                   to={`/leadership/${magProfileLead.slug || ""}`}
-                  className="group grid grid-cols-1 md:grid-cols-2 gap-5 mb-5 pb-5 border-b border-neutral-200"
+                  className="group grid grid-cols-1 sm:grid-cols-2 gap-0 mb-5 pb-5 border-b border-neutral-300"
                 >
-                  <div className="aspect-[4/3] overflow-hidden bg-black">
+                  <div className="aspect-[3/2] overflow-hidden bg-neutral-100">
                     <img
                       src={sharpen(magProfileLead.image_url, 900)}
                       alt={magProfileLead.name}
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
-                  <div className="min-w-0 flex flex-col justify-center">
+                  <div className="min-w-0 sm:pl-3 py-1">
                     <h3
-                      className="text-[18px] font-extrabold leading-snug group-hover:underline text-neutral-900"
-                      style={{ fontFamily: "Georgia, serif" }}
+                      className="text-[20px] lg:text-[22px] font-bold leading-[1.2] group-hover:text-[#E11D2A] transition-colors text-neutral-900"
                     >
-                      {magProfileLead.name}: Passion, Purpose, Leadership and Professional Healthcare and Pharmaceutical Excellence
+                      {magProfileLead.name}{magProfileLead.title ? `: ${magProfileLead.title}` : ""}
                     </h3>
                     <p
-                      className="text-[13px] text-neutral-700 mt-3 leading-relaxed line-clamp-5"
+                      className="text-[15px] lg:text-[16px] text-neutral-700 mt-2 leading-[1.4] line-clamp-5"
                       style={{ fontFamily: "Georgia, serif" }}
                     >
                       {magProfileLead.bio || "Leadership anchored in science, ethics, and purpose. A distinct leadership archetype grounded in professional excellence and industry impact."}
@@ -997,35 +1025,33 @@ const Home = () => {
                   </div>
                 </Link>
               )}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-0 gap-y-6">
                 {magProfileSecondary.map((l) => (
                   <Link
                     key={l.id}
                     to={`/leadership/${l.slug || ""}`}
-                    className="group grid grid-cols-[140px_1fr] gap-3 items-start"
+                    className="group grid grid-cols-[33%_67%] items-start sm:pr-3 sm:border-r border-neutral-300 even:border-r-0 even:pl-3"
                   >
-                    <div className="aspect-[4/3] w-full overflow-hidden bg-black self-start">
+                    <div className="aspect-[3/2] w-full overflow-hidden bg-neutral-100">
                       <img
                         src={sharpen(l.image_url, 400)}
                         alt={l.name}
                         loading="lazy"
                         decoding="async"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
                     <div className="min-w-0">
                       <h4
-                        className="text-[13px] font-extrabold leading-tight line-clamp-2 group-hover:underline text-neutral-900"
-                        style={{ fontFamily: "Georgia, serif" }}
+                        className="text-[16px] font-bold leading-[1.2] line-clamp-2 group-hover:text-[#E11D2A] transition-colors text-neutral-900"
                       >
-                        {l.name}
-                        {l.title ? `: ${l.title.split(" ").slice(0, 6).join(" ")}` : ""}
+                        {l.name}{l.title ? `: ${l.title}` : ""}
                       </h4>
                       <p
-                        className="text-[11px] text-neutral-600 mt-1.5 leading-snug line-clamp-3"
+                        className="text-[13px] text-neutral-700 mt-1.5 leading-[1.4] line-clamp-3"
                         style={{ fontFamily: "Georgia, serif" }}
                       >
-                        {l.company || "Driving change across the industry with conviction and clarity."}
+                        {l.bio || l.company || "Driving change across the industry with conviction and clarity."}
                       </p>
                     </div>
                   </Link>
@@ -1091,58 +1117,32 @@ const Home = () => {
 
         {/* ============== LEADERSHIP TALKS + LINKEDIN ============== */}
         <section className="bg-white py-6 border-b border-neutral-200">
-          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-6">
+          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_390px] gap-7 items-start">
             {/* Leadership Talks */}
             <div>
-              <div className="flex items-end mb-4">
-                <div className="bg-black text-white px-4 py-2">
-                  <h2 className="text-[14px] font-bold tracking-wide" style={{ fontFamily: "Georgia, serif" }}>
-                    Leadership Talks
-                  </h2>
-                </div>
-                <div className="flex-1 h-px bg-neutral-300" />
+              <div className="border-t-2 border-black mb-4">
+                <Link to="/leadership" className="inline-block pt-2 text-[17px] font-bold hover:text-[#E11D2A] transition-colors" style={{ fontFamily: "Georgia, serif" }}>
+                  Leadership Talks
+                </Link>
               </div>
 
               {talkLeaders[0] && (
                 <Link
                   to={`/leadership/${talkLeaders[0].slug || ""}`}
-                  className="block border border-neutral-200 p-5 flex gap-5 items-center bg-white relative overflow-hidden"
+                  className="grid grid-cols-1 sm:grid-cols-[46%_1fr] gap-4 group"
                 >
-                  <div
-                    className="absolute left-0 top-0 bottom-0 w-[210px]"
-                    style={{ backgroundColor: RED, clipPath: "polygon(0 0, 100% 0, 60% 100%, 0 100%)" }}
-                  />
-                  <div className="relative w-32 flex flex-col items-center text-white z-10 shrink-0">
-                    <span
-                      className="text-[10px] italic font-extrabold mb-1 whitespace-nowrap"
-                      style={{ fontFamily: "Georgia, serif" }}
-                    >
-                      {companyName.split(" ")[0]}
-                      <span style={{ color: "#fff" }}>.</span>
-                      {companyName.split(" ").slice(1).join(" ")}
-                    </span>
-                    <p className="text-[12px] font-extrabold uppercase mt-2 text-center leading-tight">
-                      {talkLeaders[0].name?.split(" ").slice(0, 2).join(" ").toUpperCase()}
-                    </p>
-                    <p className="text-[8px] uppercase mt-1 text-center opacity-90 leading-tight">
-                      {talkLeaders[0].title?.slice(0, 30)}
-                    </p>
-                  </div>
-                  <div
-                    className="w-32 h-32 rounded-full overflow-hidden shrink-0 z-10"
-                    style={{ boxShadow: `0 0 0 4px ${RED}, 0 0 0 7px white` }}
-                  >
+                  <div className="aspect-[3/2] overflow-hidden bg-neutral-100">
                     <img
                       src={talkLeaders[0].image_url || ""}
                       alt={talkLeaders[0].name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
-                  <div className="flex-1 z-10">
-                    <h3 className="text-[16px] font-extrabold leading-tight mb-2">
-                      {talkLeaders[0].name}: Where Venture Capital Meets Venture Philanthropy
+                  <div className="py-1">
+                    <h3 className="text-[17px] font-bold leading-snug mb-2 group-hover:underline" style={{ fontFamily: "Georgia, serif" }}>
+                      {talkLeaders[0].name}: {talkLeaders[0].title}
                     </h3>
-                    <p className="text-[11px] text-neutral-700 leading-relaxed line-clamp-4">
+                    <p className="text-[11px] text-neutral-600 leading-relaxed line-clamp-5">
                       {talkLeaders[0].bio || "An exclusive feature on a leader redefining the boundaries of impact and capital."}
                     </p>
                   </div>
@@ -1154,43 +1154,20 @@ const Home = () => {
                   <Link
                     key={l.id}
                     to={`/leadership/${l.slug || ""}`}
-                    className="border border-neutral-200 bg-white relative overflow-hidden flex gap-3 items-center p-3 pr-3 group"
+                  className="grid grid-cols-[42%_1fr] gap-3 items-start group"
                   >
-                    <div
-                      className="absolute left-0 top-0 bottom-0 w-[120px]"
-                      style={{ backgroundColor: RED, clipPath: "polygon(0 0, 100% 0, 55% 100%, 0 100%)" }}
-                    />
-                    <div className="relative w-[78px] flex flex-col items-center text-white z-10 shrink-0">
-                      <span
-                        className="text-[7px] italic font-extrabold whitespace-nowrap"
-                        style={{ fontFamily: "Georgia, serif" }}
-                      >
-                        {companyName.split(" ")[0]}
-                        <span style={{ color: "#fff" }}>.</span>
-                        {companyName.split(" ").slice(1).join(" ")}
-                      </span>
-                      <p className="text-[9px] font-extrabold uppercase mt-1 text-center leading-tight">
-                        {l.name?.split(" ").slice(0, 2).join(" ").toUpperCase()}
-                      </p>
-                      <p className="text-[6px] uppercase mt-0.5 text-center opacity-90 leading-tight px-1">
-                        {l.title?.slice(0, 24)}
-                      </p>
-                    </div>
-                    <div
-                      className="w-16 h-16 rounded-full overflow-hidden shrink-0 z-10"
-                      style={{ boxShadow: `0 0 0 2px ${RED}, 0 0 0 4px white` }}
-                    >
+                    <div className="aspect-[3/2] overflow-hidden bg-neutral-100">
                       <img
                         src={l.image_url || ""}
                         alt={l.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <div className="flex-1 min-w-0 z-10">
-                      <h4 className="text-[11px] font-extrabold leading-snug line-clamp-2 group-hover:underline">
+                    <div className="min-w-0 pl-3">
+                      <h4 className="text-[12px] font-bold leading-snug line-clamp-3 group-hover:underline" style={{ fontFamily: "Georgia, serif" }}>
                         {l.name}: {l.title}
                       </h4>
-                      <p className="text-[10px] text-neutral-600 leading-snug line-clamp-2 mt-1">
+                      <p className="text-[10px] text-neutral-600 leading-snug line-clamp-3 mt-1.5">
                         {l.bio || l.company}
                       </p>
                     </div>
@@ -1200,14 +1177,17 @@ const Home = () => {
             </div>
 
             {/* Follow on LinkedIn */}
-            <div>
-              <div
-                className="w-full text-center py-2 mb-3 text-white text-[14px] font-extrabold uppercase tracking-wider flex items-center justify-center gap-2"
+            <div className="lg:sticky lg:top-[70px]">
+              <a
+                href="https://www.linkedin.com/company/theciovision"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full text-center py-2.5 mb-3 text-white text-[14px] font-bold flex items-center justify-center gap-2 hover:brightness-95 transition"
                 style={{ backgroundColor: "#0A66C2" }}
               >
                 <Linkedin className="h-4 w-4" />
                 Follow on LinkedIn
-              </div>
+              </a>
 
               {linkedinPosts.length === 0 ? (
                 <div className="text-[11px] text-neutral-400 border border-dashed rounded p-4 text-center">
@@ -1430,37 +1410,6 @@ const Home = () => {
             </div>
           </section>
         )}
-
-        {/* ============== INLINE NEWSLETTER ============== */}
-        <section className="bg-white py-5 border-y border-neutral-200">
-          <div className="max-w-[1200px] mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            <div>
-              <h3 className="text-[16px] font-extrabold">Join The Newsletter</h3>
-              <p className="text-[11px] text-neutral-600">
-                Subscribe to our newsletter and stay updated.
-              </p>
-            </div>
-            <form onSubmit={handleNewsletterSubscribe} className="flex gap-0">
-              <Input
-                type="email"
-                placeholder="Email Address"
-                className="rounded-none border-neutral-300 focus-visible:ring-0 h-10"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                disabled={newsletterLoading}
-                required
-              />
-              <Button
-                type="submit"
-                className="rounded-none h-10 px-6 text-white font-bold text-[11px] uppercase"
-                style={{ backgroundColor: "#000" }}
-                disabled={newsletterLoading}
-              >
-                {newsletterLoading ? "Submitting..." : "Submit"}
-              </Button>
-            </form>
-          </div>
-        </section>
 
       </div>
     </>

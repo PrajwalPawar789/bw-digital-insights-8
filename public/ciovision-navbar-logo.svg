@@ -1,0 +1,14 @@
+<svg width="680" height="140" viewBox="0 0 680 140" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">The CIO Vision Business Magazine</title>
+  <defs>
+    <linearGradient id="red" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#ef3340"/>
+      <stop offset="1" stop-color="#b91c1c"/>
+    </linearGradient>
+  </defs>
+  <rect x="12" y="14" width="14" height="112" fill="url(#red)"/>
+  <text x="42" y="38" fill="#ef3340" font-family="Arial, sans-serif" font-size="20" font-weight="800">The</text>
+  <text x="42" y="94" fill="#ffffff" font-family="Arial Black, Arial, sans-serif" font-size="66" font-weight="900" letter-spacing="-4">CIO Vision</text>
+  <text x="42" y="122" fill="#ef3340" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="8">BUSINESS MAGAZINE</text>
+  <rect x="342" y="116" width="300" height="3" fill="#ef3340"/>
+</svg>
