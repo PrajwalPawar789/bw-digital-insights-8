@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLeadershipProfiles, useDeleteLeadership } from '@/hooks/useLeadership';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, Plus, Loader2 } from 'lucide-react';
 import CreateLeaderForm from './CreateLeaderForm';
 import EditLeaderForm from './EditLeaderForm';
+import type { Database } from '@/integrations/supabase/types';
+
+type LeadershipProfile = Database['public']['Tables']['leadership_profiles']['Row'];
 
 const LeaderManager = () => {
   const { data: leaders = [], isLoading, error } = useLeadershipProfiles();
@@ -14,7 +17,7 @@ const LeaderManager = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [createFormOpen, setCreateFormOpen] = useState(false);
   const [editFormOpen, setEditFormOpen] = useState(false);
-  const [selectedLeader, setSelectedLeader] = useState<any>(null);
+  const [selectedLeader, setSelectedLeader] = useState<LeadershipProfile | null>(null);
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this leadership profile?')) {
@@ -29,7 +32,7 @@ const LeaderManager = () => {
     }
   };
 
-  const handleEdit = (leader: any) => {
+  const handleEdit = (leader: LeadershipProfile) => {
     setSelectedLeader(leader);
     setEditFormOpen(true);
   };

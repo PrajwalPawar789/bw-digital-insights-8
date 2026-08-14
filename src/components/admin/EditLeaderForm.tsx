@@ -9,9 +9,13 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Upload, X } from 'lucide-react';
 import { LEADER_HOME_SECTIONS } from '@/lib/home-placements';
+import ArticleContentEditor from '@/components/admin/ArticleContentEditor';
+import type { Database } from '@/integrations/supabase/types';
+
+type LeadershipProfile = Database['public']['Tables']['leadership_profiles']['Row'];
 
 interface EditLeaderFormProps {
-  leader: any;
+  leader: LeadershipProfile;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -24,8 +28,10 @@ const EditLeaderForm = ({ leader, open, onOpenChange }: EditLeaderFormProps) => 
     name: leader?.name || '',
     title: leader?.title || '',
     company: leader?.company || '',
+    article_title: leader?.article_title || '',
     bio: leader?.bio || '',
     image_url: leader?.image_url || '',
+    featured_image_url: leader?.featured_image_url || '',
     linkedin_url: leader?.linkedin_url || '',
     twitter_url: leader?.twitter_url || '',
     areas_of_expertise: leader?.areas_of_expertise || '',
@@ -61,6 +67,16 @@ const EditLeaderForm = ({ leader, open, onOpenChange }: EditLeaderFormProps) => 
     setSelectedFile(null);
   };
 
+  const handleFeaturedImageUpload = async (file?: File) => {
+    if (!file) return;
+    try {
+      const url = await uploadImage(file, "leadership/featured");
+      setFormData((prev) => ({ ...prev, featured_image_url: url }));
+    } catch (error) {
+      console.error('Error uploading leadership story image:', error);
+    }
+  };
+
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -82,6 +98,8 @@ const EditLeaderForm = ({ leader, open, onOpenChange }: EditLeaderFormProps) => 
       await updateLeader.mutateAsync({
         id: leader.id,
         ...formData,
+        article_title: formData.article_title.trim() || null,
+        featured_image_url: formData.featured_image_url || null,
         home_sections: formData.home_sections.length ? formData.home_sections : null
       });
       onOpenChange(false);
@@ -92,7 +110,7 @@ const EditLeaderForm = ({ leader, open, onOpenChange }: EditLeaderFormProps) => 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[960px]">
         <DialogHeader>
           <DialogTitle>Edit Leadership Profile</DialogTitle>
           <DialogDescription>
@@ -131,13 +149,27 @@ const EditLeaderForm = ({ leader, open, onOpenChange }: EditLeaderFormProps) => 
           </div>
 
           <div>
-            <Label htmlFor="bio">Biography</Label>
-            <Textarea
+            <Label htmlFor="article_title">Leadership Talks Headline</Label>
+            <Input
+              id="article_title"
+              value={formData.article_title}
+              onChange={(e) => setFormData({ ...formData, article_title: e.target.value })}
+              placeholder="Inside Name's Approach to Business and Leadership"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Optional. A matching headline is generated from the leader&apos;s name when blank.
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="bio">Leadership Story</Label>
+            <ArticleContentEditor
               id="bio"
               value={formData.bio}
-              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              rows={6}
+              onChange={(bio) => setFormData({ ...formData, bio })}
               required
+              uploadFolder="leadership/content"
+              placeholder="Write the leadership story. Add section headings, links, lists, quotations, and inline images with the toolbar."
             />
           </div>
 
@@ -228,6 +260,40 @@ const EditLeaderForm = ({ leader, open, onOpenChange }: EditLeaderFormProps) => 
                 </div>
               )}
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="edit-leader-featured-image">Wide Leadership Story Image</Label>
+            <p className="mb-2 text-xs text-muted-foreground">
+              Recommended ratio: 3:2 (for example 1200 × 800). The profile image is used as a fallback.
+            </p>
+            {!formData.featured_image_url ? (
+              <Input
+                id="edit-leader-featured-image"
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={(event) => handleFeaturedImageUpload(event.target.files?.[0])}
+              />
+            ) : (
+              <div className="space-y-3">
+                <img
+                  src={formData.featured_image_url}
+                  alt="Leadership story preview"
+                  className="aspect-[3/2] w-full max-w-md border object-cover object-top"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setFormData({ ...formData, featured_image_url: '' })
+                  }
+                >
+                  <X className="mr-2 h-4 w-4" /> Remove Story Image
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

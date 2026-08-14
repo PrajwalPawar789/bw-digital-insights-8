@@ -3,10 +3,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { toCurrentStorageUrl } from "@/lib/storageUrl";
+import type { Database } from "@/integrations/supabase/types";
 
-const normalizeLeadershipImageUrl = (profile: any) => ({
+type LeadershipRow = Database["public"]["Tables"]["leadership_profiles"]["Row"];
+type LeadershipInsert = Database["public"]["Tables"]["leadership_profiles"]["Insert"];
+type LeadershipUpdate = Database["public"]["Tables"]["leadership_profiles"]["Update"];
+
+const normalizeLeadershipImageUrl = (profile: LeadershipRow): LeadershipRow => ({
   ...profile,
   image_url: toCurrentStorageUrl(profile?.image_url),
+  featured_image_url: toCurrentStorageUrl(profile?.featured_image_url),
 });
 
 export const useLeadershipProfiles = () => {
@@ -62,7 +68,7 @@ export const useCreateLeadership = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (profile: any) => {
+    mutationFn: async (profile: LeadershipInsert) => {
       const { data, error } = await supabase
         .from("leadership_profiles")
         .insert([profile])
@@ -87,7 +93,7 @@ export const useUpdateLeadership = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ id, ...updates }: any) => {
+    mutationFn: async ({ id, ...updates }: LeadershipUpdate & { id: string }) => {
       const { data, error } = await supabase
         .from("leadership_profiles")
         .update(updates)

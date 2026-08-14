@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { slugify } from '@/lib/slugify';
 import { Upload, X } from 'lucide-react';
 import { LEADER_HOME_SECTIONS } from '@/lib/home-placements';
+import ArticleContentEditor from '@/components/admin/ArticleContentEditor';
 
 interface CreateLeaderFormProps {
   open: boolean;
@@ -26,8 +27,10 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
   const [slug, setSlug] = useState('');
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState('');
+  const [articleTitle, setArticleTitle] = useState('');
   const [bio, setBio] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [featuredImageUrl, setFeaturedImageUrl] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [twitterUrl, setTwitterUrl] = useState('');
   const [areasOfExpertise, setAreasOfExpertise] = useState('');
@@ -60,6 +63,16 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
     setSelectedFile(null);
   };
 
+  const handleFeaturedImageUpload = async (file?: File) => {
+    if (!file) return;
+    try {
+      const url = await uploadImage(file, "leadership/featured");
+      setFeaturedImageUrl(url);
+    } catch (error) {
+      console.error('Error uploading leadership story image:', error);
+    }
+  };
+
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -88,8 +101,10 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
       slug: slug || slugify(name),
       title,
       company,
+      article_title: articleTitle.trim() || null,
       bio,
       image_url: imageUrl,
+      featured_image_url: featuredImageUrl || null,
       linkedin_url: linkedinUrl,
       twitter_url: twitterUrl,
       areas_of_expertise: areasOfExpertise,
@@ -117,8 +132,10 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
     setSlug('');
     setTitle('');
     setCompany('');
+    setArticleTitle('');
     setBio('');
     setImageUrl('');
+    setFeaturedImageUrl('');
     setLinkedinUrl('');
     setTwitterUrl('');
     setAreasOfExpertise('');
@@ -130,7 +147,7 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[960px]">
         <DialogHeader>
           <DialogTitle>Create Leadership Profile</DialogTitle>
           <DialogDescription>
@@ -183,14 +200,27 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
           </div>
 
           <div>
-            <Label htmlFor="bio">Biography *</Label>
-            <Textarea
+            <Label htmlFor="article_title">Leadership Talks Headline</Label>
+            <Input
+              id="article_title"
+              value={articleTitle}
+              onChange={(e) => setArticleTitle(e.target.value)}
+              placeholder="Inside Name’s Approach to Business and Leadership"
+            />
+            <p className="mt-1 text-xs text-muted-foreground">
+              Optional. A matching headline is generated from the leader&apos;s name when blank.
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="bio">Leadership Story *</Label>
+            <ArticleContentEditor
               id="bio"
               value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={6}
-              placeholder="Professional biography and achievements"
+              onChange={setBio}
               required
+              uploadFolder="leadership/content"
+              placeholder="Write the leadership story. Add section headings, links, lists, quotations, and inline images with the toolbar."
             />
           </div>
 
@@ -269,6 +299,38 @@ const CreateLeaderForm = ({ open, onOpenChange }: CreateLeaderFormProps) => {
                 </div>
               )}
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="leader-featured-image">Wide Leadership Story Image</Label>
+            <p className="mb-2 text-xs text-muted-foreground">
+              Recommended ratio: 3:2 (for example 1200 × 800). The profile image is used as a fallback.
+            </p>
+            {!featuredImageUrl ? (
+              <Input
+                id="leader-featured-image"
+                type="file"
+                accept="image/*"
+                disabled={uploading}
+                onChange={(event) => handleFeaturedImageUpload(event.target.files?.[0])}
+              />
+            ) : (
+              <div className="space-y-3">
+                <img
+                  src={featuredImageUrl}
+                  alt="Leadership story preview"
+                  className="aspect-[3/2] w-full max-w-md border object-cover object-top"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFeaturedImageUrl('')}
+                >
+                  <X className="mr-2 h-4 w-4" /> Remove Story Image
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

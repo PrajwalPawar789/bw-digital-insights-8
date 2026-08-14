@@ -10,6 +10,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import Home from "@/pages/Home";
 import Magazine from "@/pages/Magazine";
 import MagazineDetail from "@/pages/MagazineDetail";
+import MagazineProfile from "@/pages/MagazineProfile";
 import Articles from "@/pages/Articles";
 import Search from "@/pages/Search";
 import Leadership from "@/pages/Leadership";
@@ -64,6 +65,7 @@ const App = () => (
                     <Route path="/" element={<Home />} />
                     <Route path="/magazine" element={<Magazine />} />
                     <Route path="/magazine/:slug" element={<MagazineDetail />} />
+                    <Route path="/magazine-profile/:slug" element={<MagazineProfile />} />
                     <Route path="/articles" element={<Articles />} />
                     <Route path="/search" element={<Search />} />
                     <Route path="/industry-news" element={<IndustryNews />} />

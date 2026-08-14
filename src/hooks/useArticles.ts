@@ -3,8 +3,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { toCurrentStorageUrl } from "@/lib/storageUrl";
+import type { Database } from "@/integrations/supabase/types";
 
-const normalizeArticleImageUrl = (article: any) => ({
+type ArticleRow = Database["public"]["Tables"]["articles"]["Row"];
+type ArticleInsert = Database["public"]["Tables"]["articles"]["Insert"];
+type ArticleUpdate = Database["public"]["Tables"]["articles"]["Update"];
+
+const normalizeArticleImageUrl = (article: ArticleRow): ArticleRow => ({
   ...article,
   image_url: toCurrentStorageUrl(article?.image_url),
 });
@@ -62,7 +67,7 @@ export const useCreateArticle = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (article: any) => {
+    mutationFn: async (article: ArticleInsert) => {
       const { data, error } = await supabase
         .from("articles")
         .insert([article])
@@ -87,7 +92,7 @@ export const useUpdateArticle = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ id, ...updates }: any) => {
+    mutationFn: async ({ id, ...updates }: ArticleUpdate & { id: string }) => {
       const { data, error } = await supabase
         .from("articles")
         .update(updates)

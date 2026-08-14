@@ -178,11 +178,16 @@ const generate = async () => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  const [articlesResult, magazinesResult, leadershipResult, pressReleasesResult] =
-    await Promise.allSettled([
+  const [
+    articlesResult,
+    magazinesResult,
+    leadershipResult,
+    pressReleasesResult,
+    magazineProfilesResult,
+  ] = await Promise.allSettled([
       supabase
         .from("articles")
-        .select("slug, category, date, updated_at, created_at, image_url")
+        .select("id, slug, category, date, updated_at, created_at, image_url")
         .order("date", { ascending: false }),
       supabase
         .from("magazines")
@@ -190,12 +195,19 @@ const generate = async () => {
         .order("publish_date", { ascending: false }),
       supabase
         .from("leadership_profiles")
-        .select("slug, updated_at, created_at, image_url")
+        .select("slug, updated_at, created_at, image_url, home_sections")
         .order("name", { ascending: true }),
       supabase
         .from("press_releases")
         .select("slug, date, updated_at, created_at, image_url")
         .order("date", { ascending: false }),
+      supabase
+        .from("magazine_articles")
+        .select(
+          "article_id, featured, page_number, articles(slug, date, updated_at, created_at, image_url), magazines(featured_article_id)"
+        )
+        .eq("featured", true)
+        .eq("page_number", 1),
     ]);
 
   const getRows = async (result, label) => {
@@ -215,9 +227,20 @@ const generate = async () => {
     const magazines = await getRows(magazinesResult, "magazines");
     const leadershipProfiles = await getRows(leadershipResult, "leadership profiles");
     const pressReleases = await getRows(pressReleasesResult, "press releases");
+    const magazineProfileRelations = await getRows(
+      magazineProfilesResult,
+      "magazine profiles"
+    );
+
+    const magazineProfileArticleIds = new Set(
+      magazineProfileRelations.map((relation) => relation.article_id)
+    );
 
     const articleEntries = articles
-      .filter((article) => article.slug)
+      .filter(
+        (article) =>
+          article.slug && !magazineProfileArticleIds.has(article.id)
+      )
       .map((article) => ({
         path: `/article/${article.slug}`,
         lastModified: pickLatestLastMod(article.updated_at, article.date, article.created_at),
@@ -241,9 +264,43 @@ const generate = async () => {
       }));
 
     const leadershipEntries = leadershipProfiles
-      .filter((profile) => profile.slug)
+      .filter(
+        (profile) =>
+          profile.slug && !profile.home_sections?.includes("magazine_profile")
+      )
       .map((profile) => ({
         path: `/leadership/${profile.slug}`,
+        lastModified: pickLatestLastMod(profile.updated_at, profile.created_at),
+        imageUrls: normalizeStorageUrl(profile.image_url)
+          ? [normalizeStorageUrl(profile.image_url)]
+          : undefined,
+      }));
+
+    const articleMagazineProfileEntries = Array.from(
+      new Map(
+        magazineProfileRelations
+          .filter((relation) => relation.articles?.slug)
+          .map((relation) => [relation.article_id, relation])
+      ).values()
+    ).map((relation) => ({
+      path: `/magazine-profile/${relation.articles.slug}`,
+      lastModified: pickLatestLastMod(
+        relation.articles.updated_at,
+        relation.articles.date,
+        relation.articles.created_at
+      ),
+      imageUrls: normalizeStorageUrl(relation.articles.image_url)
+        ? [normalizeStorageUrl(relation.articles.image_url)]
+        : undefined,
+    }));
+
+    const leadershipMagazineProfileEntries = leadershipProfiles
+      .filter(
+        (profile) =>
+          profile.slug && profile.home_sections?.includes("magazine_profile")
+      )
+      .map((profile) => ({
+        path: `/magazine-profile/${profile.slug}`,
         lastModified: pickLatestLastMod(profile.updated_at, profile.created_at),
         imageUrls: normalizeStorageUrl(profile.image_url)
           ? [normalizeStorageUrl(profile.image_url)]
@@ -326,6 +383,8 @@ const generate = async () => {
           ...articleEntries,
           ...magazineEntries,
           ...leadershipEntries,
+          ...articleMagazineProfileEntries,
+          ...leadershipMagazineProfileEntries,
           ...pressReleaseEntries,
         ].map((entry) => [entry.path, entry])
       ).values()

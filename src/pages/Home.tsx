@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useMemo, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Loader2,
   ChevronLeft,
@@ -30,6 +30,7 @@ import { useSettings } from "@/hooks/useSettings";
 import { useUpcomingEditions } from "@/hooks/useUpcomingEditions";
 import { useCaseStudies } from "@/hooks/useCaseStudies";
 import { useLinkedinPosts } from "@/hooks/useLinkedinPosts";
+import RegionalMagazineCoverflow from "@/components/home/RegionalMagazineCoverflow";
 import { mapMagazine, type Issue } from "@/lib/magazines-map";
 import type { Article, Leader, PressRelease, Upcoming } from "@/lib/content-types";
 import {
@@ -134,7 +135,6 @@ function pickRegion(m: Issue): (typeof REGIONS)[number]["id"] {
 }
 
 const Home = () => {
-  const navigate = useNavigate();
   const { data: rawMagazines = [], isLoading: magsLoading } = useMagazines();
   const { data: rawArticles = [], isLoading: articlesLoading } = useArticles();
   const { data: rawLeaders = [] } = useLeadershipProfiles();
@@ -225,20 +225,6 @@ const Home = () => {
   }, [magazines]);
 
   const visibleMags = regionalMags[activeRegion] || [];
-
-  // ---- Coverflow state ----
-  const [activeIdx, setActiveIdx] = useState(0);
-  const [isDraggingCovers, setIsDraggingCovers] = useState(false);
-  const coverDragStart = useRef(0);
-  const coverDidDrag = useRef(false);
-  useEffect(() => { setActiveIdx(0); }, [activeRegion]);
-  useEffect(() => {
-    if (visibleMags.length < 2 || isDraggingCovers) return;
-    const t = setInterval(() => {
-      setActiveIdx((i) => (i + 1) % visibleMags.length);
-    }, 3500);
-    return () => clearInterval(t);
-  }, [visibleMags.length, isDraggingCovers]);
 
   // ---- Articles grid (3×3) — only articles tagged "grid" ----
   const gridArticles = useMemo(() => {
@@ -452,7 +438,7 @@ const Home = () => {
 
         {/* ============== TABBED MAGAZINE HERO ============== */}
         <section className="bg-white py-3 sm:py-5">
-          <div className="max-w-[1200px] mx-auto px-4">
+          <div className="mx-auto max-w-[1360px] px-0">
             <div className="overflow-hidden rounded-[12px] border border-black bg-white">
             <div className="grid grid-cols-5 gap-0" role="tablist" aria-label="Magazine editions">
               {REGIONS.map((r) => {
@@ -478,7 +464,7 @@ const Home = () => {
                 );
               })}
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_330px] gap-2 lg:gap-5 items-center px-3 sm:px-5 py-4">
+            <div className="grid grid-cols-1 items-center gap-2 px-3 py-4 sm:px-5 lg:grid-cols-[minmax(0,1fr)_430px] lg:gap-5">
               {/* LEFT */}
               <div>
                 <div className="grid grid-cols-1 sm:grid-cols-[190px_1fr] gap-2 sm:gap-5 items-center mb-2">
@@ -500,122 +486,12 @@ const Home = () => {
                   </p>
                 </div>
 
-                {/* Coverflow */}
-                <div
-                  className={`relative h-[245px] sm:h-[270px] flex items-center justify-center select-none overflow-hidden touch-pan-y ${isDraggingCovers ? "cursor-grabbing" : "cursor-grab"}`}
-                  style={{ perspective: "1600px" }}
-                  onPointerDown={(event) => {
-                    coverDragStart.current = event.clientX;
-                    coverDidDrag.current = false;
-                    setIsDraggingCovers(true);
-                    event.currentTarget.setPointerCapture(event.pointerId);
-                  }}
-                  onPointerMove={(event) => {
-                    if (!isDraggingCovers) return;
-                    if (Math.abs(event.clientX - coverDragStart.current) > 8) coverDidDrag.current = true;
-                  }}
-                  onPointerUp={(event) => {
-                    const distance = event.clientX - coverDragStart.current;
-                    if (Math.abs(distance) >= 45 && visibleMags.length > 1) {
-                      setActiveIdx((index) =>
-                        distance < 0
-                          ? (index + 1) % visibleMags.length
-                          : (index - 1 + visibleMags.length) % visibleMags.length
-                      );
-                    }
-                    setIsDraggingCovers(false);
-                    event.currentTarget.releasePointerCapture(event.pointerId);
-                  }}
-                  onPointerCancel={() => setIsDraggingCovers(false)}
-                >
-                  {visibleMags.map((m, i) => {
-                    const len = visibleMags.length;
-                    let offset = i - activeIdx;
-                    if (offset > len / 2) offset -= len;
-                    if (offset < -len / 2) offset += len;
-                    const abs = Math.abs(offset);
-                    if (abs > 3) return null;
-                    const scale = abs === 0 ? 1 : abs === 1 ? 0.86 : abs === 2 ? 0.72 : 0.6;
-                    // Per-depth offsets tuned so each magazine in the fan stays
-                    // visibly separated (~75% of every outer cover stays visible).
-                    const translateX =
-                      offset === 0
-                        ? 0
-                        : Math.sign(offset) * [0, 112, 205, 280][abs];
-                    const z = 30 - abs;
-                    const opacity = 1;
-                    const sharpCover = sharpen(m.cover, 1400);
-                    const isActive = offset === 0;
-                    return (
-                      <button
-                        key={`${m.id}-${i}`}
-                        type="button"
-                        onClick={() => {
-                          if (coverDidDrag.current) {
-                            coverDidDrag.current = false;
-                            return;
-                          }
-                          if (isActive && m.slug) {
-                            navigate(`/magazine/${m.slug}`);
-                          } else {
-                            setActiveIdx(i);
-                          }
-                        }}
-                        aria-label={isActive ? `Open ${m.title}` : `Show ${m.title}`}
-                        className="absolute top-1/2 left-1/2 cursor-pointer"
-                        style={{
-                          transform: `translate3d(-50%, -50%, 0) translateX(${translateX}px) scale(${scale})`,
-                          zIndex: z,
-                          opacity,
-                          willChange: "transform, opacity",
-                          transition:
-                            "transform 800ms cubic-bezier(0.22, 1, 0.36, 1), opacity 800ms cubic-bezier(0.22, 1, 0.36, 1)",
-                          transformOrigin: "center center",
-                        }}
-                      >
-                        <div
-                          className="relative w-[142px] sm:w-[158px] aspect-[3/4] overflow-hidden bg-neutral-100 rounded-sm"
-                          style={{
-                            boxShadow:
-                              abs === 0
-                                ? "0 18px 30px -12px rgba(0,0,0,0.55), 0 5px 12px -7px rgba(0,0,0,0.45)"
-                                : "0 12px 22px -14px rgba(0,0,0,0.45)",
-                          }}
-                        >
-                          <img
-                            src={sharpCover}
-                            alt={m.title}
-                            loading="eager"
-                            decoding="async"
-                            draggable={false}
-                            className="w-full h-full object-contain bg-black"
-                            style={{ filter: "none", backfaceVisibility: "hidden" }}
-                          />
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                <RegionalMagazineCoverflow
+                  magazines={visibleMags}
+                  region={activeRegion}
+                />
 
-                {/* Pagination dots */}
-                <div className="flex justify-center gap-1.5 mt-1">
-                  {visibleMags.slice(0, Math.min(10, visibleMags.length)).map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setActiveIdx(i)}
-                      aria-label={`Go to slide ${i + 1}`}
-                      className="h-1.5 rounded-full transition-all"
-                      style={{
-                        width: i === activeIdx % Math.min(10, visibleMags.length) ? 22 : 6,
-                        backgroundColor:
-                          i === activeIdx % Math.min(10, visibleMags.length) ? RED : "#d4d4d4",
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <div className="flex justify-center mt-3">
+                <div className="mt-3 flex justify-center">
                   <Link
                     to="/magazine"
                     className="px-5 py-2 bg-black text-white text-[11px] font-bold hover:bg-neutral-800 transition"
@@ -627,7 +503,7 @@ const Home = () => {
 
               {/* RIGHT: continent map */}
               <div className="hidden lg:block relative">
-                <div className="h-[330px] flex items-center justify-center">
+                <div className="flex h-[420px] items-center justify-center">
                   <ContinentMap region={activeRegion} />
                 </div>
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-1.5">
@@ -998,7 +874,7 @@ const Home = () => {
               </div>
               {magProfileLead && (
                 <Link
-                  to={`/leadership/${magProfileLead.slug || ""}`}
+                  to={`/magazine-profile/${magProfileLead.slug || ""}`}
                   className="group grid grid-cols-1 sm:grid-cols-2 gap-0 mb-5 pb-5 border-b border-neutral-300"
                 >
                   <div className="aspect-[3/2] overflow-hidden bg-neutral-100">
@@ -1029,7 +905,7 @@ const Home = () => {
                 {magProfileSecondary.map((l) => (
                   <Link
                     key={l.id}
-                    to={`/leadership/${l.slug || ""}`}
+                    to={`/magazine-profile/${l.slug || ""}`}
                     className="group grid grid-cols-[33%_67%] items-start sm:pr-3 sm:border-r border-neutral-300 even:border-r-0 even:pl-3"
                   >
                     <div className="aspect-[3/2] w-full overflow-hidden bg-neutral-100">

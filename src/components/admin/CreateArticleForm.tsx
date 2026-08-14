@@ -14,6 +14,7 @@ import { slugify } from '@/lib/slugify';
 import { Upload, X } from 'lucide-react';
 import { articleCategories } from '@/lib/articleCategories';
 import { ARTICLE_HOME_PLACEMENTS } from '@/lib/home-placements';
+import ArticleContentEditor from './ArticleContentEditor';
 
 interface CreateArticleFormProps {
   open: boolean;
@@ -31,6 +32,14 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
   const [author, setAuthor] = useState('');
   const [category, setCategory] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [imageSource, setImageSource] = useState('');
+  const [imageSourceUrl, setImageSourceUrl] = useState('');
+  const [publishDate, setPublishDate] = useState(() => {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16);
+  });
   const [featured, setFeatured] = useState(false);
   const [homePlacement, setHomePlacement] = useState('none');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -86,9 +95,11 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
       author,
       category,
       image_url: imageUrl,
+      image_source: imageSource.trim() || null,
+      image_source_url: imageSourceUrl.trim() || null,
       featured,
       home_placement: homePlacement === 'none' ? null : homePlacement,
-      date: new Date().toISOString(),
+      date: new Date(publishDate).toISOString(),
     };
 
     console.log('Creating article with data:', articleData);
@@ -113,14 +124,22 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
     setAuthor('');
     setCategory('');
     setImageUrl('');
+    setImageSource('');
+    setImageSourceUrl('');
     setFeatured(false);
     setHomePlacement('none');
     setSelectedFile(null);
+    const now = new Date();
+    setPublishDate(
+      new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 16)
+    );
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[960px] max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Article</DialogTitle>
           <DialogDescription>
@@ -164,12 +183,10 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
 
           <div>
             <Label htmlFor="content">Content *</Label>
-            <Textarea
+            <ArticleContentEditor
               id="content"
               value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={8}
-              placeholder="Write your article content here"
+              onChange={setContent}
               required
             />
           </div>
@@ -212,6 +229,17 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="publishDate">Publish Date and Time *</Label>
+            <Input
+              id="publishDate"
+              type="datetime-local"
+              value={publishDate}
+              onChange={(event) => setPublishDate(event.target.value)}
+              required
+            />
           </div>
 
           <div>
@@ -266,6 +294,28 @@ const CreateArticleForm = ({ open, onOpenChange }: CreateArticleFormProps) => {
                   )}
                 </div>
               )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <Label htmlFor="imageSource">Featured Image Source</Label>
+              <Input
+                id="imageSource"
+                value={imageSource}
+                onChange={(event) => setImageSource(event.target.value)}
+                placeholder="Example: Google DeepMind"
+              />
+            </div>
+            <div>
+              <Label htmlFor="imageSourceUrl">Image Source URL</Label>
+              <Input
+                id="imageSourceUrl"
+                type="url"
+                value={imageSourceUrl}
+                onChange={(event) => setImageSourceUrl(event.target.value)}
+                placeholder="https://example.com/source"
+              />
             </div>
           </div>
 

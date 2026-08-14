@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  BookOpen,
   ChevronLeft,
   ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Grid3X3,
   Loader2,
   Maximize2,
-  Minus,
-  Plus,
+  Volume2,
+  VolumeX,
+  ZoomIn,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 declare global {
   interface Window {
@@ -21,26 +23,19 @@ interface MagazineFlipbookEmbedProps {
   title?: string;
   initialPage?: number;
   onOpenFullscreen?: () => void;
-  onReadFullIssue?: () => void;
   onPageChange?: (page: number) => void;
 }
 
-const formatPage = (value?: number | null) => {
-  if (!value || Number.isNaN(value)) {
-    return "--";
-  }
-  return value.toString().padStart(2, "0");
-};
-
 const FLIPBOOK_RETRY_DELAY_MS = 60;
 const MAX_FLIPBOOK_SYNC_ATTEMPTS = 30;
+const PAGE_TURN_SOUND_URL =
+  "https://cdnm.heyzine.com/flipbook/snd/flip-ct-sm.mp3";
 
 const MagazineFlipbookEmbed = ({
   pdfUrl,
   title,
   initialPage,
   onOpenFullscreen,
-  onReadFullIssue,
   onPageChange,
 }: MagazineFlipbookEmbedProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -62,6 +57,8 @@ const MagazineFlipbookEmbed = ({
   const [pageCount, setPageCount] = useState<number | null>(null);
   const [initNonce, setInitNonce] = useState(0);
   const [hasFocus, setHasFocus] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [thumbnailsOpen, setThumbnailsOpen] = useState(false);
 
   useEffect(() => {
     titleRef.current = title;
@@ -282,13 +279,14 @@ const MagazineFlipbookEmbed = ({
       webgl: !isMobile,
       webglShadow: !isMobile,
       controlsPosition: "hide",
-      backgroundColor: "transparent",
+      backgroundColor: "#000000",
       backgroundImage: "",
       showThumbnails: false,
       showShare: false,
       showPageNumber: false,
       autoPlay: false,
-      soundEnable: false,
+      soundEnable: true,
+      soundFile: PAGE_TURN_SOUND_URL,
       enableDownload: false,
       enablePrint: false,
       paddingTop: 0,
@@ -383,20 +381,47 @@ const MagazineFlipbookEmbed = ({
     window.requestAnimationFrame(() => updatePageState(instance));
   }, [getControllableInstance, updatePageState]);
 
+  const handleFirst = useCallback(() => {
+    const instance = getControllableInstance();
+    if (!readyRef.current || !instance) {
+      return;
+    }
+    instance.gotoPage(1);
+    window.requestAnimationFrame(() => updatePageState(instance));
+  }, [getControllableInstance, updatePageState]);
+
+  const handleLast = useCallback(() => {
+    const instance = getControllableInstance();
+    const totalPages = pageCountRef.current;
+    if (!readyRef.current || !instance || !totalPages) {
+      return;
+    }
+    instance.gotoPage(totalPages);
+    window.requestAnimationFrame(() => updatePageState(instance));
+  }, [getControllableInstance, updatePageState]);
+
+  const handleThumbnails = useCallback(() => {
+    const instance = instanceRef.current;
+    if (!readyRef.current || !instance) {
+      return;
+    }
+
+    if (instance.ui?.thumbnail?.trigger) {
+      instance.ui.thumbnail.trigger("click");
+    } else if (instance.target?.thumbContainer) {
+      instance.target.thumbContainer.toggleClass?.("df-sidemenu-visible");
+    } else {
+      instance.contentProvider?.initThumbs?.();
+    }
+    setThumbnailsOpen((value) => !value);
+  }, []);
+
   const handleZoomIn = useCallback(() => {
     const instance = getControllableInstance();
     if (!readyRef.current || !instance) {
       return;
     }
     instance.zoom?.(1);
-  }, [getControllableInstance]);
-
-  const handleZoomOut = useCallback(() => {
-    const instance = getControllableInstance();
-    if (!readyRef.current || !instance) {
-      return;
-    }
-    instance.zoom?.(-1);
   }, [getControllableInstance]);
 
   const handleOpenFullscreen = useCallback(() => {
@@ -421,13 +446,17 @@ const MagazineFlipbookEmbed = ({
     container?.requestFullscreen?.();
   }, [onOpenFullscreen]);
 
-  const handleReadFullIssue = useCallback(() => {
-    if (onReadFullIssue) {
-      onReadFullIssue();
-      return;
-    }
-    window.open(pdfUrl, "_blank", "noopener,noreferrer");
-  }, [onReadFullIssue, pdfUrl]);
+  const handleToggleSound = useCallback(() => {
+    setSoundEnabled((value) => {
+      const nextValue = !value;
+      const instance = instanceRef.current;
+      if (instance?.options) {
+        instance.options.soundEnable = nextValue;
+      }
+      instance?.ui?.updateSound?.();
+      return nextValue;
+    });
+  }, []);
 
   const handleRetry = useCallback(() => {
     setError(null);
@@ -441,7 +470,7 @@ const MagazineFlipbookEmbed = ({
       aria-label={`${title || "Magazine"} preview`}
     >
       <div
-        className="magazine-embed-frame group focus-visible:ring-2 focus-visible:ring-insightRed/40"
+        className="magazine-embed-frame"
         role="region"
         aria-busy={!isReady}
         tabIndex={0}
@@ -456,137 +485,102 @@ const MagazineFlipbookEmbed = ({
           setHasFocus(false);
         }}
       >
-        <div className="relative flex justify-center">
-          <div className="relative w-full max-w-[1100px] aspect-[16/9] min-h-[280px] sm:min-h-[360px] lg:min-h-[520px]">
-            <div
-              className="pointer-events-none absolute inset-0 rounded-[32px] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.65),rgba(0,0,0,0.0)_65%)] opacity-90 blur-2xl"
-              aria-hidden="true"
-            />
-            <div
-              className="pointer-events-none absolute inset-0 rounded-[32px] bg-[radial-gradient(circle_at_center,rgba(10,10,10,0.18),rgba(0,0,0,0)_60%)]"
-              aria-hidden="true"
-            />
-            <div
-              className={`relative h-full w-full rounded-[28px] border border-white/40 bg-white/80 shadow-[0_40px_120px_-60px_rgba(0,0,0,0.65)] backdrop-blur-xl transition-transform duration-700 ${
-                isReady ? "scale-100" : "scale-[0.985]"
-              } group-hover:scale-[1.01]`}
-            >
-              <div
-                ref={containerRef}
-                className="magazine-embed-target absolute inset-0 touch-pan-y"
-              />
+        <div ref={containerRef} className="magazine-embed-target absolute inset-0 touch-pan-y" />
 
-              {!isReady && !error && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[28px] bg-white/75 backdrop-blur-sm">
-                  <div className="w-[70%] max-w-[420px] space-y-4 text-center">
-                    <div className="premium-loading h-3 w-24 rounded-full mx-auto" />
-                    <div className="premium-loading h-3 w-full rounded-full" />
-                    <div className="premium-loading h-3 w-5/6 rounded-full mx-auto" />
-                    <div className="flex items-center justify-center gap-2 text-xs text-gray-600">
-                      <Loader2 className="h-4 w-4 animate-spin text-insightRed" />
-                      Preparing the executive preview
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {error && (
-                <div
-                  className="absolute inset-0 z-10 flex items-center justify-center rounded-[28px] bg-white/80 text-center"
-                  role="alert"
-                >
-                  <div className="space-y-4 px-6">
-                    <p className="text-sm font-semibold text-insightBlack">{error}</p>
-                    <Button
-                      variant="outline"
-                      className="h-10 px-4"
-                      onClick={handleRetry}
-                    >
-                      Retry Preview
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="magazine-control-bar mt-6 flex flex-col gap-4 rounded-2xl border border-white/40 bg-white/70 px-4 py-4 text-insightBlack shadow-[0_20px_40px_-30px_rgba(0,0,0,0.5)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:px-6"
-          role="toolbar"
-          aria-label="Preview controls"
+        <button
+          type="button"
+          onClick={handlePrev}
+          className={`magazine-page-arrow magazine-page-arrow--left ${
+            currentPage <= 1 ? "is-hidden" : pageCount && currentPage >= pageCount ? "is-single-page" : ""
+          }`}
+          aria-label="Previous page"
+          title="Previous page"
+          disabled={!isReady}
         >
-          <div className="flex items-center justify-between gap-4 sm:justify-start">
-            <button
-              type="button"
-              onClick={handlePrev}
-              className="flex h-12 w-12 items-center justify-center rounded-full border border-black/10 bg-white/80 text-insightBlack transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-insightRed/40 disabled:opacity-50"
-              aria-label="Previous page"
-              disabled={!isReady}
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <div
-              className="rounded-full border border-black/10 bg-white/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-gray-700"
-              aria-live="polite"
-            >
-              {formatPage(currentPage)} <span className="text-gray-400">/</span>{" "}
-              {formatPage(pageCount)}
-            </div>
-            <button
-              type="button"
-              onClick={handleNext}
-              className="flex h-12 w-12 items-center justify-center rounded-full border border-black/10 bg-white/80 text-insightBlack transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-insightRed/40 disabled:opacity-50"
-              aria-label="Next page"
-              disabled={!isReady}
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
+          <ChevronLeft aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={handleNext}
+          className={`magazine-page-arrow magazine-page-arrow--right ${
+            currentPage <= 1 ? "is-single-page" : pageCount && currentPage >= pageCount ? "is-hidden" : ""
+          }`}
+          aria-label="Next page"
+          title="Next page"
+          disabled={!isReady}
+        >
+          <ChevronRight aria-hidden="true" />
+        </button>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="flex items-center justify-between gap-2 rounded-full border border-white/50 bg-white/70 px-3 py-2">
+        <div className="magazine-viewer-tools" role="toolbar" aria-label="Magazine controls">
+          <button type="button" onClick={handleFirst} aria-label="First page" title="First page" disabled={!isReady}>
+            <ChevronsLeft aria-hidden="true" />
+          </button>
+          <button type="button" onClick={handlePrev} aria-label="Previous page" title="Previous page" disabled={!isReady}>
+            <ChevronLeft aria-hidden="true" />
+          </button>
+          <button type="button" onClick={handleNext} aria-label="Next page" title="Next page" disabled={!isReady}>
+            <ChevronRight aria-hidden="true" />
+          </button>
+          <button type="button" onClick={handleLast} aria-label="Last page" title="Last page" disabled={!isReady}>
+            <ChevronsRight aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={handleThumbnails}
+            aria-label="Toggle page thumbnails"
+            title="Page thumbnails"
+            aria-pressed={thumbnailsOpen}
+            className={thumbnailsOpen ? "is-active" : undefined}
+            disabled={!isReady}
+          >
+            <Grid3X3 aria-hidden="true" />
+          </button>
+          <button type="button" onClick={handleZoomIn} aria-label="Zoom in" title="Zoom in" disabled={!isReady}>
+            <ZoomIn aria-hidden="true" />
+          </button>
+          <button type="button" onClick={handleOpenFullscreen} aria-label="Open fullscreen" title="Fullscreen" disabled={!isReady}>
+            <Maximize2 aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={handleToggleSound}
+            aria-label={soundEnabled ? "Turn page sound off" : "Turn page sound on"}
+            title={soundEnabled ? "Sound on" : "Sound off"}
+            aria-pressed={soundEnabled}
+            disabled={!isReady}
+          >
+            {soundEnabled ? <Volume2 aria-hidden="true" /> : <VolumeX aria-hidden="true" />}
+          </button>
+        </div>
+
+        <span className="sr-only" aria-live="polite">
+          Page {currentPage}{pageCount ? ` of ${pageCount}` : ""}
+        </span>
+
+        {!isReady && !error && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black text-white">
+            <div className="flex items-center gap-2 text-sm">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              Loading magazine
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black text-center text-white" role="alert">
+            <div className="space-y-4 px-6">
+              <p className="text-sm font-semibold">{error}</p>
               <button
                 type="button"
-                onClick={handleZoomOut}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white text-insightBlack transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-insightRed/40 disabled:opacity-50"
-                aria-label="Zoom out"
-                disabled={!isReady}
+                className="border border-white bg-white px-5 py-2 text-xs font-bold text-black transition hover:bg-black hover:text-white"
+                onClick={handleRetry}
               >
-                <Minus className="h-4 w-4" />
-              </button>
-              <span className="px-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-gray-600">
-                Zoom
-              </span>
-              <button
-                type="button"
-                onClick={handleZoomIn}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white text-insightBlack transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-insightRed/40 disabled:opacity-50"
-                aria-label="Zoom in"
-                disabled={!isReady}
-              >
-                <Plus className="h-4 w-4" />
+                Retry Preview
               </button>
             </div>
-            <Button
-              variant="outline"
-              className="h-12 rounded-full border-white/50 bg-white/70 px-5 text-sm text-insightBlack hover:bg-white"
-              onClick={handleOpenFullscreen}
-              aria-label="Open fullscreen"
-            >
-              <Maximize2 className="h-4 w-4" />
-              Open Fullscreen
-            </Button>
-            <Button
-              className="btn-premium h-12 rounded-full px-6 text-sm font-semibold"
-              onClick={handleReadFullIssue}
-              aria-label="Read full issue"
-            >
-              <BookOpen className="h-4 w-4" />
-              Read Full Issue
-            </Button>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

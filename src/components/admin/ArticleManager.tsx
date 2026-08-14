@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useArticles, useDeleteArticle } from '@/hooks/useArticles';
 import { useUpdateDatabaseSettings } from '@/hooks/useUpdateDatabaseSettings';
 import { useSettings } from '@/hooks/useSettings';
@@ -10,6 +10,9 @@ import { Edit, Trash2, Plus, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import CreateArticleForm from './CreateArticleForm';
 import EditArticleForm from './EditArticleForm';
+import type { Database } from '@/integrations/supabase/types';
+
+type Article = Database['public']['Tables']['articles']['Row'];
 
 const ArticleManager = () => {
   const { data: articles = [], isLoading, error } = useArticles();
@@ -19,7 +22,7 @@ const ArticleManager = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [createFormOpen, setCreateFormOpen] = useState(false);
   const [editFormOpen, setEditFormOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this article?')) {
@@ -34,7 +37,7 @@ const ArticleManager = () => {
     }
   };
 
-  const handleEdit = (article: any) => {
+  const handleEdit = (article: Article) => {
     setSelectedArticle(article);
     setEditFormOpen(true);
   };

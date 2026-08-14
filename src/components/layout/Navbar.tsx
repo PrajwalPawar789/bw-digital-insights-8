@@ -27,15 +27,19 @@ const Navbar = () => {
 
   return (
     <header className="relative z-[1000] bg-black text-white border-b border-white/10">
-      <div className="max-w-[1360px] mx-auto px-3 sm:px-5">
-        <div className="h-[64px] flex items-center gap-6">
-          <Link to="/" className="shrink-0" aria-label="The CIO Vision home">
+      <div className="w-full px-3 sm:px-[1.2vw]">
+        <div className="flex h-[64px] items-center gap-6 lg:h-[4.5vw] lg:min-h-[64px] lg:max-h-[82px]">
+          <Link
+            to="/"
+            className="flex h-full shrink-0 items-center overflow-hidden"
+            aria-label="The CIO Vision home"
+          >
             <img
-              src="/ciovision-logo-cropped.png"
+              src="/ciovisionnavbarlogo2.png"
               alt="The CIO Vision Business Magazine"
-              width="1680"
-              height="385"
-              className="w-[215px] sm:w-[260px] h-auto object-contain"
+              width="2000"
+              height="332"
+              className="h-auto w-[230px] object-contain sm:w-[280px] lg:w-[25vw] lg:max-w-[430px]"
             />
           </Link>
 

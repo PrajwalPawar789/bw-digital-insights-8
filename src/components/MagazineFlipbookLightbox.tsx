@@ -13,7 +13,6 @@ interface MagazineFlipbookLightboxProps {
   open: boolean;
   onClose: () => void;
   pdfUrl: string;
-  bgImageUrl?: string;
   title?: string;
   initialPage?: number;
 }
@@ -27,12 +26,13 @@ const formatPage = (value?: number | null) => {
 
 const FLIPBOOK_RETRY_DELAY_MS = 60;
 const MAX_FLIPBOOK_SYNC_ATTEMPTS = 30;
+const PAGE_TURN_SOUND_URL =
+  "https://cdnm.heyzine.com/flipbook/snd/flip-ct-sm.mp3";
 
 const MagazineFlipbookLightbox = ({
   open,
   onClose,
   pdfUrl,
-  bgImageUrl,
   title,
   initialPage,
 }: MagazineFlipbookLightboxProps) => {
@@ -263,9 +263,10 @@ const MagazineFlipbookLightbox = ({
         showShare: false,
         showPageNumber: false,
         autoPlay: false,
-        soundEnable: false,
-        backgroundColor: "transparent",
-        backgroundImage: bgImageUrl,
+        soundEnable: true,
+        soundFile: PAGE_TURN_SOUND_URL,
+        backgroundColor: "#000000",
+        backgroundImage: "",
         enableDownload: false,
         enablePrint: false,
         paddingTop: 0,
@@ -305,7 +306,7 @@ const MagazineFlipbookLightbox = ({
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [bgImageUrl, clearPendingPageRetry, clearReadyRetry, handleFlip, handleReady, initialPage, open, pdfUrl, initNonce]);
+  }, [clearPendingPageRetry, clearReadyRetry, handleFlip, handleReady, initialPage, open, pdfUrl, initNonce]);
 
   useEffect(() => {
     if (open) {
@@ -431,7 +432,7 @@ const MagazineFlipbookLightbox = ({
 
         <div className="relative flex-1 px-4 pb-6 sm:px-8 sm:pb-8">
           <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-black/30">
-            <div ref={viewerRef} className="h-full w-full" />
+            <div ref={viewerRef} className="magazine-lightbox-viewer h-full w-full" />
 
             {!isReady && !error && (
               <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40">

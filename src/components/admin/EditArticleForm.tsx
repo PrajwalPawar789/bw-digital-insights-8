@@ -12,9 +12,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Upload, X } from 'lucide-react';
 import { articleCategories } from '@/lib/articleCategories';
 import { ARTICLE_HOME_PLACEMENTS } from '@/lib/home-placements';
+import ArticleContentEditor from './ArticleContentEditor';
+import type { Database } from '@/integrations/supabase/types';
+
+type Article = Database['public']['Tables']['articles']['Row'];
+
+const toLocalDateTime = (value: string) => {
+  const date = new Date(value);
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+};
 
 interface EditArticleFormProps {
-  article: any;
+  article: Article;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -31,6 +42,9 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
     category: article?.category || '',
     featured: article?.featured || false,
     image_url: article?.image_url || '',
+    image_source: article?.image_source || '',
+    image_source_url: article?.image_source_url || '',
+    date: toLocalDateTime(article?.date || new Date().toISOString()),
     home_placement: article?.home_placement || 'none'
   });
 
@@ -73,6 +87,9 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
       await updateArticle.mutateAsync({
         id: article.id,
         ...formData,
+        image_source: formData.image_source.trim() || null,
+        image_source_url: formData.image_source_url.trim() || null,
+        date: new Date(formData.date).toISOString(),
         home_placement: formData.home_placement === 'none' ? null : formData.home_placement
       });
       onOpenChange(false);
@@ -85,7 +102,7 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[960px] max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Article</DialogTitle>
           <DialogDescription>
@@ -116,11 +133,10 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
 
           <div>
             <Label htmlFor="content">Content</Label>
-            <Textarea
+            <ArticleContentEditor
               id="content"
               value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              rows={10}
+              onChange={(content) => setFormData({ ...formData, content })}
               required
             />
           </div>
@@ -154,6 +170,17 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
           </div>
 
           <div>
+            <Label htmlFor="edit-publish-date">Publish Date and Time</Label>
+            <Input
+              id="edit-publish-date"
+              type="datetime-local"
+              value={formData.date}
+              onChange={(event) => setFormData({ ...formData, date: event.target.value })}
+              required
+            />
+          </div>
+
+          <div>
             <Label htmlFor="home_placement">Home Page Placement</Label>
             <Select
               value={formData.home_placement}
@@ -170,6 +197,32 @@ const EditArticleForm = ({ article, open, onOpenChange }: EditArticleFormProps) 
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <Label htmlFor="edit-image-source">Featured Image Source</Label>
+              <Input
+                id="edit-image-source"
+                value={formData.image_source}
+                onChange={(event) =>
+                  setFormData({ ...formData, image_source: event.target.value })
+                }
+                placeholder="Example: Google DeepMind"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-image-source-url">Image Source URL</Label>
+              <Input
+                id="edit-image-source-url"
+                type="url"
+                value={formData.image_source_url}
+                onChange={(event) =>
+                  setFormData({ ...formData, image_source_url: event.target.value })
+                }
+                placeholder="https://example.com/source"
+              />
+            </div>
           </div>
 
           <div>

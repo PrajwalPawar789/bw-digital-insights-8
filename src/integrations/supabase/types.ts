@@ -56,6 +56,8 @@ export type Database = {
           home_order: number | null
           home_placement: string | null
           id: string
+          image_source: string | null
+          image_source_url: string | null
           image_url: string | null
           slug: string
           title: string
@@ -72,6 +74,8 @@ export type Database = {
           home_order?: number | null
           home_placement?: string | null
           id?: string
+          image_source?: string | null
+          image_source_url?: string | null
           image_url?: string | null
           slug: string
           title: string
@@ -88,6 +92,8 @@ export type Database = {
           home_order?: number | null
           home_placement?: string | null
           id?: string
+          image_source?: string | null
+          image_source_url?: string | null
           image_url?: string | null
           slug?: string
           title?: string
@@ -327,10 +333,12 @@ export type Database = {
       leadership_profiles: {
         Row: {
           areas_of_expertise: string | null
+          article_title: string | null
           bio: string
           company: string | null
           created_at: string | null
           featured: boolean | null
+          featured_image_url: string | null
           home_order: number | null
           home_sections: string[] | null
           id: string
@@ -345,10 +353,12 @@ export type Database = {
         }
         Insert: {
           areas_of_expertise?: string | null
+          article_title?: string | null
           bio: string
           company?: string | null
           created_at?: string | null
           featured?: boolean | null
+          featured_image_url?: string | null
           home_order?: number | null
           home_sections?: string[] | null
           id?: string
@@ -363,10 +373,12 @@ export type Database = {
         }
         Update: {
           areas_of_expertise?: string | null
+          article_title?: string | null
           bio?: string
           company?: string | null
           created_at?: string | null
           featured?: boolean | null
+          featured_image_url?: string | null
           home_order?: number | null
           home_sections?: string[] | null
           id?: string
