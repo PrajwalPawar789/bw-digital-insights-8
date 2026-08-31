@@ -10,6 +10,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import Home from "@/pages/Home";
 import Magazine from "@/pages/Magazine";
 import MagazineDetail from "@/pages/MagazineDetail";
+import MagazineFlipHtml5Test from "@/pages/MagazineFlipHtml5Test";
 import MagazineProfile from "@/pages/MagazineProfile";
 import Articles from "@/pages/Articles";
 import Search from "@/pages/Search";
@@ -64,6 +65,10 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/magazine" element={<Magazine />} />
+                    <Route
+                      path="/magazine/the-most-influential-career-coach-inspiring-women-leaders-in-2025-New-fliphtml5"
+                      element={<MagazineFlipHtml5Test />}
+                    />
                     <Route path="/magazine/:slug" element={<MagazineDetail />} />
                     <Route path="/magazine-profile/:slug" element={<MagazineProfile />} />
                     <Route path="/articles" element={<Articles />} />
