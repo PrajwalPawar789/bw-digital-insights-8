@@ -330,23 +330,22 @@ const MagazineProfile = () => {
             </article>
 
             <aside className="border border-black bg-white lg:sticky lg:top-[70px]" aria-label="Profile details">
-              {sidebarMagazine && (
-                <div className="px-10 pt-3 text-center">
-                  <Link to={`/magazine/${sidebarMagazine.slug}`} className="group block">
-                    <img
-                      src={sidebarMagazine.cover_image_url || FALLBACK_IMAGE}
-                      alt={sidebarMagazine.title}
-                      className="mx-auto aspect-[576/756] w-full border border-neutral-300 object-cover"
-                      loading="lazy"
-                    />
-                    <h2 className="mt-2 font-serif text-[19px] font-bold leading-[1.15] group-hover:text-[#e62429]">
-                      {sidebarMagazine.title}
-                    </h2>
-                  </Link>
-                </div>
-              )}
+              <div className="px-6 pt-5 text-center">
+                <img
+                  src={profile.image_url || FALLBACK_IMAGE}
+                  alt={profile.name}
+                  className="mx-auto aspect-[4/3] w-full border border-neutral-300 object-cover object-top"
+                  loading="lazy"
+                />
+                <h2 className="mt-3 font-serif text-[20px] font-bold leading-tight">
+                  {profile.name.trim()}
+                </h2>
+                <p className="mt-1 font-sans text-xs text-neutral-600">
+                  {profile.title}{profile.company ? ` at ${profile.company}` : ""}
+                </p>
+              </div>
 
-              <div className="space-y-1.5 px-3 py-4 font-serif text-[16px] leading-[1.28]">
+              <div className="mt-4 space-y-1.5 border-t border-neutral-200 px-3 py-4 font-serif text-[15px] leading-[1.3]">
                 <p>
                   <strong>Featured Person:</strong> {profile.name.trim()} ({profile.title})
                 </p>
@@ -363,6 +362,11 @@ const MagazineProfile = () => {
                     <strong>Expertise:</strong> {profile.areas_of_expertise}
                   </p>
                 )}
+                {sidebarMagazine && (
+                  <p>
+                    <strong>Featured In Edition:</strong> {sidebarMagazine.title}
+                  </p>
+                )}
                 {publishedLabel && (
                   <p>
                     <strong>Profile Published:</strong> {publishedLabel}
@@ -376,7 +380,7 @@ const MagazineProfile = () => {
                     to={`/magazine/${sidebarMagazine.slug}`}
                     className="inline-flex min-h-10 items-center justify-center gap-2 bg-black px-3 text-xs font-bold text-white transition hover:bg-[#e62429]"
                   >
-                    <Globe2 className="h-4 w-4" /> Magazine
+                    <Globe2 className="h-4 w-4" /> View Edition
                   </Link>
                 )}
                 {profile.linkedin_url && (
