@@ -35,11 +35,11 @@ const Navbar = () => {
             aria-label="The CIO Vision home"
           >
             <img
-              src="/ciovisionnavbarlogo2.png"
+              src="/ciovision-logo-cropped.png"
               alt="The CIO Vision Business Magazine"
-              width="2000"
-              height="332"
-              className="h-auto w-[230px] object-contain sm:w-[280px] lg:w-[25vw] lg:max-w-[430px]"
+              width="1680"
+              height="385"
+              className="h-[42px] w-auto max-w-[calc(100vw-112px)] object-contain sm:h-[48px] lg:h-[3.5vw] lg:max-h-[58px]"
             />
           </Link>
 

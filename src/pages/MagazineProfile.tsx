@@ -18,6 +18,7 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 import Seo from "@/components/seo/Seo";
+import ArticleBody from "@/components/articles/ArticleBody";
 import ArticleMagazineProfile, {
   MagazineProfileLoading,
 } from "@/components/magazine/ArticleMagazineProfile";
@@ -93,7 +94,31 @@ const MagazineProfile = () => {
     profileIndex >= 0 && profileIndex < magazineProfiles.length - 1
       ? magazineProfiles[profileIndex + 1]
       : null;
-  const sidebarMagazine = magazines[0];
+  const sidebarMagazine = useMemo(() => {
+    if (!profile || !magazines.length) return null;
+
+    if (profile.article_title) {
+      const match = magazines.find(
+        (m) =>
+          m.title.toLowerCase().includes(profile.article_title!.toLowerCase()) ||
+          profile.article_title!.toLowerCase().includes(m.title.toLowerCase())
+      );
+      if (match) return match;
+    }
+
+    if (profile.slug === "richard-jacik" || profile.slug === "silvia-borzini") {
+      const match = magazines.find(
+        (m) => m.slug === "the-most-visionary-leaders-transforming-the-future-in-2026"
+      );
+      if (match) return match;
+    }
+
+    const fallback = magazines.find((m) =>
+      m.title.toLowerCase().includes("visionary") || m.title.toLowerCase().includes("innovative")
+    );
+
+    return fallback || magazines[0] || null;
+  }, [profile, magazines]);
 
   if (
     articleLoading ||
@@ -255,24 +280,7 @@ const MagazineProfile = () => {
               </figure>
 
               <div className="magazine-profile-copy">
-                {blocks.map((block, index) => {
-                  if (isHeadingBlock(block)) {
-                    return <h2 key={`${index}-${block}`}>{block}</h2>;
-                  }
-
-                  const lines = block.split("\n").map(cleanText).filter(Boolean);
-                  if (lines.length > 1 && lines.every((line) => /^[-•]/.test(line))) {
-                    return (
-                      <ul key={`${index}-${block}`}>
-                        {lines.map((line) => (
-                          <li key={line}>{line.replace(/^[-•]\s*/, "")}</li>
-                        ))}
-                      </ul>
-                    );
-                  }
-
-                  return <p key={`${index}-${block}`}>{block}</p>;
-                })}
+                <ArticleBody content={profile.bio || ""} />
               </div>
 
               <section className="mt-9 border-t border-black pt-4">

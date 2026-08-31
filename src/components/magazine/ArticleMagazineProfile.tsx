@@ -14,6 +14,7 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 import Seo from "@/components/seo/Seo";
+import ArticleBody from "@/components/articles/ArticleBody";
 import type { Database } from "@/integrations/supabase/types";
 import {
   useMagazineProfileRecords,
@@ -252,11 +253,7 @@ const ArticleMagazineProfile = ({
                 {article.excerpt && (
                   <p className="magazine-profile-lead">{article.excerpt}</p>
                 )}
-                {content
-                  .split(/\n\s*\n+/)
-                  .map(cleanText)
-                  .filter(Boolean)
-                  .map(renderContentBlock)}
+                <ArticleBody content={article.content || ""} />
               </div>
 
               <section className="mt-9 border-t border-black pt-4">

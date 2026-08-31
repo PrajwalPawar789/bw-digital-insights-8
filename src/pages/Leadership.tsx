@@ -55,6 +55,17 @@ const leaderText = (leader: LeadershipRecord) =>
     .filter(Boolean)
     .join(" ");
 
+const getCleanBioSnippet = (bio?: string | null, fallback?: string) => {
+  if (!bio) return fallback || "";
+  const clean = bio
+    .replace(/^LinkedIn:?\s*\[[^\]]+\]\([^\)]+\)\s*/i, "")
+    .replace(/^LinkedIn:?\s*https?:\/\/[^\s]+\s*/i, "")
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1")
+    .replace(/^--\s*/, "")
+    .trim();
+  return clean || fallback || "";
+};
+
 const matchesDirectoryFilter = (leader: LeadershipRecord, filter: DirectoryFilter) => {
   if (filter === "All") return true;
 
@@ -255,7 +266,7 @@ const Leadership = () => {
                           className="mt-[5px] line-clamp-4 text-[10px] leading-[1.35] text-white sm:text-[11px]"
                           style={{ fontFamily: "Georgia, serif" }}
                         >
-                          {leader.bio || `${leader.name} shares insights on leadership, strategy, and lasting business impact.`}
+                          {getCleanBioSnippet(leader.bio, `${leader.name} shares insights on leadership, strategy, and lasting business impact.`)}
                         </p>
                       </div>
                     </article>

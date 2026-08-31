@@ -51,9 +51,7 @@ const ArticleDetail = () => {
     () => extractArticleHeadings(article?.content || ""),
     [article?.content]
   );
-  const tableOfContents = headings.length
-    ? headings
-    : [{ id: "article-overview", level: 2 as const, text: "Article overview" }];
+  const tableOfContents = headings;
   const readingMinutes = useMemo(() => {
     if (!article) return 1;
     const words =
@@ -82,6 +80,17 @@ const ArticleDetail = () => {
       ? allArticles[articleIndex + 1]
       : null;
   const nextArticle = articleIndex > 0 ? allArticles[articleIndex - 1] : null;
+
+  const bodyContent = useMemo(() => {
+    let text = article?.content || "";
+    if (article?.excerpt) {
+      const trimmedExcerpt = article.excerpt.trim();
+      if (text.startsWith(trimmedExcerpt)) {
+        text = text.substring(trimmedExcerpt.length).trim();
+      }
+    }
+    return text;
+  }, [article?.content, article?.excerpt]);
 
   if (!article && (slugLoading || articlesLoading)) {
     return (
@@ -282,26 +291,37 @@ const ArticleDetail = () => {
                 </figcaption>
               </figure>
 
-              <div className="grid items-start gap-7 pt-5 lg:grid-cols-[230px_minmax(0,1fr)]">
-                <aside className="hidden lg:block lg:sticky lg:top-[76px]">
-                  <h2 className="bg-black px-3 py-2 font-serif text-[17px] font-bold text-white">
-                    In This Article
-                  </h2>
-                  <nav className="border border-t-0 border-neutral-300" aria-label="Table of contents">
-                    {tableOfContents.map((heading) => (
-                      <a
-                        key={heading.id}
-                        href={`#${heading.id}`}
-                        className={`group flex border-b border-neutral-200 px-3 py-2.5 font-sans text-[13px] font-semibold leading-[1.25] last:border-0 hover:bg-neutral-100 hover:text-[#e62429] ${
-                          heading.level === 3 ? "pl-6" : ""
-                        }`}
-                      >
-                        <ChevronRight className="mr-1.5 mt-0.5 h-3 w-3 shrink-0 transition group-hover:translate-x-0.5" />
-                        {heading.text}
-                      </a>
-                    ))}
-                  </nav>
-                </aside>
+              <div
+                className={`grid items-start gap-7 pt-5 ${
+                  tableOfContents.length > 0
+                    ? "lg:grid-cols-[230px_minmax(0,1fr)]"
+                    : "max-w-4xl"
+                }`}
+              >
+                {tableOfContents.length > 0 && (
+                  <aside className="hidden lg:block lg:sticky lg:top-[76px]">
+                    <h2 className="bg-black px-3 py-2 font-serif text-[17px] font-bold text-white">
+                      In This Article
+                    </h2>
+                    <nav
+                      className="border border-t-0 border-neutral-300"
+                      aria-label="Table of contents"
+                    >
+                      {tableOfContents.map((heading) => (
+                        <a
+                          key={heading.id}
+                          href={`#${heading.id}`}
+                          className={`group flex border-b border-neutral-200 px-3 py-2.5 font-sans text-[13px] font-semibold leading-[1.25] last:border-0 hover:bg-neutral-100 hover:text-[#e62429] ${
+                            heading.level === 3 ? "pl-6" : ""
+                          }`}
+                        >
+                          <ChevronRight className="mr-1.5 mt-0.5 h-3 w-3 shrink-0 transition group-hover:translate-x-0.5" />
+                          {heading.text}
+                        </a>
+                      ))}
+                    </nav>
+                  </aside>
+                )}
 
                 <div className="min-w-0">
                   {article.excerpt && (
@@ -309,7 +329,7 @@ const ArticleDetail = () => {
                       {article.excerpt}
                     </p>
                   )}
-                  <ArticleBody content={article.content} />
+                  <ArticleBody content={bodyContent} />
 
                   <section className="mt-9 border-t border-black pt-4">
                     <h2 className="font-serif text-lg font-bold">

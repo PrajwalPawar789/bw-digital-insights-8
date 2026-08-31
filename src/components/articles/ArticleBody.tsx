@@ -14,38 +14,6 @@ type ArticleBlock =
   | { type: "blockquote"; text: string }
   | { type: "image"; src: string; alt: string; caption?: string };
 
-type GeneratedSection = ArticleHeading & { blockIndex: number };
-
-const LEGACY_SECTION_TITLES = [
-  "Article overview",
-  "Key details",
-  "Background and context",
-  "What happens next",
-] as const;
-
-const getGeneratedSections = (blockCount: number): GeneratedSection[] => {
-  if (blockCount <= 0) return [];
-
-  const sectionCount =
-    blockCount === 1 ? 1 : Math.min(4, Math.ceil(blockCount / 2) + 1);
-
-  return Array.from({ length: sectionCount }, (_, index) => {
-    const blockIndex = Math.floor((index * blockCount) / sectionCount);
-    const text = LEGACY_SECTION_TITLES[index];
-    return {
-      id: index === 0 ? "article-overview" : headingId(text, index),
-      level: 2 as const,
-      text,
-      blockIndex,
-    };
-  });
-};
-
-const getHtmlBlockCount = (content: string) =>
-  Array.from(
-    content.matchAll(/<(?:p|ul|ol|figure|blockquote)\b[^>]*>/gi)
-  ).length;
-
 const stripTags = (value: string) =>
   value
     .replace(/<[^>]*>/g, " ")
@@ -114,14 +82,11 @@ export const parseArticleBlocks = (content: string): ArticleBlock[] => {
         .filter(Boolean);
       if (!lines.length) return;
 
-      const markdownHeading = lines[0].match(/^(#{2,3})\s+(.+)$/);
-      const inferredHeading =
-        !markdownHeading && looksLikeHeading(lines[0]) &&
-        (lines.length > 1 || lines.length === 1);
+      const markdownHeading = lines[0].match(/^(#{1,4})\s+(.+)$/);
 
-      if (markdownHeading || inferredHeading) {
-        const text = (markdownHeading?.[2] || lines[0]).trim();
-        const level: 2 | 3 = markdownHeading?.[1].length === 3 ? 3 : 2;
+      if (markdownHeading) {
+        const text = markdownHeading[2].trim();
+        const level: 2 | 3 = markdownHeading[1].length === 3 ? 3 : 2;
         blocks.push({
           type: "heading",
           heading: { id: headingId(text, headingIndex++), level, text },
@@ -178,24 +143,16 @@ export const extractArticleHeadings = (content: string): ArticleHeading[] => {
   }
 
   if (/<(?:p|ul|ol|figure|blockquote|img)\b/i.test(content)) {
-    return getGeneratedSections(getHtmlBlockCount(content)).map(
-      ({ blockIndex: _blockIndex, ...heading }) => heading
-    );
+    return [];
   }
 
   const blocks = parseArticleBlocks(content);
-  const explicitHeadings = blocks
+  return blocks
     .filter(
       (block): block is Extract<ArticleBlock, { type: "heading" }> =>
         block.type === "heading"
     )
     .map((block) => block.heading);
-
-  if (explicitHeadings.length) return explicitHeadings;
-
-  return getGeneratedSections(blocks.length).map(
-    ({ blockIndex: _blockIndex, ...heading }) => heading
-  );
 };
 
 export const getArticleWordCount = (content: string) =>
@@ -317,26 +274,6 @@ const sanitizeArticleHtml = (html: string) => {
     }
   });
 
-  if (!documentNode.body.querySelector("h2, h3")) {
-    const contentBlocks = Array.from(documentNode.body.children).filter((element) =>
-      ["P", "UL", "OL", "FIGURE", "BLOCKQUOTE", "IMG"].includes(
-        element.tagName
-      )
-    );
-
-    getGeneratedSections(contentBlocks.length)
-      .slice()
-      .reverse()
-      .forEach((section) => {
-        const target = contentBlocks[section.blockIndex];
-        if (!target) return;
-        const heading = documentNode.createElement("h2");
-        heading.id = section.id;
-        heading.textContent = section.text;
-        target.before(heading);
-      });
-  }
-
   return documentNode.body.innerHTML;
 };
 
@@ -348,7 +285,6 @@ const ArticleBody = ({ content }: { content: string }) => {
   if (containsHtml) {
     return (
       <div
-        id="article-overview"
         className="article-editorial-copy"
         dangerouslySetInnerHTML={{ __html: sanitizeArticleHtml(content) }}
       />
@@ -356,26 +292,10 @@ const ArticleBody = ({ content }: { content: string }) => {
   }
 
   const blocks = parseArticleBlocks(content);
-  const hasExplicitHeadings = blocks.some((block) => block.type === "heading");
-  const generatedSections = hasExplicitHeadings
-    ? []
-    : getGeneratedSections(blocks.length);
 
   return (
-    <div
-      id={hasExplicitHeadings ? "article-overview" : undefined}
-      className="article-editorial-copy"
-    >
+    <div className="article-editorial-copy">
       {blocks.map((block, index) => {
-        const generatedHeading = generatedSections.find(
-          (section) => section.blockIndex === index
-        );
-        const sectionHeading = generatedHeading ? (
-          <h2 key={`generated-${generatedHeading.id}`} id={generatedHeading.id}>
-            {generatedHeading.text}
-          </h2>
-        ) : null;
-
         if (block.type === "heading") {
           const Heading = block.heading.level === 3 ? "h3" : "h2";
           return (
@@ -387,42 +307,32 @@ const ArticleBody = ({ content }: { content: string }) => {
         if (block.type === "unordered-list" || block.type === "ordered-list") {
           const List = block.type === "ordered-list" ? "ol" : "ul";
           return (
-            <Fragment key={`${block.type}-${index}`}>
-              {sectionHeading}
-              <List>
-                {block.items.map((item, itemIndex) => (
-                  <li key={`${itemIndex}-${item}`}>{renderInline(item)}</li>
-                ))}
-              </List>
-            </Fragment>
+            <List key={`${block.type}-${index}`}>
+              {block.items.map((item, itemIndex) => (
+                <li key={`${itemIndex}-${item}`}>{renderInline(item)}</li>
+              ))}
+            </List>
           );
         }
         if (block.type === "blockquote") {
           return (
-            <Fragment key={`quote-${index}`}>
-              {sectionHeading}
-              <blockquote>{renderInline(block.text)}</blockquote>
-            </Fragment>
+            <blockquote key={`quote-${index}`}>
+              {renderInline(block.text)}
+            </blockquote>
           );
         }
         if (block.type === "image") {
           const source = safeUrl(block.src, true);
           if (!source) return null;
           return (
-            <Fragment key={`${block.src}-${index}`}>
-              {sectionHeading}
-              <figure>
-                <img src={source} alt={block.alt} loading="lazy" decoding="async" />
-                {block.caption && <figcaption>{block.caption}</figcaption>}
-              </figure>
-            </Fragment>
+            <figure key={`${block.src}-${index}`}>
+              <img src={source} alt={block.alt} loading="lazy" decoding="async" />
+              {block.caption && <figcaption>{block.caption}</figcaption>}
+            </figure>
           );
         }
         return (
-          <Fragment key={`paragraph-${index}`}>
-            {sectionHeading}
-            <p>{renderInline(block.text)}</p>
-          </Fragment>
+          <p key={`paragraph-${index}`}>{renderInline(block.text)}</p>
         );
       })}
     </div>
