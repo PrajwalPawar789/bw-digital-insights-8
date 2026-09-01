@@ -856,7 +856,7 @@
 
 .home-motion-magazine-slide {
   aspect-ratio: 880 / 1155;
-  height: auto !important;
+  height: 100% !important;
   overflow: hidden;
   background: #111111;
   backface-visibility: hidden;

@@ -91,7 +91,7 @@ const RegionalMagazineCoverflow = ({
                 loading={index < 5 ? "eager" : "lazy"}
                 decoding="async"
                 draggable={false}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
               />
             </Link>
           </SwiperSlide>
